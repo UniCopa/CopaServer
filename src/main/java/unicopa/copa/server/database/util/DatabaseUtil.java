@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nipgm.util;
+package unicopa.copa.server.database.util;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import static nipgm.util.Util.*;
 
 /**
  * Utility methods for general database operations.
@@ -145,14 +144,14 @@ public class DatabaseUtil {
             Class.forName(driver).newInstance();
             //System.out.println("Loaded the appropriate driver");
         } catch (ClassNotFoundException cnfe) {
-            err("\nUnable to load the JDBC driver " + driver);
-            err("Please check your CLASSPATH.");
+            System.err.println("\nUnable to load the JDBC driver " + driver);
+            System.err.println("Please check your CLASSPATH.");
             //cnfe.printStackTrace(System.err);
         } catch (InstantiationException ie) {
-            err("\nUnable to instantiate the JDBC driver " + driver);
+            System.err.println("\nUnable to instantiate the JDBC driver " + driver);
             ie.printStackTrace(System.err);
         } catch (IllegalAccessException iae) {
-            err("\nNot allowed to access the JDBC driver " + driver);
+            System.err.println("\nNot allowed to access the JDBC driver " + driver);
             iae.printStackTrace(System.err);
         }
     }
