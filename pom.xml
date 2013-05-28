@@ -27,6 +27,15 @@
         <role>developer</role>
       </roles>
     </developer>
+    <developer>
+      <id>philipW</id>
+      <name>Philip Wendland</name>
+      <email>pwku@gmx.de</email>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+    </developer>
   </developers>
   <prerequisites>
     <maven>2.2.1</maven>
@@ -61,6 +70,11 @@
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis</artifactId>
       <version>3.2.2</version>
+    </dependency>
+    <dependency>
+       <groupId>javax.mail</groupId>
+       <artifactId>mail</artifactId>
+       <version>1.4</version>
     </dependency>
   </dependencies>
   <build>
