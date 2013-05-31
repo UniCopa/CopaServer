@@ -25,12 +25,16 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import unicopa.copa.base.event.Event;
+import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.server.database.util.DatabaseUtil;
+import unicopa.copa.base.event.SingleEvent;
 
 /**
  * The database service provides an interface to the database. It allows to
@@ -88,6 +92,106 @@ public class DatabaseService {
 
     public DatabaseService(File database) throws IOException {
 	this(database, "", "");
+    }
+
+    /**
+     * Get all event groups that match a given category and a search string.
+     * 
+     * @param categoryNodeID
+     *            the ID of the category node in the category tree whose subtree
+     *            must contain a category node of the event group
+     * @param searchTerm
+     *            the exact string the name of the event group must contain
+     * @return
+     */
+    public List<EventGroup> getEventGroups(int categoryNodeID, String searchTerm) {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Get all events of an event group that match a given category.
+     * 
+     * @param eventGroupID
+     *            the ID of the event group to get the events from
+     * @param categoryNodeID
+     *            the ID of the category node in the category tree whose subtree
+     *            must contain a category node of the event
+     * @return
+     */
+    public List<Event> getEvents(int eventGroupID, int categoryNodeID) {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Get a SingleEvent.
+     * 
+     * @param id
+     *            the ID of the SingleEvent
+     * @return
+     */
+    public SingleEvent getSingleEvent(int id) {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Get the names of rightholders for an event.
+     * 
+     * @param eventID
+     *            the ID of the event
+     * @param appointedByUserID
+     *            the ID of the user that appointed the rightholders to be
+     *            returned, '-1' means all users
+     * @return
+     */
+    public List<String> getRightholders(int eventID, int appointedByUserID) {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Get the names of all rightholders for an event.
+     * 
+     * @param eventID
+     *            the ID of the event
+     * @return
+     */
+    public List<String> getRightholders(int eventID) {
+	return getRightholders(eventID, -1);
+    }
+
+    /**
+     * Get the names of deputies for an event.
+     * 
+     * @param eventID
+     *            the ID of the event
+     * @param appointedByUserID
+     *            the ID of the user that appointed the deputies to be returned,
+     *            '-1' means all users
+     * @return
+     */
+    public List<String> getDeputies(int eventID, int appointedByUserID) {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Get the names of all deputies for an event.
+     * 
+     * @param eventID
+     *            the ID of the event
+     * @return
+     */
+    public List<String> getDeputies(int eventID) {
+	return getDeputies(eventID, -1);
+    }
+
+    /**
+     * Get the names of all owners for an event.
+     * 
+     * @param eventID
+     *            the ID of the event
+     * @return
+     */
+    public List<String> getOwners(int eventID) {
+	throw new UnsupportedOperationException();
     }
 
     /**
