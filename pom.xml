@@ -10,7 +10,7 @@
   <groupId>unicopa.copa.server</groupId>
   <artifactId>copa-server</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <name>copa-server</name>
   <url>https://github.com/UniCopa/CopaServer</url>
   <organization>
