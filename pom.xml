@@ -42,7 +42,7 @@
         <role>developer</role>
       </roles>
     </developer>
-	<developer>
+    <developer>
       <id>david</id>
       <name>David Knacker</name>
       <email>thaddl@hotmail.de</email>
@@ -90,6 +90,11 @@
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.1.1.0</version>
     </dependency>
   </dependencies>
   <build>
