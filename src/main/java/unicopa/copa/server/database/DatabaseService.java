@@ -25,16 +25,22 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
+import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
-import unicopa.copa.server.database.util.DatabaseUtil;
 import unicopa.copa.base.event.SingleEvent;
+import unicopa.copa.server.database.data.persistence.*;
+import unicopa.copa.server.database.util.DatabaseUtil;
+
 
 /**
  * The database service provides an interface to the database. It allows to
@@ -58,8 +64,8 @@ public class DatabaseService {
 	}
     }
 
-    private static final String RESOURCE_SQL_INITDB = "/nipgm/resources/sql/initializeDB.sql";
-    private static final String RESOURCE_MYBATIS_CONFIG = "nipgm/resources/mybatis-config.xml";
+    private static final String RESOURCE_SQL_INITDB = "/sql/initializeDB.sql";
+    private static final String RESOURCE_MYBATIS_CONFIG = "mybatis-config.xml";
     private final File database;
     private SqlSessionFactory sqlSessionFactory; // The session factory used to
 						 // obtain SQL sessions in
@@ -83,6 +89,7 @@ public class DatabaseService {
 	properties.setProperty("password", password);
 	properties.setProperty("url",
 		DatabaseUtil.protocol + database.getCanonicalPath());
+
 
 	InputStream inputStream = Resources
 		.getResourceAsStream(RESOURCE_MYBATIS_CONFIG);
@@ -119,7 +126,19 @@ public class DatabaseService {
      * @return
      */
     public List<Event> getEvents(int eventGroupID, int categoryNodeID) {
-	throw new UnsupportedOperationException();
+    	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
+    	if(categoryNodeID!=0) nodeList.add(categoryNodeID);
+    	
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+	        EventMapper mapper = session.getMapper(EventMapper.class);
+	        for(int i=0;i<nodeList.size();i++){
+	        	System.out.println("eGID: "+eventGroupID+" | category: "+nodeList.get(i));
+	        }
+	        List<Event> list = mapper.getEvents(eventGroupID, nodeList);
+	        session.commit();
+			session.close();
+			return list;
+	    }
     }
 
     /**
@@ -130,8 +149,16 @@ public class DatabaseService {
      * @return
      */
     public SingleEvent getSingleEvent(int id) {
-	throw new UnsupportedOperationException();
+
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+	        SingleEventMapper mapper = session.getMapper(SingleEventMapper.class);
+	        SingleEvent sEvent= mapper.getSingleEvent(id);
+	        session.commit();
+			session.close();
+			return sEvent; 
+	    }
     }
+
 
     /**
      * Get the names of rightholders for an event.
@@ -156,6 +183,42 @@ public class DatabaseService {
      */
     public List<String> getRightholders(int eventID) {
 	return getRightholders(eventID, -1);
+    }
+    
+    /**
+     *  Get the child nodes of the node categoryID
+     * @param categoryID
+     * 			the ID of the node
+     * @return
+     */
+    private List<Integer> getChildNodes(int categoryID){
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+	        CategoryMapper mapper = session.getMapper(CategoryMapper.class);
+	        List<Integer> nodeList = mapper.getChildNodes(categoryID);
+	        session.commit();
+			session.close();
+			return nodeList;
+	    }
+    }
+    
+    /**
+     * Uses getChildNodes recursive to get all leaves that are below the 
+     * node categoryID
+     * @param categoryID
+     * 			the ID of the node
+     * @return
+     */
+    private List<Integer> getAllChildNodes(int categoryID){
+    	List<Integer> nodeList = new ArrayList<Integer>();
+    	nodeList.clear();
+    	if(getChildNodes(categoryID).size()==0) return nodeList;
+    	else{
+    		nodeList=getChildNodes(categoryID);
+    		for(int i=0;i<nodeList.size();i++){
+    			nodeList.addAll(getAllChildNodes(nodeList.get(i)));
+    		}
+    		return nodeList;
+    	}
     }
 
     /**
