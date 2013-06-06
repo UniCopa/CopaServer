@@ -1,0 +1,21 @@
+The name of the file consists of three different fields:
+usrType_updateType_language.txt
+
+where
+
+usrType = default for every normal user who has subscribed for the update or
+	  general for recipients who wish to be informed about changes to events, e.g. the general office
+updateType = new to inform about new appointments
+       	     upd to inform about updated appointments
+	     cncld to inform about canceled appointments
+language = the language code in the UserSettings from the database for the particular user, typically e.g. ENG or english
+
+
+
+
+
+The following example shows the format of the text template: 
+
+The first line is the E-Mail subject line
+The message body begins with the second line. You can add expressions from unicopa.copa.server.email.TextPatterns 
+(i.e. _UPDATE_DATE, _CREATOR_NAME, _COMMENT, _LOCATION, _DATE, _SUPERVISOR, _EVENTGROUP_NAME, _EVENT_NAME). These expressions will be replaced by the data from the SingleEventUpdate before sending E-Mails with the method notifySingleEventUpdate. This will also work in the subject line!
