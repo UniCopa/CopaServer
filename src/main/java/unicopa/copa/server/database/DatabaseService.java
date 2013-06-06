@@ -213,9 +213,9 @@ public class DatabaseService {
      * @return
      */
     private List<Integer> getAllChildNodes(int categoryID){
-    	List<Integer> nodeList = new ArrayList<Integer>();
+    	List<Integer> nodeList = new ArrayList<>();
     	nodeList.clear();
-    	if(getChildNodes(categoryID).size()==0) return nodeList;
+    	if( getChildNodes(categoryID).isEmpty()) return nodeList;
     	else{
     		nodeList=getChildNodes(categoryID);
     		for(int i=0;i<nodeList.size();i++){
