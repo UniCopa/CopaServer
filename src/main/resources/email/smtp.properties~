@@ -1,0 +1,15 @@
+##############################################################################
+# Configuration file for the SMTP-Server in order to be able to send E-Mails #
+##############################################################################
+#mail.smtp.host - specifies the host address of the SMTP-Server you wish to use, e.g. smtp.example.com
+mail.smtp.host=
+#mail.smtp.auth - specifies, whether authentication is necessary in order to be able to connect to the SMTP-Server (true/false - true in most cases)
+mail.smtp.auth=true
+#mail.smtp.port - specifies the port of the SMTP-Server to connect to, e.g. 587
+mail.smtp.port=587
+#mail.from - specifies the return E-Mail address of the sent E-Mail, i.e. info@example.com
+mail.from=
+#username - the username of the user (if mail.smtp.auth=true)
+username=
+#password - the password of the user (if mail.smtp.auth=true)
+password=
