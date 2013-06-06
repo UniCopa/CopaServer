@@ -20,7 +20,26 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace='unicopa.copa.server.database.data.persistence.EventGroupMapper'>
-    
-
-
+    <resultMap id="resultEventGroups" type="unicopa.copa.base.event.EventGroup">
+        <id property="eventGroupID" column="eventGroupID" />
+    	<result property="eventGroupName" column="eventGroupName" />
+    	<result property="eventGroupInfo" column="eventGroupInfo" />
+    	<collection property="categories" column="categoryID" javaType="ArrayList" 
+    	    ofType="Integer" resultMap="SingleCategory"/>
+	</resultMap>
+	
+    <resultMap id="SingleCategory" type="Integer">
+        <id property="id" column="categoryID" />     
+    </resultMap>
+        
+    <select id='getEventGroups' parameterType='map' resultType='unicopa.copa.base.event.EventGroup' resultMap="resultEventGroups">
+        select e.eventGroupID, e.eventGroupName, e.eventGroupInfo, c.categoryID
+		from eventGroups e,eventGroup_has_Categories c,categories g
+		where e.eventGroupID=c.eventGroupID and UPPER(e.eventGroupName) like UPPER(#{searchTerm})
+		and c.categoryID=g.categoryID and 
+		<foreach item="item" index="index" collection="categoryNodeID"
+            open="(" separator="or" close=")">
+            g.categoryID=#{item} 
+        </foreach>
+    </select>
 </mapper>

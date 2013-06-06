@@ -64,7 +64,7 @@ public class DatabaseService {
 	}
     }
 
-    private static final String RESOURCE_SQL_INITDB = "/sql/initializeDB.sql";
+    private static final String RESOURCE_SQL_INITDB = "sql/initializeDB.sql";
     private static final String RESOURCE_MYBATIS_CONFIG = "mybatis-config.xml";
     private final File database;
     private SqlSessionFactory sqlSessionFactory; // The session factory used to
@@ -112,7 +112,15 @@ public class DatabaseService {
      * @return
      */
     public List<EventGroup> getEventGroups(int categoryNodeID, String searchTerm) {
-	throw new UnsupportedOperationException();
+    	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
+    	if(categoryNodeID!=0) nodeList.add(categoryNodeID);	
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+	        EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
+	        List<EventGroup> list = mapper.getEventGroups(nodeList, "%"+searchTerm+"%");
+	        session.commit();
+			session.close();
+			return list;
+	    }
     }
 
     /**
@@ -127,13 +135,9 @@ public class DatabaseService {
      */
     public List<Event> getEvents(int eventGroupID, int categoryNodeID) {
     	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
-    	if(categoryNodeID!=0) nodeList.add(categoryNodeID);
-    	
+    	if(categoryNodeID!=0) nodeList.add(categoryNodeID);	
 		try (SqlSession session = sqlSessionFactory.openSession()) {
 	        EventMapper mapper = session.getMapper(EventMapper.class);
-	        for(int i=0;i<nodeList.size();i++){
-	        	System.out.println("eGID: "+eventGroupID+" | category: "+nodeList.get(i));
-	        }
 	        List<Event> list = mapper.getEvents(eventGroupID, nodeList);
 	        session.commit();
 			session.close();

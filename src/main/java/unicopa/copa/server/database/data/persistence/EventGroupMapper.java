@@ -16,6 +16,14 @@
  */
 package unicopa.copa.server.database.data.persistence;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import unicopa.copa.base.event.EventGroup;
+
 public interface EventGroupMapper {
+
+	public List<EventGroup> getEventGroups(@Param("categoryNodeID") List<Integer> categoryNodeID, @Param("searchTerm") String searchTerm);
 
 }
