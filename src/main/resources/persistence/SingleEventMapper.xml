@@ -19,13 +19,25 @@
    <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
 <mapper namespace='unicopa.copa.server.database.data.persistence.SingleEventMapper'>
     
+    <resultMap id="resultSingleEvent" type="unicopa.copa.base.event.SingleEvent">
+        <constructor>
+            <idArg column="SEventDate" javaType="long"/>   
+        </constructor>
+        <id property="singleEventID" column="singleEventID" />
+    	<id property="eventID" column="eventID" />
+    	<id property="durationMinutes" column="duration" />
+    	<result property="location" column="location" />
+    	<result property="supervisor" column="supervisor" />
+    </resultMap>
 
-    <select id='getSingleEvents' parameterType='int' resultType='unicopa.copa.base.event.SingleEvent'>
-		select distinct e.singleEventID, e.eventID, e.location, e.sEventDate,e.SEventTime,e.duration,e.supervisor 
-		From events e
-		Where e.singleEventID=#{singleEventID}		
+
+    <select id='getSingleEvent' parameterType='int' resultMap="resultSingleEvent">
+		select s.singleEventID, s.eventID, s.location,s.SEventDate,s.supervisor,s.duration 
+		From  singleEvents s
+		Where s.singleEventID=#{singleEventID}		
     </select>
 
 </mapper>

@@ -26,7 +26,9 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
@@ -34,13 +36,11 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.server.database.data.persistence.*;
 import unicopa.copa.server.database.util.DatabaseUtil;
-
 
 /**
  * The database service provides an interface to the database. It allows to
@@ -90,7 +90,6 @@ public class DatabaseService {
 	properties.setProperty("url",
 		DatabaseUtil.protocol + database.getCanonicalPath());
 
-
 	InputStream inputStream = Resources
 		.getResourceAsStream(RESOURCE_MYBATIS_CONFIG);
 	sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream,
@@ -112,15 +111,17 @@ public class DatabaseService {
      * @return
      */
     public List<EventGroup> getEventGroups(int categoryNodeID, String searchTerm) {
-    	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
-    	if(categoryNodeID!=0) nodeList.add(categoryNodeID);	
-		try (SqlSession session = sqlSessionFactory.openSession()) {
-	        EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
-	        List<EventGroup> list = mapper.getEventGroups(nodeList, "%"+searchTerm+"%");
-	        session.commit();
-			session.close();
-			return list;
-	    }
+	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
+	if (categoryNodeID != 0)
+	    nodeList.add(categoryNodeID);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
+	    List<EventGroup> list = mapper.getEventGroups(nodeList, "%"
+		    + searchTerm + "%");
+	    session.commit();
+	    session.close();
+	    return list;
+	}
     }
 
     /**
@@ -134,15 +135,16 @@ public class DatabaseService {
      * @return
      */
     public List<Event> getEvents(int eventGroupID, int categoryNodeID) {
-    	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
-    	if(categoryNodeID!=0) nodeList.add(categoryNodeID);	
-		try (SqlSession session = sqlSessionFactory.openSession()) {
-	        EventMapper mapper = session.getMapper(EventMapper.class);
-	        List<Event> list = mapper.getEvents(eventGroupID, nodeList);
-	        session.commit();
-			session.close();
-			return list;
-	    }
+	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
+	if (categoryNodeID != 0)
+	    nodeList.add(categoryNodeID);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventMapper mapper = session.getMapper(EventMapper.class);
+	    List<Event> list = mapper.getEvents(eventGroupID, nodeList);
+	    session.commit();
+	    session.close();
+	    return list;
+	}
     }
 
     /**
@@ -150,19 +152,18 @@ public class DatabaseService {
      * 
      * @param id
      *            the ID of the SingleEvent
-     * @return
+     * @returns
      */
     public SingleEvent getSingleEvent(int id) {
-
-		try (SqlSession session = sqlSessionFactory.openSession()) {
-	        SingleEventMapper mapper = session.getMapper(SingleEventMapper.class);
-	        SingleEvent sEvent= mapper.getSingleEvent(id);
-	        session.commit();
-			session.close();
-			return sEvent; 
-	    }
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    SingleEventMapper mapper = session
+		    .getMapper(SingleEventMapper.class);
+	    SingleEvent sEH = mapper.getSingleEvent(id);
+	    session.commit();
+	    session.close();
+	    return sEH;
+	}
     }
-
 
     /**
      * Get the names of rightholders for an event.
@@ -188,41 +189,44 @@ public class DatabaseService {
     public List<String> getRightholders(int eventID) {
 	return getRightholders(eventID, -1);
     }
-    
+
     /**
-     *  Get the child nodes of the node categoryID
+     * Get the child nodes of the node categoryID
+     * 
      * @param categoryID
-     * 			the ID of the node
+     *            the ID of the node
      * @return
      */
-    private List<Integer> getChildNodes(int categoryID){
-		try (SqlSession session = sqlSessionFactory.openSession()) {
-	        CategoryMapper mapper = session.getMapper(CategoryMapper.class);
-	        List<Integer> nodeList = mapper.getChildNodes(categoryID);
-	        session.commit();
-			session.close();
-			return nodeList;
-	    }
+    private List<Integer> getChildNodes(int categoryID) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
+	    List<Integer> nodeList = mapper.getChildNodes(categoryID);
+	    session.commit();
+	    session.close();
+	    return nodeList;
+	}
     }
-    
+
     /**
-     * Uses getChildNodes recursive to get all leaves that are below the 
-     * node categoryID
+     * Uses getChildNodes recursive to get all leaves that are below the node
+     * categoryID
+     * 
      * @param categoryID
-     * 			the ID of the node
+     *            the ID of the node
      * @return
      */
-    private List<Integer> getAllChildNodes(int categoryID){
-    	List<Integer> nodeList = new ArrayList<>();
-    	nodeList.clear();
-    	if( getChildNodes(categoryID).isEmpty()) return nodeList;
-    	else{
-    		nodeList=getChildNodes(categoryID);
-    		for(int i=0;i<nodeList.size();i++){
-    			nodeList.addAll(getAllChildNodes(nodeList.get(i)));
-    		}
-    		return nodeList;
-    	}
+    private List<Integer> getAllChildNodes(int categoryID) {
+	List<Integer> nodeList = new ArrayList<>();
+	nodeList.clear();
+	if (getChildNodes(categoryID).isEmpty())
+	    return nodeList;
+	else {
+	    nodeList = getChildNodes(categoryID);
+	    for (int i = 0; i < nodeList.size(); i++) {
+		nodeList.addAll(getAllChildNodes(nodeList.get(i)));
+	    }
+	    return nodeList;
+	}
     }
 
     /**
