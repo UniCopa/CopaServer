@@ -174,7 +174,8 @@ public class DatabaseService {
      * Get a list of user-IDs of users that are subscribers for the event.
      * 
      * @param eventID
-     *            the event ID for the event the users should have subscribed to.
+     *            the event ID for the event the users should have subscribed
+     *            to.
      * @return
      */
     public List<Integer> getSubscribedUserIDs(int eventID) {

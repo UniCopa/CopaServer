@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
@@ -48,7 +49,19 @@ import unicopa.copa.server.email.EmailService;
  */
 public class EmailNotificationService extends NotificationService {
     private EmailService emailService;
+    private Map<InternetAddress, String> centralInstances;
 
+    /**
+     * Create a new EmailNotificationService.
+     * 
+     * Reads the configuration and text templates from /email and gets an
+     * EmailService object.
+     * 
+     * @param dbservice
+     *            The DatabaseService object used by the system.
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public EmailNotificationService(DatabaseService dbservice)
 	    throws FileNotFoundException, IOException {
 	super(dbservice);
@@ -68,8 +81,29 @@ public class EmailNotificationService extends NotificationService {
 	    texts.put(file.getName(), fis);
 	}
 
+	// gather external E-Mail addresses and language settigns from
+	// configuration
+	centralInstances = new HashMap<>();
+	FileInputStream extAddrs = new FileInputStream(
+		"/email/externalAddresses.txt");
+	Scanner scn = new Scanner(new BufferedInputStream(extAddrs));
+	scn.nextLine();
+	scn.nextLine();
+	scn.nextLine(); // ignore first three lines
+	while (scn.hasNextLine()) {
+	    String nextAddrStr = scn.useDelimiter(":").next();
+	    String nextLanguage = scn.nextLine();
+	    try {
+		InternetAddress nextAddr = new InternetAddress(nextAddrStr);
+		this.centralInstances.put(nextAddr, nextLanguage);
+	    } catch (AddressException ex) {
+		Logger.getLogger(EmailNotificationService.class.getName()).log(
+			Level.SEVERE, null, ex);
+	    }
+	}
+
 	// get a EmailService object
-	emailService = new EmailService(smtpProps, texts);
+	this.emailService = new EmailService(smtpProps, texts);
     }
 
     /**
@@ -93,8 +127,10 @@ public class EmailNotificationService extends NotificationService {
     /**
      * Notify all users that have subscribed to get the specified
      * SingleEventUpdate by sending an E-Mail to their registered E-Mail
-     * address. The content of the E-Mail will be in the language the user
-     * specified in his settings (if available).
+     * address.
+     * 
+     * The content of the E-Mail will be in the language the user specified in
+     * his settings (if available).
      * 
      * TODO obtain E-Mail addresses for general text templates
      * 
@@ -106,11 +142,11 @@ public class EmailNotificationService extends NotificationService {
 	// determine kind of update
 	String kindOfUpd;
 	if (update.isSingleEventCreation()) {
-	    kindOfUpd = "new";
+	    kindOfUpd = "new_";
 	} else if (update.isCancellation()) {
-	    kindOfUpd = "cncld";
+	    kindOfUpd = "cncld_";
 	} else {
-	    kindOfUpd = "upd";
+	    kindOfUpd = "upd_";
 	}
 
 	// obtain EventGroupName, EventName from db.
@@ -126,20 +162,22 @@ public class EmailNotificationService extends NotificationService {
 		.getEventGroupName();
 
 	// search for clients who want to be notified about this update
-	List<Integer> subUsers = super.dbservice().getSubscribedUserIDs(eventID);
+	List<Integer> subUsers = super.dbservice()
+		.getSubscribedUserIDs(eventID);
 
 	// get the Email addresses and user settings for those users
 	Map<Integer, String> emailStrings = new HashMap<>();
-        Map<Integer, UserSettings> usrSettings = new HashMap<>();
-        for(int usrID: subUsers){
-            String addr = super.dbservice().getEmailAddresses(usrID);
-            emailStrings.put(usrID, addr);            
-            UserSettings settings = super.dbservice().getUserSettings(usrID);
-            usrSettings.put(usrID, settings);
-        }
-	
+	Map<Integer, UserSettings> usrSettings = new HashMap<>();
+	for (int usrID : subUsers) {
+	    String addr = super.dbservice().getEmailAddresses(usrID);
+	    emailStrings.put(usrID, addr);
+	    UserSettings settings = super.dbservice().getUserSettings(usrID);
+	    usrSettings.put(usrID, settings);
+	}
 
-	// create list of EmailContext
+	// create the list of EmailContext
+
+	// begin with default users from db
 	List<EmailContext> emailContexts = new ArrayList<>();
 	for (int userID : subUsers) {
 	    UserSettings usrSet = usrSettings.get(userID);
@@ -155,17 +193,34 @@ public class EmailNotificationService extends NotificationService {
 		}
 
 		// Text-ID
-		String textID = "default_";
-		textID = textID.concat(kindOfUpd);
-		String language = usrSet.getLanguage();
-		textID = textID.concat(language);
+		StringBuilder textID = new StringBuilder();
+		textID.append("default_");
+		textID.append(kindOfUpd);
+		textID.append(usrSet.getLanguage());
 
 		// add EmailContext to list
 		if (EmailAddr != null) {
-		    EmailContext ctx = new EmailContext(EmailAddr, textID);
+		    EmailContext ctx = new EmailContext(EmailAddr,
+			    textID.toString());
 		    emailContexts.add(ctx);
 		}
 	    }
+	}
+
+	// next we have to add the contexts for external users.
+	// The E-Mail addresses of those users are located in a configuration
+	// file and have already been gathered by the constructor.
+	for (Map.Entry<InternetAddress, String> entry : centralInstances
+		.entrySet()) {
+	    // Text-ID
+	    String lang = entry.getValue();
+	    StringBuilder textID = new StringBuilder();
+	    textID.append("general_");
+	    textID.append(kindOfUpd);
+	    textID.append(lang);
+	    EmailContext ctx = new EmailContext(entry.getKey(),
+		    textID.toString());
+	    emailContexts.add(ctx);
 	}
 
 	// use EmailService to send emails

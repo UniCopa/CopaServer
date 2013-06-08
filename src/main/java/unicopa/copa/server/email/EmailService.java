@@ -18,13 +18,15 @@ package unicopa.copa.server.email;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.mail.*;
 import javax.mail.internet.*;
 import unicopa.copa.base.event.SingleEventUpdate;
 
 /**
- * \brief With the E-Mail Service it is possible to send E-Mails for
- * notifications of updates.
+ * With the E-Mail Service it is possible to send E-Mails for notifications of
+ * updates.
  * 
  * @author Philip Wendland
  */
@@ -36,7 +38,7 @@ public class EmailService {
     private Map<String, String> subjects;
 
     /**
-     * \brief Create a new EmailService.
+     * Create a new EmailService.
      * 
      * @param smtpProps
      *            the environment properties used by the JavaMail API. The path
@@ -104,10 +106,10 @@ public class EmailService {
     }
 
     /**
-     * \brief Sends a simple plain-text E-Mail.
+     * Sends a simple plain-text E-Mail.
      * 
      * @param recipient
-     *            the reciptient the E-Mail should be sent to, i.e. x@y.com
+     *            the recipient the E-Mail should be sent to, i.e. x@y.com
      * @param subject
      *            the subject of the E-Mail
      * @param message
@@ -132,10 +134,9 @@ public class EmailService {
     }
 
     /**
-     * \brief Sends E-Mails to notify the given recipients of the
-     * SingelEventUpdate.
+     * Sends E-Mails to notify the given recipients of the SingelEventUpdate.
      * 
-     * Note: The format of the E-Mail depents on the data obtained from the
+     * Note: The format of the E-Mail depends on the data obtained from the
      * parameter "update" and the "TextID" obtained from the parameter contexts.
      * For each TextID there should be one entry in the "texts" parameter which
      * was passed to the constructor when you created your EmailContext object.
@@ -160,27 +161,41 @@ public class EmailService {
 		this.subjects, update, eventGroupName, eventName);
 
 	// send E-Mails
-	Session session = Session.getInstance(smtpProps, auth);
+	Session session = Session.getInstance(this.smtpProps, this.auth);
 	for (EmailContext ctx : contexts) {
 	    InternetAddress addr = ctx.getEmailAddress();
 	    String textID = ctx.getTextID();
-	    String msgBody = processedBodies.get(textID);
-	    String subject = processedSubjects.get(textID);
-
-	    Message msg = new MimeMessage(session);
-	    msg.setRecipient(Message.RecipientType.TO, addr);
-	    msg.setSubject(subject);
-	    msg.setContent(msgBody, "text/plain");
-	    Transport.send(msg);
+	    if (processedBodies.containsKey(textID)
+		    && processedSubjects.containsKey(textID)) {
+		String msgBody = processedBodies.get(textID);
+		String subject = processedSubjects.get(textID);
+		Message msg = new MimeMessage(session);
+		msg.setRecipient(Message.RecipientType.TO, addr);
+		msg.setSubject(subject);
+		msg.setContent(msgBody, "text/plain");
+		Transport.send(msg);
+	    } else {
+		Logger log = Logger.getLogger(EmailService.class.getName());
+		log.log(Level.SEVERE,
+			"Missing E-Mail template. You should provide a template with the following name: {0}",
+			textID);
+		Message msg = new MimeMessage(session);
+		msg.setRecipient(Message.RecipientType.TO, addr);
+		msg.setSubject("Update from CoPA");
+		msg.setContent(
+			"Hello, \nthere are updates available for you. Visit the website to check them.",
+			"text/plain");
+		Transport.send(msg);
+	    }
 	}
     }
 
     /**
-     * \brief This method returns a Map with the TextPatterns being replaced by
-     * the data obtained from the parameters.
+     * This method returns a Map with the TextPatterns being replaced by the
+     * data obtained from the parameters.
      * 
      * The parameters SingleEventUpdate, eventGroupName and eventName define the
-     * replacements for the Testpatterns.
+     * replacements for the Test-Patterns.
      * 
      * @param inputMap
      *            The map where the values contain the TextPatterns that should
@@ -218,20 +233,19 @@ public class EmailService {
 
 	for (Map.Entry<String, String> entry : messages.entrySet()) {
 	    String text = entry.getValue();
-	    text = text.replaceAll(TextPatterns._UPDATE_DATE.toString(),
-		    updateDate);
-	    text = text.replaceAll(TextPatterns._CREATOR_NAME.toString(),
-		    creatorName);
-	    text = text.replaceAll(TextPatterns._COMMENT.toString(), comment);
-	    text = text.replaceAll(TextPatterns._LOCATION.toString(),
-		    newLocation);
-	    text = text.replaceAll(TextPatterns._DATE.toString(), newDate);
-	    text = text.replaceAll(TextPatterns._SUPERVISOR.toString(),
-		    newSupervisor);
-	    text = text.replaceAll(TextPatterns._EVENTGROUP_NAME.toString(),
-		    eventGroupName);
-	    text = text.replaceAll(TextPatterns._EVENT_NAME.toString(),
-		    eventName);
+	    text = text
+		    .replaceAll(TextPatterns._UPDATE_DATE.toString(),
+			    updateDate)
+		    .replaceAll(TextPatterns._CREATOR_NAME.toString(),
+			    creatorName)
+		    .replaceAll(TextPatterns._COMMENT.toString(), comment)
+		    .replaceAll(TextPatterns._LOCATION.toString(), newLocation)
+		    .replaceAll(TextPatterns._DATE.toString(), newDate)
+		    .replaceAll(TextPatterns._SUPERVISOR.toString(),
+			    newSupervisor)
+		    .replaceAll(TextPatterns._EVENTGROUP_NAME.toString(),
+			    eventGroupName)
+		    .replaceAll(TextPatterns._EVENT_NAME.toString(), eventName);
 	    entry.setValue(text);
 	}
 
