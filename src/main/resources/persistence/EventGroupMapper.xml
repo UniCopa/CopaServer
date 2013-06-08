@@ -25,7 +25,7 @@
     	<result property="eventGroupName" column="eventGroupName" />
     	<result property="eventGroupInfo" column="eventGroupInfo" />
     	<collection property="categories" column="categoryID" javaType="ArrayList" 
-    	    ofType="Integer" resultMap="SingleCategory"/>
+    	    ofType="Integer"  resultMap="SingleCategory"/>
 	</resultMap>
 	
     <resultMap id="SingleCategory" type="Integer">
@@ -41,5 +41,12 @@
             open="(" separator="or" close=")">
             g.categoryID=#{item} 
         </foreach>
+    </select>
+    
+    <select id='getEventGroup' parameterType='int' resultMap="resultEventGroups">
+        select e.eventGroupID, e.eventGroupName, e.eventGroupInfo, c.categoryID
+		from eventGroups e,eventGroup_has_Categories c
+		where e.eventGroupID =#{eventGroupID} and e.eventGroupID=c.eventGroupID
+		Order By (c.categoryID)
     </select>
 </mapper>
