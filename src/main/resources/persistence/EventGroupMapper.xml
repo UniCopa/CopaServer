@@ -32,7 +32,7 @@
         <id property="id" column="categoryID" />     
     </resultMap>
         
-    <select id='getEventGroups' parameterType='map' resultType='unicopa.copa.base.event.EventGroup' resultMap="resultEventGroups">
+    <select id='getEventGroups' parameterType='map' resultMap="resultEventGroups">
         select e.eventGroupID, e.eventGroupName, e.eventGroupInfo, c.categoryID
 		from eventGroups e,eventGroup_has_Categories c,categories g
 		where e.eventGroupID=c.eventGroupID and UPPER(e.eventGroupName) like UPPER(#{searchTerm})
