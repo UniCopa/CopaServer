@@ -26,9 +26,7 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
@@ -65,7 +63,7 @@ public class DatabaseService {
 	}
     }
 
-    private static final String RESOURCE_SQL_INITDB = "sql/initializeDB.sql";
+    private static final String RESOURCE_SQL_INITDB = "/sql/initializeDB.sql";
     private static final String RESOURCE_MYBATIS_CONFIG = "mybatis-config.xml";
     private final File database;
     private SqlSessionFactory sqlSessionFactory; // The session factory used to
@@ -119,8 +117,6 @@ public class DatabaseService {
 	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
 	    List<EventGroup> list = mapper.getEventGroups(nodeList, "%"
 		    + searchTerm + "%");
-	    session.commit();
-	    session.close();
 	    return list;
 	}
     }
@@ -142,21 +138,23 @@ public class DatabaseService {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventMapper mapper = session.getMapper(EventMapper.class);
 	    List<Event> list = mapper.getEvents(eventGroupID, nodeList);
-	    session.commit();
-	    session.close();
 	    return list;
 	}
     }
 
     /**
-     * Get the event group by its ID.
+     * Get the eventGroup by its ID.
      * 
-     * @param eventID
-     *            the ID of the event group.
+     * @param eventGroupID
+     *            the ID of the eventGroup.
      * @return
      */
     public EventGroup getEventGroup(int eventGroupID) {
-	throw new UnsupportedOperationException("Not supported yet.");
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
+	    EventGroup eGroup = mapper.getEventGroup(eventGroupID);
+	    return eGroup;
+	}
     }
 
     /**
@@ -174,7 +172,8 @@ public class DatabaseService {
      * Get a list of user-IDs of users that are subscribers for the event.
      * 
      * @param eventID
-     *            the event ID for the event the users should have subscribed to.
+     *            the event ID for the event the users should have subscribed
+     *            to.
      * @return
      */
     public List<Integer> getSubscribedUserIDs(int eventID) {
@@ -215,8 +214,6 @@ public class DatabaseService {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);
 	    SingleEvent sEH = mapper.getSingleEvent(id);
-	    session.commit();
-	    session.close();
 	    return sEH;
 	}
     }
@@ -257,8 +254,6 @@ public class DatabaseService {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
 	    List<Integer> nodeList = mapper.getChildNodes(categoryID);
-	    session.commit();
-	    session.close();
 	    return nodeList;
 	}
     }
