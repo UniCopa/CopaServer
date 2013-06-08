@@ -1,4 +1,4 @@
-﻿insert into eventGroups(eventGroupName, eventGroupInfo) values
+insert into eventGroups(eventGroupName, eventGroupInfo) values
 	   ('TestEvent1','This is the first TestEvent'),
         ('TestEvent2','Blaa'),
         ('TestEvent3','g'),
@@ -92,3 +92,62 @@ insert into singleEvents(eventID,location,sEventDate,duration,supervisor) values
 	   (5,'Raumtest',61354,12,'Prof. Test'),
 	   (9,'Raum 5',34634,253,'Dr. Test'),
 	   (11,'Raumtest',8765,2345,'Dr. Test');
+	   
+	   
+
+insert into persons(userName,firstName,familyName,email,titel,language,eMailNotification) values
+	('user123','Max','Mustermann','max@musteffrmann.com','Dr.','german',true),
+	('derp','Derp','Derpenson','derp@Derpenson.com','','english',true),
+	('testuser','Max','Mustermann','max@muster2mafnn.com','Dr.','german',false),
+	('usertest','Max1','Mustermann4','max@must1efrmann.com','Dr.','german',true),
+	('tessdft','Max2','Mustermann3','max@muste3rmfann.com','Dr.','german',true),
+	('testhe','Max3','Mustermann2','max@mustermffsann.de','Dr.Prof','german',true),
+	('test2','Max','Mustermann','max@muste4rmann.com','Dr.','german',false),
+	('test3','Max','Mustermann','max@murstfermann.com','Dr.','german',true),
+	('test4','Max','Mustermann','mfax@mustgdermann.com','Dr.','german',false),
+	('test5','Magdx','Musdfgtermann','madx@mustfermann.com','Dr.','german',true),
+	('test6','Max','Mustermann','magx@mustegdrmann.com','Mr.','english',false),
+	('test7','Madfgx','Mustermann','maegrx@mustdgermann.com','Dr.','english',true),
+	('test8','Max','Mustersdfgmann','maegx@mustermsfann.com','Dr.','deutsch',true),
+	('test9','Masx','Mustermann','mawx@mustefdrmann.com','Dr.','english',false),
+	('testgr','Mdfgsax','Mustsdfgermann','ma5x@mustermann.com','Dr.','german',true),
+	('testdfg','Max','Mustergmann','max@mufste23rmann.com','Dr.','english',false);
+	
+insert into privilege(personID,eventID,kindOfPrivilege,gavePrivilege,privDate) values
+	(1,1,1,2,1231414),
+	(4,2,2,2,12431414),
+	(6,2,3,8,14121414),
+	(6,4,2,8,4231414),
+	(5,5,2,1,241414),
+	(7,8,1,9,5231414);
+	
+insert into admins(personID,adminDate) values
+	(2,13212313),
+	(5,23423423);
+	
+insert into gCMKeys(gCMKey,personID,pushToThisKey) values
+	('refgsfb',2,true),
+	('dsfbsdb',2,true),
+	('snfdggd',2,false),
+	('fsbsfb',4,true),
+	('vvdfdf',5,true),
+	('hnbvfg',7,false);
+	
+insert into singleEventUpdates(oldSingleEventID,newSingleEventID,sEventUpdateDate,comment,creator) values
+	(1,3,234234,'Nope',2),
+	(3,4,2134,'Grund:sfsfsdf',1),
+	(2,6,13513,'gsdgdf',5),
+	(6,7,61344,'',3),
+	(5,8,523462,'',7),
+	(10,11,53234,'sdfr',2);
+	
+insert into subscriptionLists(personID,eventID,color) values
+	(2,1,'FFFFFF'),
+	(2,2,'000000'),
+	(2,3,'FF0000'),
+	(2,4,'00FF00'),
+	(5,1,'0000FF'),
+	(7,1,'FFFF00'),
+	(8,6,'00FFFF'),
+	(9,4,'FF00FF'),
+	(1,3,'FFFFFF');

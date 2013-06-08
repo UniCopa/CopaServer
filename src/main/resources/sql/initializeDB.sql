@@ -6,7 +6,7 @@ CREATE TABLE persons(
 	familyName varchar(35) NOT NULL, 
 	email varchar(100) NOT NULL UNIQUE, 
 	titel varchar(50), 
-	language varchar(50) NOT NULL, 
+	language varchar(50) NOT NULL DEFAULT 'english', 
 	eMailNotification boolean, 
 	PRIMARY KEY (personID)
 );
@@ -74,7 +74,7 @@ CREATE TABLE singleEventUpdates(
 CREATE TABLE admins(
 	adminID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
 	personID int NOT NULL, 
-	adminTimeStampDate BIGINT  NOT NULL,
+	adminDate BIGINT  NOT NULL,
 	PRIMARY KEY (adminID),
 	FOREIGN KEY (personID) REFERENCES persons(personID)
 );
@@ -102,7 +102,7 @@ CREATE TABLE privilege(
 	eventID int NOT NULL, 
 	kindOfPrivilege int NOT NULL, 
 	gavePrivilege int NOT NULL, 
-	privTimeStamp BIGINT  NOT NULL,
+	privDate BIGINT  NOT NULL,
 	PRIMARY KEY (personID, eventID),
 	FOREIGN KEY (personID) REFERENCES persons(personID),
 	FOREIGN KEY (gavePrivilege) REFERENCES persons(personID),
