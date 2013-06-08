@@ -1,0 +1,13 @@
+DROP TABLE persons;
+DROP TABLE eventGroups;
+DROP TABLE events;
+DROP TABLE categories;
+DROP TABLE eventGroup_has_Categories
+DROP TABLE category_Connections;
+DROP TABLE singleEvents;
+DROP TABLE singleEventUpdates;
+DROP TABLE admins;
+DROP TABLE gCMKeys;
+DROP TABLE subscriptionLists;
+DROP TABLE privilege;
+DROP TABLE event_has_Categories;
