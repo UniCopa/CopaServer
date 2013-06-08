@@ -173,11 +173,11 @@ public class DatabaseService {
     /**
      * Get a list of user-IDs of users that are subscribers for the event.
      * 
-     * @param event
-     *            the event the users should have subscribed to.
+     * @param eventID
+     *            the event ID for the event the users should have subscribed to.
      * @return
      */
-    public List<Integer> getSubscribedUserIDs(Event event) {
+    public List<Integer> getSubscribedUserIDs(int eventID) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -185,21 +185,21 @@ public class DatabaseService {
      * Get the E-Mail-Addresses of the given users.
      * 
      * @param userIDs
-     *            the list of user-IDs
-     * @return a map of key:userID value:emailAddress
+     *            the user-ID
+     * @return the E-Mail address as String
      */
-    public Map<Integer, String> getEmailAddresses(List<Integer> userIDs) {
+    public String getEmailAddresses(int userID) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
-     * Get the user settings of the given users.
+     * Get the user settings of the given user.
      * 
-     * @param userIDs
-     *            the list of user-IDs
-     * @return a map of key:userID, value:userSettings
+     * @param userID
+     *            the user-ID
+     * @return the UserSettings for the user
      */
-    public Map<Integer, UserSettings> getUserSettings(List<Integer> userIDs) {
+    public UserSettings getUserSettings(int userID) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
 

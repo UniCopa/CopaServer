@@ -126,13 +126,18 @@ public class EmailNotificationService extends NotificationService {
 		.getEventGroupName();
 
 	// search for clients who want to be notified about this update
-	List<Integer> subUsers = super.dbservice().getSubscribedUserIDs(event);
+	List<Integer> subUsers = super.dbservice().getSubscribedUserIDs(eventID);
 
 	// get the Email addresses and user settings for those users
-	Map<Integer, String> emailStrings = super.dbservice()
-		.getEmailAddresses(subUsers);
-	Map<Integer, UserSettings> usrSettings = super.dbservice()
-		.getUserSettings(subUsers);
+	Map<Integer, String> emailStrings = new HashMap<>();
+        Map<Integer, UserSettings> usrSettings = new HashMap<>();
+        for(int usrID: subUsers){
+            String addr = super.dbservice().getEmailAddresses(usrID);
+            emailStrings.put(usrID, addr);            
+            UserSettings settings = super.dbservice().getUserSettings(usrID);
+            usrSettings.put(usrID, settings);
+        }
+	
 
 	// create list of EmailContext
 	List<EmailContext> emailContexts = new ArrayList<>();
