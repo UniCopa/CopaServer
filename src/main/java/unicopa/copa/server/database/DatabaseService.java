@@ -35,6 +35,7 @@ import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import unicopa.copa.base.UserSettings;
 
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
@@ -145,6 +146,61 @@ public class DatabaseService {
 	    session.close();
 	    return list;
 	}
+    }
+
+    /**
+     * Get the event group by its ID.
+     * 
+     * @param eventID
+     *            the ID of the event group.
+     * @return
+     */
+    public EventGroup getEventGroup(int eventGroupID) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * Get the event by its ID.
+     * 
+     * @param eventID
+     *            the ID of the event.
+     * @return
+     */
+    public Event getEvent(int eventID) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * Get a list of user-IDs of users that are subscribers for the event.
+     * 
+     * @param event
+     *            the event the users should have subscribed to.
+     * @return
+     */
+    public List<Integer> getSubscribedUserIDs(Event event) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * Get the E-Mail-Addresses of the given users.
+     * 
+     * @param userIDs
+     *            the list of user-IDs
+     * @return a map of key:userID value:emailAddress
+     */
+    public Map<Integer, String> getEmailAddresses(List<Integer> userIDs) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * Get the user settings of the given users.
+     * 
+     * @param userIDs
+     *            the list of user-IDs
+     * @return a map of key:userID, value:userSettings
+     */
+    public Map<Integer, UserSettings> getUserSettings(List<Integer> userIDs) {
+	throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**

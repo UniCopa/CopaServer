@@ -23,11 +23,22 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import unicopa.copa.base.UserSettings;
+import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.SingleEventUpdate;
+import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.server.database.DatabaseService;
+import unicopa.copa.server.email.EmailContext;
 import unicopa.copa.server.email.EmailService;
 
 /**
@@ -85,17 +96,80 @@ public class EmailNotificationService extends NotificationService {
      * address. The content of the E-Mail will be in the language the user
      * specified in his settings (if available).
      * 
+     * TODO obtain E-Mail addresses for general text templates
+     * 
      * @param update
      *            the SingleEventUpdate to inform about
      */
     @Override
     public void notifyClients(SingleEventUpdate update) {
-	throw new UnsupportedOperationException("Not supported yet.");
-	// TODO search for clients who want to be notified about this update
-	// compose the textIDs for the text template for every user
-	// obtain EventGroupName, EventName from db
-	// use EmailService to send emails
-	// add required methods to DatabaseService
-    }
+	// determine kind of update
+	String kindOfUpd;
+	if (update.isSingleEventCreation()) {
+	    kindOfUpd = "new";
+	} else if (update.isCancellation()) {
+	    kindOfUpd = "cncld";
+	} else {
+	    kindOfUpd = "upd";
+	}
 
+	// obtain EventGroupName, EventName from db.
+	// Note: We have to get the Event-ID from the old single event, because
+	// the new single event might be null
+	int OldID = update.getOldSingleEventID();
+	SingleEvent oldSingleEvent = super.dbservice().getSingleEvent(OldID);
+	int eventID = oldSingleEvent.getEventID();
+	Event event = super.dbservice().getEvent(eventID);
+	int eventGroupID = event.getEventGroupID();
+	String eventName = event.getEventName();
+	String eventGroupName = super.dbservice().getEventGroup(eventGroupID)
+		.getEventGroupName();
+
+	// search for clients who want to be notified about this update
+	List<Integer> subUsers = super.dbservice().getSubscribedUserIDs(event);
+
+	// get the Email addresses and user settings for those users
+	Map<Integer, String> emailStrings = super.dbservice()
+		.getEmailAddresses(subUsers);
+	Map<Integer, UserSettings> usrSettings = super.dbservice()
+		.getUserSettings(subUsers);
+
+	// create list of EmailContext
+	List<EmailContext> emailContexts = new ArrayList<>();
+	for (int userID : subUsers) {
+	    UserSettings usrSet = usrSettings.get(userID);
+	    if (usrSet.isEmailNotificationEnabled()) {
+		// E-Mail address
+		String emailString = emailStrings.get(userID);
+		InternetAddress EmailAddr = null;
+		try {
+		    EmailAddr = new InternetAddress(emailString);
+		} catch (AddressException ex) {
+		    Logger.getLogger(EmailNotificationService.class.getName())
+			    .log(Level.SEVERE, null, ex);
+		}
+
+		// Text-ID
+		String textID = "default_";
+		textID = textID.concat(kindOfUpd);
+		String language = usrSet.getLanguage();
+		textID = textID.concat(language);
+
+		// add EmailContext to list
+		if (EmailAddr != null) {
+		    EmailContext ctx = new EmailContext(EmailAddr, textID);
+		    emailContexts.add(ctx);
+		}
+	    }
+	}
+
+	// use EmailService to send emails
+	try {
+	    this.emailService.notifySingleEventUpdate(emailContexts, update,
+		    eventGroupName, eventName);
+	} catch (MessagingException ex) {
+	    Logger.getLogger(EmailNotificationService.class.getName()).log(
+		    Level.SEVERE, null, ex);
+	}
+    }
 }
