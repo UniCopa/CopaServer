@@ -110,7 +110,7 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void testgetEventGroup() {
+    public void testGetEventGroup() {
 	List<Integer> res = new ArrayList<Integer>();
 	res.add(5);
 	res.add(7);
@@ -122,6 +122,19 @@ public class DatabaseServiceTest {
 	assertEquals(eG.getEventGroupInfo(), resG.getEventGroupInfo());
 	assertEquals(eG.getEventGroupID(), resG.getEventGroupID());
 	assertEquals(eG.getCategories(), resG.getCategories());
+    }
+
+    @Test
+    public void testGetEvent() {
+	ArrayList<Integer> res = new ArrayList<Integer>();
+	res.add(5);
+	res.add(6);
+	Event e = new Event(2, 1, "Übung", res);
+	Event resE = dbs.getEvent(2);
+	assertEquals(e.getCategories(), resE.getCategories());
+	assertEquals(e.getEventGroupID(), resE.getEventGroupID());
+	assertEquals(e.getEventID(), resE.getEventID());
+	assertEquals(e.getEventName(), resE.getEventName());
     }
 
 }

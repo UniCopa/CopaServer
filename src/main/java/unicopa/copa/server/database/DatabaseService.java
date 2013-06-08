@@ -165,7 +165,11 @@ public class DatabaseService {
      * @return
      */
     public Event getEvent(int eventID) {
-	throw new UnsupportedOperationException("Not supported yet.");
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventMapper mapper = session.getMapper(EventMapper.class);
+	    Event e = mapper.getEvent(eventID);
+	    return e;
+	}
     }
 
     /**
