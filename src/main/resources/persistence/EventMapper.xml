@@ -35,7 +35,7 @@
         
     
     
-    <select id='getEvents' parameterType='map' resultType='unicopa.copa.base.event.Event' resultMap="resultEvents">
+    <select id='getEvents' parameterType='map' resultMap="resultEvents">
 		select e.eventID, e.eventGroupID, e.kindOfEvent, c.categoryID
 		From events e, event_has_Categories c
 		Where e.eventGroupID=#{eventGroupID} and e.eventID=c.eventID and
@@ -43,7 +43,13 @@
             open="(" separator="or" close=")">
             c.categoryID=#{item} 
         </foreach>
-
     </select>
 
+    <select id='getEvent' parameterType='int' resultMap="resultEvents">
+    	select e.eventID, e.eventGroupID, e.kindOfEvent, c.categoryID
+		From events e, event_has_Categories c
+		Where e.eventID=#{eventID} and e.eventID=c.eventID
+		Order By (c.categoryID)
+    </select>
+        
 </mapper>

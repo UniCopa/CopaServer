@@ -52,8 +52,7 @@ CREATE TABLE singleEvents(
 	singleEventID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
 	eventID int NOT NULL, 
 	location varchar(70) NOT NULL, 
-	sEventDate date NOT NULL,
-	sEventTime time NOT NULL,
+	sEventDate BIGINT  NOT NULL,
 	duration int NOT NULL, 
 	supervisor varchar(70) NOT NULL, 
 	PRIMARY KEY (singleEventID),
@@ -63,8 +62,7 @@ CREATE TABLE singleEvents(
 CREATE TABLE singleEventUpdates(
 	oldSingleEventID int NOT NULL, 
 	newSingleEventID int NOT NULL, 
-	sEventUpdateDate date NOT NULL,
-	sEventUpdateTime time NOT NULL,
+	sEventUpdateDate BIGINT  NOT NULL,
 	comment varchar(1000), 
 	creator int NOT NULL,
 	PRIMARY KEY (oldSingleEventID,newSingleEventID),
@@ -76,8 +74,7 @@ CREATE TABLE singleEventUpdates(
 CREATE TABLE admins(
 	adminID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
 	personID int NOT NULL, 
-	timeStampDate date NOT NULL,
-	timeStampTime time NOT NULL,
+	adminTimeStampDate BIGINT  NOT NULL,
 	PRIMARY KEY (adminID),
 	FOREIGN KEY (personID) REFERENCES persons(personID)
 );
@@ -105,8 +102,7 @@ CREATE TABLE privilege(
 	eventID int NOT NULL, 
 	kindOfPrivilege int NOT NULL, 
 	gavePrivilege int NOT NULL, 
-	TimeStampDate date NOT NULL,
-	TimeStampTime time NOT NULL,
+	privTimeStamp BIGINT  NOT NULL,
 	PRIMARY KEY (personID, eventID),
 	FOREIGN KEY (personID) REFERENCES persons(personID),
 	FOREIGN KEY (gavePrivilege) REFERENCES persons(personID),
