@@ -46,7 +46,7 @@ public class DatabaseServiceTest {
 			    .getResourceAsStream(RESOURCE_SQL_INITDB)));
 	    ScriptRunner runner = new ScriptRunner(conn);
 	    runner.setLogWriter(null);
-	    runner.setErrorLogWriter(null);
+	    // runner.setErrorLogWriter(null);
 	    runner.runScript(reader);
 
 	    reader = new BufferedReader(new InputStreamReader(
@@ -66,7 +66,7 @@ public class DatabaseServiceTest {
 			.getResourceAsStream(RESOURCE_SQL_DROP)));
 	ScriptRunner runner = new ScriptRunner(conn);
 	runner.setLogWriter(null);
-	runner.setErrorLogWriter(null);
+	// runner.setErrorLogWriter(null);
 	runner.runScript(reader);
     }
 
@@ -137,4 +137,8 @@ public class DatabaseServiceTest {
 	assertEquals(e.getEventName(), resE.getEventName());
     }
 
+    @Test
+    public void testGetEmailAddress() {
+	assertEquals("derp@Derpenson.com", dbs.getEmailAddress(2));
+    }
 }

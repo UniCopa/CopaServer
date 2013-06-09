@@ -185,14 +185,18 @@ public class DatabaseService {
     }
 
     /**
-     * Get the E-Mail-Addresses of the given users.
+     * Get the E-Mail-Address of the given user.
      * 
-     * @param userIDs
+     * @param userID
      *            the user-ID
      * @return the E-Mail address as String
      */
-    public String getEmailAddresses(int userID) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public String getEmailAddress(int userID) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    String email = mapper.getEmailAddress(userID);
+	    return email;
+	}
     }
 
     /**
