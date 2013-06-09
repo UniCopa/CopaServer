@@ -169,7 +169,7 @@ public class EmailNotificationService extends NotificationService {
 	Map<Integer, String> emailStrings = new HashMap<>();
 	Map<Integer, UserSettings> usrSettings = new HashMap<>();
 	for (int usrID : subUsers) {
-	    String addr = super.dbservice().getEmailAddresses(usrID);
+	    String addr = super.dbservice().getEmailAddress(usrID);
 	    emailStrings.put(usrID, addr);
 	    UserSettings settings = super.dbservice().getUserSettings(usrID);
 	    usrSettings.put(usrID, settings);
