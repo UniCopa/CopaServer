@@ -45,13 +45,13 @@ insert into eventGroup_has_Categories(categoryID,eventGroupID) values
 		
 
 insert into events(eventGroupID, kindOfEvent) values
-	   (1,'Übung'),
-	   (1,'Übung'),
-	   (2,'Übung'),
-	   (3,'Übung'),
-	   (5,'Übung'),
-	   (5,'Übung'),
-	   (6,'Übung'),
+	   (1,'Uebung'),
+	   (1,'Uebung'),
+	   (2,'Uebung'),
+	   (3,'Uebung'),
+	   (5,'Uebung'),
+	   (5,'Uebung'),
+	   (6,'Uebung'),
 	   (1,'Vorlesung'),
 	   (2,'Vorlesung'),
 	   (4,'Vorlesung'),
