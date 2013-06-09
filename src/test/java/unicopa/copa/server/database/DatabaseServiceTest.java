@@ -129,7 +129,7 @@ public class DatabaseServiceTest {
 	ArrayList<Integer> res = new ArrayList<Integer>();
 	res.add(5);
 	res.add(6);
-	Event e = new Event(2, 1, "Übung", res);
+	Event e = new Event(2, 1, "Uebung", res);
 	Event resE = dbs.getEvent(2);
 	assertEquals(e.getCategories(), resE.getCategories());
 	assertEquals(e.getEventGroupID(), resE.getEventGroupID());
@@ -149,6 +149,16 @@ public class DatabaseServiceTest {
 	res.add(5);
 	res.add(7);
 	assertEquals(res, dbs.getSubscribedUserIDs(1));
+    }
+
+    @Test
+    public void testGetRightholders() {
+	List<String> resN = dbs.getRightholders(1, 2);
+	ArrayList<String> nList = new ArrayList<String>();
+	nList.add("Max Mustermann");
+	nList.add("Max1 Mustermann4");
+	assertEquals(nList.get(0), resN.get(0));
+	assertEquals(nList.get(1), resN.get(1));
     }
 
 }

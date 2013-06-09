@@ -119,7 +119,10 @@ insert into privilege(personID,eventID,kindOfPrivilege,gavePrivilege,privDate) v
 	(6,2,3,8,14121414),
 	(6,4,2,8,4231414),
 	(5,5,2,1,241414),
-	(7,8,1,9,5231414);
+	(7,8,1,9,5231414),
+	(3,1,1,6,1231414),
+	(4,1,1,2,234414),
+	(5,1,2,2,5341414);
 	
 insert into admins(personID,adminDate) values
 	(2,13212313),
