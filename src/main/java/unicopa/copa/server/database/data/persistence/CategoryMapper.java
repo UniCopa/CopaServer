@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface CategoryMapper {
-	public List<Integer> getChildNodes(@Param("categoryID") int categoryID);
+
+    public List<Integer> getChildNodes(@Param("categoryID") int categoryID);
 
 }
