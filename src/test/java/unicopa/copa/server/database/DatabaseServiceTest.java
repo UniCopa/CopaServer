@@ -141,4 +141,14 @@ public class DatabaseServiceTest {
     public void testGetEmailAddress() {
 	assertEquals("derp@Derpenson.com", dbs.getEmailAddress(2));
     }
+
+    @Test
+    public void testGetSubscribedUserIDs() {
+	ArrayList<Integer> res = new ArrayList<Integer>();
+	res.add(2);
+	res.add(5);
+	res.add(7);
+	assertEquals(res, dbs.getSubscribedUserIDs(1));
+    }
+
 }

@@ -181,7 +181,11 @@ public class DatabaseService {
      * @return
      */
     public List<Integer> getSubscribedUserIDs(int eventID) {
-	throw new UnsupportedOperationException("Not supported yet.");
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    List<Integer> iDList = mapper.getSubscribedUserIDs(eventID);
+	    return iDList;
+	}
     }
 
     /**

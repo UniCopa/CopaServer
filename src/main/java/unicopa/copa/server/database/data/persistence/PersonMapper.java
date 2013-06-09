@@ -16,9 +16,13 @@
  */
 package unicopa.copa.server.database.data.persistence;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface PersonMapper {
 
     public String getEmailAddress(@Param("userID") int userID);
+
+    public List<Integer> getSubscribedUserIDs(@Param("eventID") int eventID);
 }
