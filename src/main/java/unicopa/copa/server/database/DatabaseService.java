@@ -241,7 +241,12 @@ public class DatabaseService {
      * @return
      */
     public List<String> getRightholders(int eventID, int appointedByUserID) {
-	throw new UnsupportedOperationException();
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    List<String> privList = mapper.getRightholders(eventID,
+		    appointedByUserID);
+	    return privList;
+	}
     }
 
     /**
