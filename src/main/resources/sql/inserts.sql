@@ -98,7 +98,7 @@ insert into singleEvents(eventID,location,sEventDate,duration,supervisor) values
 insert into persons(userName,firstName,familyName,email,titel,language,eMailNotification) values
 	('user123','Max','Mustermann','max@musteffrmann.com','Dr.','german',true),
 	('derp','Derp','Derpenson','derp@Derpenson.com','','english',true),
-	('testuser','Max','Mustermann','max@muster2mafnn.com','Dr.','german',false),
+	('testuser','Test','Mustermann','max@muster2mafnn.com','Dr.','german',false),
 	('usertest','Max1','Mustermann4','max@must1efrmann.com','Dr.','german',true),
 	('tessdft','Max2','Mustermann3','max@muste3rmfann.com','Dr.','german',true),
 	('testhe','Max3','Mustermann2','max@mustermffsann.de','Dr.Prof','german',true),
@@ -116,6 +116,7 @@ insert into persons(userName,firstName,familyName,email,titel,language,eMailNoti
 insert into privilege(personID,eventID,kindOfPrivilege,gavePrivilege,privDate) values
 	(1,1,1,2,1231414),
 	(4,2,2,2,12431414),
+	(5,2,2,3,12431414),
 	(6,2,3,8,14121414),
 	(6,4,2,8,4231414),
 	(5,5,2,1,241414),

@@ -243,8 +243,8 @@ public class DatabaseService {
     public List<String> getRightholders(int eventID, int appointedByUserID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
-	    List<String> privList = mapper.getRightholders(eventID,
-		    appointedByUserID);
+	    List<String> privList = mapper.getPrivileged(eventID,
+		    appointedByUserID, 1);
 	    return privList;
 	}
     }
@@ -308,7 +308,12 @@ public class DatabaseService {
      * @return
      */
     public List<String> getDeputies(int eventID, int appointedByUserID) {
-	throw new UnsupportedOperationException();
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    List<String> privList = mapper.getPrivileged(eventID,
+		    appointedByUserID, 2);
+	    return privList;
+	}
     }
 
     /**
@@ -330,7 +335,11 @@ public class DatabaseService {
      * @return
      */
     public List<String> getOwners(int eventID) {
-	throw new UnsupportedOperationException();
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    List<String> privList = mapper.getPrivileged(eventID, -1, 3);
+	    return privList;
+	}
     }
 
     /**

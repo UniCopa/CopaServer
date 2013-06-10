@@ -161,4 +161,41 @@ public class DatabaseServiceTest {
 	assertEquals(nList.get(1), resN.get(1));
     }
 
+    @Test
+    public void testGetRightholders2() {
+	List<String> resN = dbs.getRightholders(1);
+	ArrayList<String> nList = new ArrayList<String>();
+	nList.add("Max Mustermann");
+	nList.add("Test Mustermann");
+	nList.add("Max1 Mustermann4");
+	assertEquals(nList.get(0), resN.get(0));
+	assertEquals(nList.get(1), resN.get(1));
+	assertEquals(nList.get(2), resN.get(2));
+    }
+
+    @Test
+    public void testGetDeputies() {
+	List<String> resN = dbs.getDeputies(2, 2);
+	ArrayList<String> nList = new ArrayList<String>();
+	nList.add("Max1 Mustermann4");
+	assertEquals(nList.get(0), resN.get(0));
+    }
+
+    @Test
+    public void testGetDeputies2() {
+	List<String> resN = dbs.getDeputies(2);
+	ArrayList<String> nList = new ArrayList<String>();
+	nList.add("Max1 Mustermann4");
+	nList.add("Max2 Mustermann3");
+	assertEquals(nList.get(0), resN.get(0));
+	assertEquals(nList.get(1), resN.get(1));
+    }
+
+    @Test
+    public void testGetOwners() {
+	List<String> resN = dbs.getOwners(2);
+	ArrayList<String> nList = new ArrayList<String>();
+	nList.add("Max3 Mustermann2");
+	assertEquals(nList.get(0), resN.get(0));
+    }
 }

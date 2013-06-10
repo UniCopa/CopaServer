@@ -22,6 +22,7 @@ import org.apache.ibatis.annotations.Param;
 
 public interface PrivilegeMapper {
 
-    public List<String> getRightholders(@Param("eventID") int eventID,
-	    @Param("appointedByUserID") int appointedByUserID);
+    public List<String> getPrivileged(@Param("eventID") int eventID,
+	    @Param("appointedByUserID") int appointedByUserID,
+	    @Param("kindOfPriv") int kindOfPriv);
 }

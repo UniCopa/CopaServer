@@ -20,10 +20,10 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace='unicopa.copa.server.database.data.persistence.PrivilegeMapper'>
     
-    <select id='getRightholders' parameterType='int' resultType='String'>
+    <select id='getPrivileged' parameterType='int' resultType='String'>
         select p.firstName || ' ' || p.familyName as Name
 		from persons p, privilege r
-		where p.personID=r.personID and r.eventID=#{eventID} and kindOfPrivilege = 1
+		where p.personID=r.personID and r.eventID=#{eventID} and kindOfPrivilege = #{kindOfPriv}
 		<if test="appointedByUserID != -1">
 		    and r.gavePrivilege=#{appointedByUserID}
 		</if>
