@@ -129,13 +129,13 @@ insert into admins(personID,adminDate) values
 	(2,13212313),
 	(5,23423423);
 	
-insert into gCMKeys(gCMKey,personID,pushToThisKey) values
-	('refgsfb',2,true),
-	('dsfbsdb',2,true),
-	('snfdggd',2,false),
-	('fsbsfb',4,true),
-	('vvdfdf',5,true),
-	('hnbvfg',7,false);
+insert into gCMKeys(gCMKey,personID) values
+	('refgsfb',2),
+	('dsfbsdb',2),
+	('snfdggd',2),
+	('fsbsfb',4),
+	('vvdfdf',5),
+	('hnbvfg',7);
 	
 insert into singleEventUpdates(oldSingleEventID,newSingleEventID,sEventUpdateDate,comment,creator) values
 	(1,3,234234,'Nope',2),

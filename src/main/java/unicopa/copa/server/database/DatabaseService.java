@@ -26,14 +26,19 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
 import unicopa.copa.base.UserRole;
+import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserSettings;
 
 import unicopa.copa.base.event.Event;
@@ -215,7 +220,22 @@ public class DatabaseService {
      * @return the UserSettings for the user
      */
     public UserSettings getUserSettings(int userID) {
-	throw new UnsupportedOperationException("Not supported yet.");
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    HashSet<String> uGCMKeys = mapper.getUserGCMKey(userID);
+	    HashSet<Integer> subscriptions = mapper.getSubscriptions(userID);
+	    Boolean eMailNoty = mapper.getEmailNotification(userID);
+	    String language = mapper.getLanguage(userID);
+	    List<Map<String, Integer>> listEventColor = mapper
+		    .getEventColors(userID);
+	    Map<Integer, UserEventSettings> eventSettings = new HashMap<Integer, UserEventSettings>();
+	    for (Map<String, Integer> map : listEventColor) {
+		eventSettings.put(map.get("EVENTID"), new UserEventSettings(
+			String.valueOf(map.get("COLOR"))));
+	    }
+	    return new UserSettings(uGCMKeys, eMailNoty, language,
+		    eventSettings, subscriptions);
+	}
     }
 
     /**

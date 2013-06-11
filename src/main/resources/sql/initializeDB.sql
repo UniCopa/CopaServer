@@ -81,8 +81,7 @@ CREATE TABLE admins(
 
 CREATE TABLE gCMKeys(
 	gCMKey varchar(300) NOT NULL, 
-	personID int NOT NULL, 
-	pushToThisKey boolean, 
+	personID int NOT NULL,
 	PRIMARY KEY (gCMKey),
 	FOREIGN KEY (personID) REFERENCES persons(personID)
 );
