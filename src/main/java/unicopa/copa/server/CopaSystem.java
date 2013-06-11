@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import unicopa.copa.base.com.exception.APIException;
 import unicopa.copa.base.com.AbstractRequest;
 import unicopa.copa.base.com.AbstractResponse;
-import unicopa.copa.base.com.GetSingleEventRequest;
+import unicopa.copa.base.com.request.GetSingleEventRequest;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
