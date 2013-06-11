@@ -10,13 +10,19 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import unicopa.copa.base.UserEventSettings;
+import unicopa.copa.base.UserSettings;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
@@ -197,5 +203,41 @@ public class DatabaseServiceTest {
 	ArrayList<String> nList = new ArrayList<String>();
 	nList.add("Max3 Mustermann2");
 	assertEquals(nList.get(0), resN.get(0));
+    }
+
+    @Test
+    public void testGetUserSettings() {
+	Set<String> uGCMKeys = new HashSet<String>();
+	uGCMKeys.add("refgsfb");
+	uGCMKeys.add("dsfbsdb");
+	uGCMKeys.add("snfdggd");
+	Set<Integer> subscriptions = new HashSet<Integer>();
+	subscriptions.add(1);
+	subscriptions.add(2);
+	subscriptions.add(3);
+	subscriptions.add(4);
+	Map<Integer, UserEventSettings> eventSettings = new HashMap<Integer, UserEventSettings>();
+	eventSettings.put(1, new UserEventSettings("FFFFFF"));
+	eventSettings.put(2, new UserEventSettings("000000"));
+	eventSettings.put(3, new UserEventSettings("FF0000"));
+	eventSettings.put(4, new UserEventSettings("00FF00"));
+	UserSettings uS = new UserSettings(uGCMKeys, true, "english",
+		eventSettings, subscriptions);
+	UserSettings resUs = dbs.getUserSettings(2);
+	assertEquals(uS.getLanguage(), resUs.getLanguage());
+	assertEquals(uS.getGCMKeys(), resUs.getGCMKeys());
+	assertEquals(uS.getEventSettings(1).getColorCode(), resUs
+		.getEventSettings(1).getColorCode());
+	assertEquals(uS.getEventSettings(2).getColorCode(), resUs
+		.getEventSettings(2).getColorCode());
+	assertEquals(uS.getEventSettings(3).getColorCode(), resUs
+		.getEventSettings(3).getColorCode());
+	assertEquals(uS.getEventSettings(4).getColorCode(), resUs
+		.getEventSettings(4).getColorCode());
+	assertEquals(uS.isEmailNotificationEnabled(),
+		resUs.isEmailNotificationEnabled());
+	for (int i = 0; i < 6; i++) {
+	    assertEquals(uS.hasSubscribed(i), resUs.hasSubscribed(i));
+	}
     }
 }

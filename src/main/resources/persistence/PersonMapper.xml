@@ -19,7 +19,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace='unicopa.copa.server.database.data.persistence.PersonMapper'>
-   
+           
     <select id='getEmailAddress' parameterType='int' resultType='String'>
         Select email
 		From persons
@@ -32,5 +32,36 @@
 		Where p.personID=l.personID and l.eventID=#{eventID}
 		ORDER By p.personID
     </select>
+    
+    <select id='getUserGCMKey' parameterType='int' resultType='String'>
+        Select distinct g.gCMKey
+        From gCMKeys g
+        Where g.personID=#{userID}
+    </select>
+    
+    <select id='getEventColors' parameterType='int' resultType='hashMap'>
+        Select distinct l.eventID, l.color
+        From subscriptionLists l
+        Where l.personID=#{userID}
+    </select>
+    
+    <select id='getSubscriptions' parameterType='int' resultType='int'>
+        Select distinct l.eventID
+        From subscriptionLists l
+        Where l.personID=#{userID}
+    </select>
+    
+    <select id='getEmailNotification' parameterType='int' resultType='boolean'>
+        Select distinct p.eMailNotification
+        From persons p
+        Where p.personID=#{userID}
+    </select>
+    
+    <select id='getLanguage' parameterType='int' resultType='String'>
+        Select distinct p.language
+        From persons p
+        Where p.personID=#{userID}
+    </select>
+    
 
 </mapper>
