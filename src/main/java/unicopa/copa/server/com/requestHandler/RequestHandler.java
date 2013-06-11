@@ -67,6 +67,7 @@ public abstract class RequestHandler {
      * @return true if the user holds the specified or any higher role
      */
     public boolean checkEventPermission(int userID, int eventID, UserRole role) {
-	throw new UnsupportedOperationException();
+	UserRole hasRole = context.getDbservice().getUsersRoleForEvent(userID, eventID);
+        return hasRole.level() >= role.level();
     }
 }
