@@ -17,8 +17,8 @@
 package unicopa.copa.server.com.requestHandler;
 
 import java.util.Date;
-import unicopa.copa.base.com.AbstractRequest;
-import unicopa.copa.base.com.AbstractResponse;
+import unicopa.copa.base.com.request.AbstractRequest;
+import unicopa.copa.base.com.request.AbstractResponse;
 import unicopa.copa.base.com.request.GetSingleEventRequest;
 import unicopa.copa.base.com.request.GetSingleEventResponse;
 import unicopa.copa.base.com.exception.InternalErrorException;

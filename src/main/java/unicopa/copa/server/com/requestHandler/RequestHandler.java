@@ -17,8 +17,8 @@
 package unicopa.copa.server.com.requestHandler;
 
 import unicopa.copa.base.UserRole;
-import unicopa.copa.base.com.AbstractRequest;
-import unicopa.copa.base.com.AbstractResponse;
+import unicopa.copa.base.com.request.AbstractRequest;
+import unicopa.copa.base.com.request.AbstractResponse;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
