@@ -16,6 +16,7 @@
  */
 package unicopa.copa.server.notification;
 
+import java.util.LinkedList;
 import java.util.List;
 import unicopa.copa.base.event.SingleEventUpdate;
 
@@ -28,7 +29,7 @@ import unicopa.copa.base.event.SingleEventUpdate;
  */
 public class Notifier {
 
-    private List<NotificationService> services;
+    private List<NotificationService> services = new LinkedList<>();
 
     /**
      * For each notification service, use their 'notifyClients' interface with

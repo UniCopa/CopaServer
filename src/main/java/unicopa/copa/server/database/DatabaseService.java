@@ -33,6 +33,7 @@ import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
 
 import unicopa.copa.base.event.Event;
@@ -67,8 +68,9 @@ public class DatabaseService {
     private static final String RESOURCE_MYBATIS_CONFIG = "mybatis-config.xml";
     private final File database;
     private SqlSessionFactory sqlSessionFactory; // The session factory used to
-						 // obtain SQL sessions in
-						 // service methods
+
+    // obtain SQL sessions in
+    // service methods
 
     /**
      * Create a new database service. Note: The database must already be
@@ -111,8 +113,9 @@ public class DatabaseService {
      */
     public List<EventGroup> getEventGroups(int categoryNodeID, String searchTerm) {
 	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
-	if (categoryNodeID != 0)
+	if (categoryNodeID != 0) {
 	    nodeList.add(categoryNodeID);
+	}
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
 	    List<EventGroup> list = mapper.getEventGroups(nodeList, "%"
@@ -133,8 +136,9 @@ public class DatabaseService {
      */
     public List<Event> getEvents(int eventGroupID, int categoryNodeID) {
 	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
-	if (categoryNodeID != 0)
+	if (categoryNodeID != 0) {
 	    nodeList.add(categoryNodeID);
+	}
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventMapper mapper = session.getMapper(EventMapper.class);
 	    List<Event> list = mapper.getEvents(eventGroupID, nodeList);
@@ -286,15 +290,32 @@ public class DatabaseService {
     private List<Integer> getAllChildNodes(int categoryID) {
 	List<Integer> nodeList = new ArrayList<>();
 	nodeList.clear();
-	if (getChildNodes(categoryID).isEmpty())
+	if (getChildNodes(categoryID).isEmpty()) {
 	    return nodeList;
-	else {
+	} else {
 	    nodeList = getChildNodes(categoryID);
 	    for (int i = 0; i < nodeList.size(); i++) {
 		nodeList.addAll(getAllChildNodes(nodeList.get(i)));
 	    }
 	    return nodeList;
 	}
+    }
+
+    /**
+     * Get the role a user holds for a specific event. The roles will be checked
+     * and returned in the following order: UserRole.ADMINISTRATOR if the user
+     * holds this role in general, UserRole.RIGHTHOLER, UserRole.DEPUTY,
+     * UserRole.OWNER if the user holds the role for the specified event
+     * UserRole.User otherwise.
+     * 
+     * @param userID
+     *            the ID of the user
+     * @param eventID
+     *            the ID of the event
+     * @return the role the user holds for the specified event
+     */
+    public UserRole getUsersRoleForEvent(int userID, int eventID) {
+	throw new UnsupportedOperationException();
     }
 
     /**
