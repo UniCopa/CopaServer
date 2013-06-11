@@ -21,8 +21,12 @@ import org.junit.Before;
 import org.junit.Test;
 import unicopa.copa.base.com.AbstractRequest;
 import unicopa.copa.base.com.AbstractResponse;
-import unicopa.copa.base.com.GetSingleEventRequest;
-import unicopa.copa.base.com.GetSingleEventResponse;
+import unicopa.copa.base.com.exception.APIException;
+import unicopa.copa.base.com.exception.InternalErrorException;
+import unicopa.copa.base.com.exception.PermissionException;
+import unicopa.copa.base.com.exception.RequestNotPracticableException;
+import unicopa.copa.base.com.request.GetSingleEventRequest;
+import unicopa.copa.base.com.request.GetSingleEventResponse;
 
 /**
  * Simulate client requests to the service. All requests should be tested here.
@@ -60,5 +64,39 @@ public class ClientSimulationTest {
 	AbstractResponse resp = AbstractResponse.deserialize(recv);
 	GetSingleEventResponse response = (GetSingleEventResponse) resp;
 	// TODO assert equals
+    }
+    
+    @Test(expected = APIException.class)
+    public void testWrongAPIUsage() throws Exception {
+	String send = "Send something strange...";
+	String recv = system.processClientMessage(send);
+	AbstractResponse resp = AbstractResponse.deserialize(recv);
+    }
+
+    @Test(expected = PermissionException.class)
+    public void testGetSingleEventRequestInsufficientPermission() throws Exception {
+	AbstractRequest req = new GetSingleEventRequest(-1);
+	String send = req.serialize();
+	String recv = system.processClientMessage(send);
+	AbstractResponse resp = AbstractResponse.deserialize(recv);
+	GetSingleEventResponse response = (GetSingleEventResponse) resp;
+    }
+    
+    @Test(expected = RequestNotPracticableException.class)
+    public void testGetSingleEventRequestWrongParameter() throws Exception {
+	AbstractRequest req = new GetSingleEventRequest(42);
+	String send = req.serialize();
+	String recv = system.processClientMessage(send);
+	AbstractResponse resp = AbstractResponse.deserialize(recv);
+	GetSingleEventResponse response = (GetSingleEventResponse) resp;
+    }
+    
+    @Test(expected = InternalErrorException.class)
+    public void testGetSingleEventRequestInternalError() throws Exception {
+	AbstractRequest req = new GetSingleEventRequest(0);
+	String send = req.serialize();
+	String recv = system.processClientMessage(send);
+	AbstractResponse resp = AbstractResponse.deserialize(recv);
+	GetSingleEventResponse response = (GetSingleEventResponse) resp;
     }
 }
