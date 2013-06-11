@@ -21,6 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import unicopa.copa.server.CopaSystem;
 
 /**
  * 
@@ -28,9 +29,16 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class CopaServlet extends HttpServlet {
 
+    private CopaSystem system;
+    private static final String PARAM_REQUEST = "req"; // the parameter name of
+						       // the HTTP POST method
+						       // which includes the
+						       // client request
+    private static final String CONTENT_TYPE = "text/plain;charset=UTF-8";
+
     @Override
     public void init() throws ServletException {
-	super.init(); // TODO init copa system
+	system = new CopaSystem();
     }
 
     /**
@@ -48,7 +56,10 @@ public class CopaServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request,
 	    HttpServletResponse response) throws ServletException, IOException {
-	response.setContentType("text/plain;charset=UTF-8");
+	response.setContentType(CONTENT_TYPE);
+	response.getWriter()
+		.print(system.processClientMessage(request
+			.getParameter(PARAM_REQUEST)));
     }
 
     /**
