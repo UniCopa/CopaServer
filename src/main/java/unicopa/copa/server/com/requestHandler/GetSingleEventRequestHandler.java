@@ -39,7 +39,7 @@ public class GetSingleEventRequestHandler extends RequestHandler {
 
     // TODO this is only a test
     @Override
-    public AbstractResponse handleRequest(AbstractRequest request)
+    public AbstractResponse handleRequest(AbstractRequest request, int userID)
 	    throws RequestNotPracticableException, InternalErrorException,
 	    PermissionException {
 	GetSingleEventRequest req = (GetSingleEventRequest) request;

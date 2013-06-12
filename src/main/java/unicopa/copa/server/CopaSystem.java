@@ -114,13 +114,19 @@ public class CopaSystem {
      * 
      * @param json
      *            the message from the client (expected in JSON format)
+     * @param userName
+     *            the unique user name of the user whose message to process
+     * 
      * @return the message to be sent back to the client
      */
-    public String processClientMessage(String json) {
+    public String processClientMessage(String json, String userName) {
+	// TODO send back InternalErrorException or PermissionException if the
+	// user cannot be found
+	int userID = context.getDbservice().getUserID(userName);
 	try {
 	    AbstractRequest request = AbstractRequest.deserialize(json);
 	    AbstractResponse response = getRequestHandler(request.getClass())
-		    .handleRequest(request);
+		    .handleRequest(request, userID);
 	    return response.serialize();
 	} catch (InternalErrorException | APIException | PermissionException
 		| RequestNotPracticableException ex) {
@@ -140,5 +146,9 @@ public class CopaSystem {
 			    + requestClass.getSimpleName() + ".");
 	}
 	return requestHandler;
+    }
+
+    public CopaSystemContext getContext() {
+	return context;
     }
 }

@@ -57,9 +57,10 @@ public class CopaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request,
 	    HttpServletResponse response) throws ServletException, IOException {
 	response.setContentType(CONTENT_TYPE);
-	response.getWriter()
-		.print(system.processClientMessage(request
-			.getParameter(PARAM_REQUEST)));
+	String userName = request.getUserPrincipal().getName();
+	String resp = system.processClientMessage(
+		request.getParameter(PARAM_REQUEST), userName);
+	response.getWriter().print(resp);
     }
 
     /**

@@ -199,6 +199,17 @@ public class DatabaseService {
     }
 
     /**
+     * Get the ID of a user.
+     * 
+     * @param userName
+     *            the user name of the user
+     * @return
+     */
+    public int getUserID(String userName) {
+	return 0; // TODO implement
+    }
+
+    /**
      * Get the E-Mail-Address of the given user.
      * 
      * @param userID

@@ -46,14 +46,17 @@ public abstract class RequestHandler {
      * guaranteed that the user satisfies
      * 
      * @param request
+     *            the request to be processed
+     * @param userID
+     *            the ID of the user who sent the request
      * @return
      * @throws PermissionException
      * @throws RequestNotPracticableException
      * @throws InternalErrorException
      */
-    public abstract AbstractResponse handleRequest(AbstractRequest request)
-	    throws PermissionException, RequestNotPracticableException,
-	    InternalErrorException;
+    public abstract AbstractResponse handleRequest(AbstractRequest request,
+	    int userID) throws PermissionException,
+	    RequestNotPracticableException, InternalErrorException;
 
     /**
      * Check whether a user holds a specific role for a specific event.
