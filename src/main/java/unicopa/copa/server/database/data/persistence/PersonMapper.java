@@ -16,10 +16,7 @@
  */
 package unicopa.copa.server.database.data.persistence;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.annotations.Param;
 
 public interface PersonMapper {
@@ -27,14 +24,4 @@ public interface PersonMapper {
     public String getEmailAddress(@Param("userID") int userID);
 
     public List<Integer> getSubscribedUserIDs(@Param("eventID") int eventID);
-
-    public HashSet<String> getUserGCMKey(@Param("userID") int userID);
-
-    public List<Map<String, Integer>> getEventColors(@Param("userID") int userID);
-
-    public HashSet<Integer> getSubscriptions(int userID);
-
-    public Boolean getEmailNotification(int userID);
-
-    public String getLanguage(int userID);
 }
