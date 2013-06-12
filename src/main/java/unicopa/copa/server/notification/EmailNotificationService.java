@@ -232,4 +232,9 @@ public class EmailNotificationService extends NotificationService {
 		    Level.SEVERE, null, ex);
 	}
     }
+
+    @Override
+    public void notifyClients(NotificationEvent event) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

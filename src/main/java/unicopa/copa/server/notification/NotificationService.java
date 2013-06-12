@@ -25,6 +25,15 @@ import unicopa.copa.server.database.DatabaseService;
  * @author Felix Wiemuth
  */
 public abstract class NotificationService {
+
+    /**
+     * Events clients can be notified about. This are only events where no
+     * special data has to be sent.
+     */
+    public enum NotificationEvent {
+	USER_SETTINGS_CHANGED;
+    }
+
     private DatabaseService dbservice;
 
     /**
@@ -55,5 +64,14 @@ public abstract class NotificationService {
      *            the SingleEventUpdate to inform about
      */
     public abstract void notifyClients(SingleEventUpdate update);
+
+    /**
+     * Notify all clients that support and registered for this kind of
+     * notification.
+     * 
+     * @param event
+     *            the notification event to inform about
+     */
+    public abstract void notifyClients(NotificationEvent event);
 
 }

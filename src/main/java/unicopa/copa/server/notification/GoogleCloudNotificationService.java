@@ -46,4 +46,9 @@ public class GoogleCloudNotificationService extends NotificationService {
 	// communication interface specifications
 	// TODO add required methods to DatabaseService
     }
+
+    @Override
+    public void notifyClients(NotificationEvent event) {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

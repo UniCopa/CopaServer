@@ -19,6 +19,7 @@ package unicopa.copa.server.notification;
 import java.util.LinkedList;
 import java.util.List;
 import unicopa.copa.base.event.SingleEventUpdate;
+import unicopa.copa.server.notification.NotificationService.NotificationEvent;
 
 /**
  * This class holds all notification services available to the system. If
@@ -28,7 +29,6 @@ import unicopa.copa.base.event.SingleEventUpdate;
  * @author Felix Wiemuth
  */
 public class Notifier {
-
     private List<NotificationService> services = new LinkedList<>();
 
     /**
@@ -41,6 +41,19 @@ public class Notifier {
     public void notifyClients(SingleEventUpdate update) {
 	for (NotificationService service : services) {
 	    service.notifyClients(update);
+	}
+    }
+
+    /**
+     * For each notification service, use their 'notifyClients' interface with
+     * this notification event to inform clients about the event.
+     * 
+     * @param event
+     *            the notification event to inform about
+     */
+    public void notifyClients(NotificationEvent event) {
+	for (NotificationService service : services) {
+	    service.notifyClients(event);
 	}
     }
 

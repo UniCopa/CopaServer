@@ -53,7 +53,6 @@ public class GetSingleEventRequestHandler extends RequestHandler {
 	    throw new PermissionException(
 		    "You are not allowed to ask for negative events!");
 	}
-	getContext().getNotifier().notifyClients(null);
 	return new GetSingleEventResponse(new SingleEvent(
 		req.getSingleEventID(), 100, "Room" + req.getSingleEventID(),
 		new Date(), "sup XYZ", 90));
