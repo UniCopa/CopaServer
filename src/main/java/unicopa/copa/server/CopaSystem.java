@@ -124,9 +124,9 @@ public class CopaSystem {
 	    return response.serialize();
 	} catch (InternalErrorException | APIException | PermissionException
 		| RequestNotPracticableException ex) {
-//	    Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
-//		    null, ex);
-            //TODO log in appropriate way
+	    // Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
+	    // null, ex);
+	    // TODO log in appropriate way
 	    return ServerSerializer.serialize(ex); // pass exception to client
 	}
     }

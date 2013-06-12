@@ -65,7 +65,7 @@ public class ClientSimulationTest {
 	GetSingleEventResponse response = (GetSingleEventResponse) resp;
 	// TODO assert equals
     }
-    
+
     @Test(expected = APIException.class)
     public void testWrongAPIUsage() throws Exception {
 	String send = "Send something strange...";
@@ -74,14 +74,15 @@ public class ClientSimulationTest {
     }
 
     @Test(expected = PermissionException.class)
-    public void testGetSingleEventRequestInsufficientPermission() throws Exception {
+    public void testGetSingleEventRequestInsufficientPermission()
+	    throws Exception {
 	AbstractRequest req = new GetSingleEventRequest(-1);
 	String send = req.serialize();
 	String recv = system.processClientMessage(send);
 	AbstractResponse resp = AbstractResponse.deserialize(recv);
 	GetSingleEventResponse response = (GetSingleEventResponse) resp;
     }
-    
+
     @Test(expected = RequestNotPracticableException.class)
     public void testGetSingleEventRequestWrongParameter() throws Exception {
 	AbstractRequest req = new GetSingleEventRequest(42);
@@ -90,7 +91,7 @@ public class ClientSimulationTest {
 	AbstractResponse resp = AbstractResponse.deserialize(recv);
 	GetSingleEventResponse response = (GetSingleEventResponse) resp;
     }
-    
+
     @Test(expected = InternalErrorException.class)
     public void testGetSingleEventRequestInternalError() throws Exception {
 	AbstractRequest req = new GetSingleEventRequest(0);
