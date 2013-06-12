@@ -16,16 +16,22 @@
  */
 package unicopa.copa.server.database.data.persistence;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
-import unicopa.copa.base.event.CategoryNodeImpl;
+public interface UserSettingMapper {
 
-public interface CategoryMapper {
+    public HashSet<String> getUserGCMKey(@Param("userID") int userID);
 
-    public List<Integer> getChildNodeIDs(@Param("categoryID") int categoryID);
+    public List<Map<String, Integer>> getEventColors(@Param("userID") int userID);
 
-    public CategoryNodeImpl getCategoryTree(@Param("categoryID") int categoryID);
+    public HashSet<Integer> getSubscriptions(int userID);
+
+    public Boolean getEmailNotification(int userID);
+
+    public String getLanguage(int userID);
 
 }

@@ -20,7 +20,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace='unicopa.copa.server.database.data.persistence.CategoryMapper'>
     
-    <select id='getChildNodes' parameterType='int' resultType='int'>
+    <select id='getChildNodeIDs' parameterType='int' resultType='int'>
         select c2.categoryID as ID
 			from categories c, category_Connections n, categories c2
 			where c.categoryID=#{categoryID} and c.categoryID=n.categoryNodeParent 

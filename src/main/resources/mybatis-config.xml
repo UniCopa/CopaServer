@@ -44,5 +44,6 @@
 		<mapper resource="persistence/CategoryMapper.xml"/>
 		<mapper resource="persistence/PersonMapper.xml"/>
 		<mapper resource="persistence/PrivilegeMapper.xml"/>
+		<mapper resource="persistence/UserSettingMapper.xml"/>
     </mappers>
 </configuration>

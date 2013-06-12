@@ -41,6 +41,7 @@ import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserSettings;
 
+import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
@@ -221,7 +222,8 @@ public class DatabaseService {
      */
     public UserSettings getUserSettings(int userID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
-	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    UserSettingMapper mapper = session
+		    .getMapper(UserSettingMapper.class);
 	    HashSet<String> uGCMKeys = mapper.getUserGCMKey(userID);
 	    HashSet<Integer> subscriptions = mapper.getSubscriptions(userID);
 	    Boolean eMailNoty = mapper.getEmailNotification(userID);
@@ -291,10 +293,10 @@ public class DatabaseService {
      *            the ID of the node
      * @return
      */
-    private List<Integer> getChildNodes(int categoryID) {
+    private List<Integer> getChildNodeIDs(int categoryID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
-	    List<Integer> nodeList = mapper.getChildNodes(categoryID);
+	    List<Integer> nodeList = mapper.getChildNodeIDs(categoryID);
 	    return nodeList;
 	}
     }
@@ -310,10 +312,10 @@ public class DatabaseService {
     private List<Integer> getAllChildNodes(int categoryID) {
 	List<Integer> nodeList = new ArrayList<>();
 	nodeList.clear();
-	if (getChildNodes(categoryID).isEmpty()) {
+	if (getChildNodeIDs(categoryID).isEmpty()) {
 	    return nodeList;
 	} else {
-	    nodeList = getChildNodes(categoryID);
+	    nodeList = getChildNodeIDs(categoryID);
 	    for (int i = 0; i < nodeList.size(); i++) {
 		nodeList.addAll(getAllChildNodes(nodeList.get(i)));
 	    }
@@ -381,6 +383,11 @@ public class DatabaseService {
 	    List<String> privList = mapper.getPrivileged(eventID, -1, 3);
 	    return privList;
 	}
+    }
+
+    public CategoryNodeImpl getCategoryTree(int categoryID) {
+
+	return null;
     }
 
     /**
