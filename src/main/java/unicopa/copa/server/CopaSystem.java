@@ -33,6 +33,7 @@ import unicopa.copa.base.com.request.GetSingleEventRequest;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
+import unicopa.copa.base.com.request.TestRequest;
 import unicopa.copa.base.com.serialization.ServerSerializer;
 import unicopa.copa.server.com.requestHandler.RequestHandler;
 import unicopa.copa.server.database.DatabaseService;
@@ -71,6 +72,7 @@ public class CopaSystem {
 	// registered below)
 	List<Class<? extends AbstractRequest>> requests = new ArrayList<Class<? extends AbstractRequest>>() {
 	    {
+		add(TestRequest.class);
 		add(GetSingleEventRequest.class);
 	    }
 	};
@@ -127,6 +129,10 @@ public class CopaSystem {
 	    AbstractRequest request = AbstractRequest.deserialize(json);
 	    AbstractResponse response = getRequestHandler(request.getClass())
 		    .handleRequest(request, userID);
+	    if (response == null) {
+		throw new InternalErrorException(
+			"The request handler for the request returned a null object.");
+	    }
 	    return response.serialize();
 	} catch (InternalErrorException | APIException | PermissionException
 		| RequestNotPracticableException ex) {
