@@ -14,20 +14,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package unicopa.copa.server.database.data.persistence;
+package unicopa.copa.server.database.data.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
+/**
+ * This is a Helperclass to simplefy the work with the categorytable in the
+ * database
+ * 
+ * @author Nintaro
+ * 
+ */
+public class DBCategoryNode {
+    private int id;
+    private String name;
+    private List<Integer> children = new ArrayList<Integer>();
 
-import unicopa.copa.server.database.data.db.DBCategoryNode;
+    public int getId() {
+	return id;
+    }
 
-public interface CategoryMapper {
+    public void setId(int id) {
+	this.id = id;
+    }
 
-    public List<Integer> getChildNodeIDs(@Param("categoryID") int categoryID);
+    public String getName() {
+	return name;
+    }
 
-    public DBCategoryNode getDBCategoryNode(@Param("categoryID") int categoryID);
+    public void setName(String name) {
+	this.name = name;
+    }
 
-    public DBCategoryNode getDBCategoryNodeLeaf(
-	    @Param("categoryID") int categoryID);
+    public List<Integer> getChildren() {
+	return children;
+    }
+
+    public void setChildren(List<Integer> children) {
+	this.children = children;
+    }
+
 }

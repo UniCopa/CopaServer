@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2013 UniCoPA
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package unicopa.copa.server.database;
 
 import static org.junit.Assert.*;
@@ -23,6 +39,7 @@ import org.junit.Test;
 
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserSettings;
+import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
@@ -239,5 +256,37 @@ public class DatabaseServiceTest {
 	for (int i = 0; i < 6; i++) {
 	    assertEquals(uS.hasSubscribed(i), resUs.hasSubscribed(i));
 	}
+    }
+
+    @Test
+    public void testGetCategoryNodes() {
+	CategoryNodeImpl resCNI = dbs.getCategoryTree(2);
+	CategoryNodeImpl cNI1 = new CategoryNodeImpl(2, "BA");
+	CategoryNodeImpl cNI2 = new CategoryNodeImpl(4, "INF");
+	cNI2.addChildNode(new CategoryNodeImpl(7, "S2"));
+	cNI1.addChildNode(cNI2);
+	cNI1.addChildNode(new CategoryNodeImpl(5, "WI"));
+	cNI1.addChildNode(new CategoryNodeImpl(6, "MN"));
+
+	assertEquals(resCNI.getId(), cNI1.getId());
+	assertEquals(resCNI.getName(), cNI1.getName());
+	assertEquals(resCNI.getChildren().get(0).getId(), cNI1.getChildren()
+		.get(0).getId());
+	assertEquals(resCNI.getChildren().get(0).getName(), cNI1.getChildren()
+		.get(0).getName());
+	assertEquals(resCNI.getChildren().get(1).getId(), cNI1.getChildren()
+		.get(1).getId());
+	assertEquals(resCNI.getChildren().get(1).getName(), cNI1.getChildren()
+		.get(1).getName());
+	assertEquals(resCNI.getChildren().get(2).getId(), cNI1.getChildren()
+		.get(2).getId());
+	assertEquals(resCNI.getChildren().get(2).getName(), cNI1.getChildren()
+		.get(2).getName());
+	assertEquals(resCNI.getChildren().get(0).getChildren().get(0).getId(),
+		cNI1.getChildren().get(0).getChildren().get(0).getId());
+	assertEquals(
+		resCNI.getChildren().get(0).getChildren().get(0).getName(),
+		cNI1.getChildren().get(0).getChildren().get(0).getName());
+
     }
 }

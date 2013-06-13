@@ -10,9 +10,9 @@ insert into eventGroups(eventGroupName, eventGroupInfo) values
 		
 insert into categories(name) values
 	   ('Uni'),
-	   ('Ba'),
-	   ('Ma'),
-	   ('Inf'),
+	   ('BA'),
+	   ('MA'),
+	   ('INF'),
 	   ('WI'),
 	   ('MN'),
 	   ('S2'),

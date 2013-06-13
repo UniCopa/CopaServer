@@ -45,6 +45,7 @@ import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
+import unicopa.copa.server.database.data.db.DBCategoryNode;
 import unicopa.copa.server.database.data.persistence.*;
 import unicopa.copa.server.database.util.DatabaseUtil;
 
@@ -396,9 +397,30 @@ public class DatabaseService {
 	}
     }
 
+    /**
+     * Get the categoryNodeImpl with ID=categoryID.
+     * 
+     * @param categoryID
+     *            the ID of the category
+     * @return
+     */
     public CategoryNodeImpl getCategoryTree(int categoryID) {
-
-	return null;
+	CategoryNodeImpl catTree = null;
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
+	    DBCategoryNode dBCategoryNode;
+	    if (mapper.getChildNodeIDs(categoryID).isEmpty()) {
+		dBCategoryNode = mapper.getDBCategoryNodeLeaf(categoryID);
+	    } else {
+		dBCategoryNode = mapper.getDBCategoryNode(categoryID);
+	    }
+	    catTree = new CategoryNodeImpl(dBCategoryNode.getId(),
+		    dBCategoryNode.getName());
+	    for (int child : dBCategoryNode.getChildren()) {
+		catTree.addChildNode(getCategoryTree(child));
+	    }
+	}
+	return catTree;
     }
 
     /**
