@@ -17,6 +17,7 @@
 package unicopa.copa.server.database;
 
 import static org.junit.Assert.*;
+import org.junit.runners.MethodSorters;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,6 +36,7 @@ import java.util.Set;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 
 import unicopa.copa.base.UserEventSettings;
@@ -45,6 +47,7 @@ import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.server.database.util.DatabaseUtil;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DatabaseServiceTest {
     private static String dbURL = "CopaTestDB";
     private static DatabaseService dbs;
@@ -228,18 +231,13 @@ public class DatabaseServiceTest {
 	uGCMKeys.add("refgsfb");
 	uGCMKeys.add("dsfbsdb");
 	uGCMKeys.add("snfdggd");
-	Set<Integer> subscriptions = new HashSet<Integer>();
-	subscriptions.add(1);
-	subscriptions.add(2);
-	subscriptions.add(3);
-	subscriptions.add(4);
 	Map<Integer, UserEventSettings> eventSettings = new HashMap<Integer, UserEventSettings>();
 	eventSettings.put(1, new UserEventSettings("FFFFFF"));
 	eventSettings.put(2, new UserEventSettings("000000"));
 	eventSettings.put(3, new UserEventSettings("FF0000"));
 	eventSettings.put(4, new UserEventSettings("00FF00"));
 	UserSettings uS = new UserSettings(uGCMKeys, true, "english",
-		eventSettings, subscriptions);
+		eventSettings);
 	UserSettings resUs = dbs.getUserSettings(2);
 	assertEquals(uS.getLanguage(), resUs.getLanguage());
 	assertEquals(uS.getGCMKeys(), resUs.getGCMKeys());
@@ -287,6 +285,26 @@ public class DatabaseServiceTest {
 	assertEquals(
 		resCNI.getChildren().get(0).getChildren().get(0).getName(),
 		cNI1.getChildren().get(0).getChildren().get(0).getName());
+
+    }
+
+    @Test
+    public void testupdateUserSetting() {
+	Set<String> uGCMKeys = new HashSet<String>();
+	uGCMKeys.add("test1");
+	uGCMKeys.add("test2");
+	Map<Integer, UserEventSettings> eventSettings = new HashMap<Integer, UserEventSettings>();
+	eventSettings.put(1, new UserEventSettings("FFFFFF"));
+	eventSettings.put(2, new UserEventSettings("000000"));
+	eventSettings.put(5, new UserEventSettings("123456"));
+	eventSettings.put(6, new UserEventSettings("654321"));
+	UserSettings uS = new UserSettings(uGCMKeys, false, "english",
+		eventSettings);
+	dbs.updateUserSetting(uS, 4);
+	UserSettings res = dbs.getUserSettings(4);
+	assertEquals(false, res.isEmailNotificationEnabled());
+	assertEquals("english", res.getLanguage());
+	assertEquals("[test1, test2]", res.getGCMKeys().toString());
 
     }
 }

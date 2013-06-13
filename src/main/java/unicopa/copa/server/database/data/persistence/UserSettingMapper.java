@@ -19,6 +19,7 @@ package unicopa.copa.server.database.data.persistence;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -33,5 +34,19 @@ public interface UserSettingMapper {
     public Boolean getEmailNotification(int userID);
 
     public String getLanguage(int userID);
+
+    public void deleteAllGCMKeys(@Param("userID") int userID);
+
+    public void insertGCMKeys(@Param("gCMKeys") Set<String> gCMKey,
+	    @Param("userID") int userID);
+
+    public void updatePerson(@Param("language") String language,
+	    @Param("eMailNotification") boolean eMailNotification,
+	    @Param("userID") int userID);
+
+    public void deleteAllSubscriptions(@Param("userID") int userID);
+
+    public void insertSubscription(@Param("eventID") int eventID,
+	    @Param("color") String color, @Param("userID") int userID);
 
 }

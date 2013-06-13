@@ -237,7 +237,6 @@ public class DatabaseService {
 	    UserSettingMapper mapper = session
 		    .getMapper(UserSettingMapper.class);
 	    HashSet<String> uGCMKeys = mapper.getUserGCMKey(userID);
-	    HashSet<Integer> subscriptions = mapper.getSubscriptions(userID);
 	    Boolean eMailNoty = mapper.getEmailNotification(userID);
 	    String language = mapper.getLanguage(userID);
 	    List<Map<String, Integer>> listEventColor = mapper
@@ -248,7 +247,7 @@ public class DatabaseService {
 			String.valueOf(map.get("COLOR"))));
 	    }
 	    return new UserSettings(uGCMKeys, eMailNoty, language,
-		    eventSettings, subscriptions);
+		    eventSettings);
 	}
     }
 
@@ -421,6 +420,31 @@ public class DatabaseService {
 	    }
 	}
 	return catTree;
+    }
+
+    /**
+     * Update the UserSettings of the User with ID = userID
+     * 
+     * @param userSetting
+     *            the new UserSettings
+     * @param userID
+     *            the userID
+     */
+    public void updateUserSetting(UserSettings userSetting, int userID) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    UserSettingMapper mapper = session
+		    .getMapper(UserSettingMapper.class);
+	    mapper.deleteAllGCMKeys(userID);
+	    mapper.insertGCMKeys(userSetting.getGCMKeys(), userID);
+	    mapper.updatePerson(userSetting.getLanguage(),
+		    userSetting.isEmailNotificationEnabled(), userID);
+	    mapper.deleteAllSubscriptions(userID);
+	    for (int eventID : userSetting.getSubscriptions()) {
+		mapper.insertSubscription(eventID, userSetting
+			.getEventSettings(eventID).getColorCode(), userID);
+	    }
+	    session.commit();
+	}
     }
 
     /**

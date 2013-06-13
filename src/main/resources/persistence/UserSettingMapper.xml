@@ -19,7 +19,37 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace='unicopa.copa.server.database.data.persistence.UserSettingMapper'>
-        
+            	
+    <delete id="deleteAllGCMKeys" parameterType='int'>
+        delete from gCMKeys
+        Where personID=#{userID}
+    </delete>
+    
+    <delete id="deleteAllSubscriptions" parameterType='int'>
+        delete from subscriptionLists
+        Where personID=#{userID}
+    </delete>
+    
+    <insert id="insertGCMKeys" parameterType='map'>
+        insert into gCMKeys values
+        <foreach item="item" index="index" collection="gCMKeys"
+            open="" separator="," close="">
+            (#{item},#{userID})
+        </foreach>     
+    </insert>
+    
+    <insert id="insertSubscription" parameterType='map'>
+        insert into subscriptionLists values
+        	(#{userID},#{eventID},#{color})
+    </insert>
+    
+    <update id="updatePerson" parameterType='map'>
+        update persons
+        set language = #{language},
+        	eMailNotification = #{eMailNotification}
+        where personID = #{userID}  
+    </update>
+    
     <select id='getUserGCMKey' parameterType='int' resultType='String'>
         Select distinct g.gCMKey
         From gCMKeys g
