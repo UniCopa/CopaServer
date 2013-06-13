@@ -16,7 +16,6 @@
  */
 package unicopa.copa.server.notification;
 
-import java.util.Set;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.database.DatabaseService;
 
@@ -65,12 +64,14 @@ public abstract class NotificationService {
      *            the SingleEventUpdate to inform about
      */
     public abstract void notifyClients(SingleEventUpdate update);
-    
+
     /**
      * Notify a specific client.
      * 
-     * @param event the notification event to inform about
-     * @param userID the recipient of the notification event
+     * @param event
+     *            the notification event to inform about
+     * @param userID
+     *            the recipient of the notification event
      */
     public abstract void notifyClient(NotificationEvent event, int userID);
 }

@@ -33,11 +33,11 @@ import unicopa.copa.server.gcm.GoogleCloudMessagingService;
  * @author Felix Wiemuth, Philip Wendland
  */
 public class GoogleCloudNotificationService extends NotificationService {
-    private  GoogleCloudMessagingService gcmService; 
+    private GoogleCloudMessagingService gcmService;
 
     public GoogleCloudNotificationService(DatabaseService dbservice) {
 	super(dbservice);
-        this.gcmService = GoogleCloudMessagingService.getInstance();        
+	this.gcmService = GoogleCloudMessagingService.getInstance();
     }
 
     /**
@@ -51,32 +51,40 @@ public class GoogleCloudNotificationService extends NotificationService {
     @Override
     public void notifyClients(SingleEventUpdate update) {
 	// determine the single event ID
-        // Note: We have to get the Event-ID from the old single event, because
+	// Note: We have to get the Event-ID from the old single event, because
 	// the new single event might be null
-        int seID = update.getOldSingleEventID();
+	int seID = update.getOldSingleEventID();
 	SingleEvent oldSingleEvent = super.dbservice().getSingleEvent(seID);
-	int eventID = oldSingleEvent.getEventID();        
-        // determine the users that should be informed about the update
-        List<Integer> subUsers = super.dbservice()
-		.getSubscribedUserIDs(eventID); 
-        //determine GCM keys of the users
-        Set<String> gcmKeys = new HashSet<>();
-        for (Integer userID : subUsers) {
-            UserSettings settings = super.dbservice().getUserSettings(userID);
-            Set<String> usrKeys = settings.getGCMKeys();
-            gcmKeys.addAll(usrKeys);
-        }       
-        //send using service
-        this.gcmService.notify(gcmKeys, NotificationEvent.SINGLE_EVENT_UPDATE.toString());      
-    }  
-
-    @Override
-    public void notifyClient(NotificationEvent event, int userID) {       
-        UserSettings settings = super.dbservice().getUserSettings(userID);         
-        Set<String> usrKeys = settings.getGCMKeys();
-        //send using service
-        this.gcmService.notify(usrKeys, event.toString());          
+	int eventID = oldSingleEvent.getEventID();
+	// determine the users that should be informed about the update
+	List<Integer> subUsers = super.dbservice()
+		.getSubscribedUserIDs(eventID);
+	// determine GCM keys of the users
+	Set<String> gcmKeys = new HashSet<>();
+	for (Integer userID : subUsers) {
+	    UserSettings settings = super.dbservice().getUserSettings(userID);
+	    Set<String> usrKeys = settings.getGCMKeys();
+	    gcmKeys.addAll(usrKeys);
+	}
+	// send using service
+	this.gcmService.notify(gcmKeys,
+		NotificationEvent.SINGLE_EVENT_UPDATE.toString());
     }
-    
-    
+
+    /**
+     * Uses GoogleCloudMessagingService to notify the client.
+     * 
+     * The message will be sent to every device which is registered.
+     * 
+     * @param event
+     * @param userID
+     */
+    @Override
+    public void notifyClient(NotificationEvent event, int userID) {
+	UserSettings settings = super.dbservice().getUserSettings(userID);
+	Set<String> usrKeys = settings.getGCMKeys();
+	// send using service
+	this.gcmService.notify(usrKeys, event.toString());
+    }
+
 }

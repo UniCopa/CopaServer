@@ -16,7 +16,6 @@
  */
 package unicopa.copa.server.gcm;
 
-
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,67 +30,82 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
- *
+ * With the GoogleCloudMessagingSerive it is possible to send push messages to
+ * Android devices.
+ * 
  * @author Philip Wendland
  */
 public class GoogleCloudMessagingService {
     private static GoogleCloudMessagingService instance = null;
     private HttpClient client;
     private Properties gcmProps;
-    
-    
-    private GoogleCloudMessagingService(){
-        this.gcmProps = new Properties();
+
+    /**
+     * Creates an object of GoogleCloudMessagingService.
+     * 
+     * Note: You have to provide configuration in
+     * /gcm/googleCloudMessaging.properties for the GoogleCloudMessagingService
+     * to work.
+     * 
+     */
+    private GoogleCloudMessagingService() {
+	this.gcmProps = new Properties();
 	try (BufferedInputStream stream = new BufferedInputStream(
 		new FileInputStream("/gcm/googleCloudMessaging.properties"))) {
 	    this.gcmProps.load(stream);
 	} catch (FileNotFoundException ex) {
-            Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        // Instantiate and configure the SslContextFactory
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        sslContextFactory.setTrustAll(true);        
-        // Instantiate HttpClient with the SslContextFactory
-        this.client = new HttpClient(sslContextFactory);
-        // Configure HttpClient
-        //client.setFollowRedirects(false);        
-        // Start HttpClient        
-        try {
-            client.start();           
-        } catch (Exception ex) {
-            Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+	    Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(
+		    Level.SEVERE, null, ex);
+	} catch (IOException ex) {
+	    Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(
+		    Level.SEVERE, null, ex);
+	}
+	// Instantiate and configure the SslContextFactory
+	SslContextFactory sslContextFactory = new SslContextFactory();
+	sslContextFactory.setTrustAll(true);
+	// Instantiate HttpClient with the SslContextFactory
+	this.client = new HttpClient(sslContextFactory);
+	// Start HttpClient
+	try {
+	    client.start();
+	} catch (Exception ex) {
+	    Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(
+		    Level.SEVERE, null, ex);
+	}
     }
-    
+
     public static synchronized GoogleCloudMessagingService getInstance() {
-        if (instance == null) {
-            instance = new GoogleCloudMessagingService();
-        }
-        return instance;
+	if (instance == null) {
+	    instance = new GoogleCloudMessagingService();
+	}
+	return instance;
     }
-    
-    public void notify(Set<String> gcmKeys, String msg){        
-        for (String key : gcmKeys) {       
-                //async POST
-                this.client.POST(gcmProps.getProperty("gcmURL"))
-                        .header("Authorization", "key="+gcmProps.getProperty("senderAuthToken"))
-                        .header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
-                        .param("registration_id", key)
-                        .param("data.msg", msg)
-                        .send(new Response.Listener.Empty()
-                            {
-                                @Override
-                                public void onContent(Response response, ByteBuffer buffer)
-                                {
-                                    if(response.getStatus() != 200){
-                                        Logger.getLogger(GoogleCloudMessagingService.class.getName())
-                                                .log(Level.INFO, "Google Cloud Messaging Server rejected request. Response code: {0}", response.getStatus());
-                                    }                                   
-                                }
-                            });           
-        }
-    }   
-          
+
+    public void notify(Set<String> gcmKeys, String msg) {
+	for (String key : gcmKeys) {
+	    // async POST
+	    this.client
+		    .POST(gcmProps.getProperty("gcmURL"))
+		    .header("Authorization",
+			    "key=" + gcmProps.getProperty("senderAuthToken"))
+		    .header("Content-Type",
+			    "application/x-www-form-urlencoded;charset=UTF-8")
+		    .param("registration_id", key).param("data.msg", msg)
+		    .send(new Response.Listener.Empty() {
+			@Override
+			public void onContent(Response response,
+				ByteBuffer buffer) {
+			    if (response.getStatus() != 200) {
+				Logger.getLogger(
+					GoogleCloudMessagingService.class
+						.getName())
+					.log(Level.INFO,
+						"Google Cloud Messaging Server rejected request. Response code: {0}",
+						response.getStatus());
+			    }
+			}
+		    });
+	}
+    }
+
 }

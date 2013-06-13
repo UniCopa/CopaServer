@@ -175,7 +175,7 @@ public class EmailNotificationService extends NotificationService {
 	    usrSettings.put(usrID, settings);
 	}
 
-	// create the list of EmailContext
+	// === create the list of EmailContext ===
 
 	// begin with default users from db
 	List<EmailContext> emailContexts = new ArrayList<>();
@@ -232,8 +232,8 @@ public class EmailNotificationService extends NotificationService {
 		    Level.SEVERE, null, ex);
 	}
     }
-    
+
     @Override
-    public void notifyClient(NotificationEvent event, int userID) {	
-    }   
+    public void notifyClient(NotificationEvent event, int userID) {
+    }
 }
