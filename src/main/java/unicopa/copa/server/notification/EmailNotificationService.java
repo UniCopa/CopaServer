@@ -152,8 +152,8 @@ public class EmailNotificationService extends NotificationService {
 	// obtain EventGroupName, EventName from db.
 	// Note: We have to get the Event-ID from the old single event, because
 	// the new single event might be null
-	int OldID = update.getOldSingleEventID();
-	SingleEvent oldSingleEvent = super.dbservice().getSingleEvent(OldID);
+	int oldID = update.getOldSingleEventID();
+	SingleEvent oldSingleEvent = super.dbservice().getSingleEvent(oldID);
 	int eventID = oldSingleEvent.getEventID();
 	Event event = super.dbservice().getEvent(eventID);
 	int eventGroupID = event.getEventGroupID();
@@ -232,9 +232,8 @@ public class EmailNotificationService extends NotificationService {
 		    Level.SEVERE, null, ex);
 	}
     }
-
+    
     @Override
-    public void notifyClients(NotificationEvent event) {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
+    public void notifyClient(NotificationEvent event, int userID) {	
+    }   
 }

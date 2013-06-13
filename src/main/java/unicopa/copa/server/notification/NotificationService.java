@@ -16,6 +16,7 @@
  */
 package unicopa.copa.server.notification;
 
+import java.util.Set;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.database.DatabaseService;
 
@@ -31,7 +32,7 @@ public abstract class NotificationService {
      * special data has to be sent.
      */
     public enum NotificationEvent {
-	USER_SETTINGS_CHANGED;
+	USER_SETTINGS_CHANGED, SERVER_STATUS_NOTE, SINGLE_EVENT_UPDATE;
     }
 
     private DatabaseService dbservice;
@@ -64,14 +65,12 @@ public abstract class NotificationService {
      *            the SingleEventUpdate to inform about
      */
     public abstract void notifyClients(SingleEventUpdate update);
-
+    
     /**
-     * Notify all clients that support and registered for this kind of
-     * notification.
+     * Notify a specific client.
      * 
-     * @param event
-     *            the notification event to inform about
+     * @param event the notification event to inform about
+     * @param userID the recipient of the notification event
      */
-    public abstract void notifyClients(NotificationEvent event);
-
+    public abstract void notifyClient(NotificationEvent event, int userID);
 }

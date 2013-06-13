@@ -16,24 +16,33 @@
  */
 package unicopa.copa.server.notification;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import unicopa.copa.base.UserSettings;
+import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.database.DatabaseService;
+import unicopa.copa.server.gcm.GoogleCloudMessagingService;
 
 /**
  * This NotificationService informs Android devices about updates by sending
  * Google Cloud Messages.
  * 
- * @author Felix Wiemuth
+ * @author Felix Wiemuth, Philip Wendland
  */
 public class GoogleCloudNotificationService extends NotificationService {
+    private  GoogleCloudMessagingService gcmService; 
 
     public GoogleCloudNotificationService(DatabaseService dbservice) {
 	super(dbservice);
+        this.gcmService = GoogleCloudMessagingService.getInstance();        
     }
 
     /**
      * Notify all users on their Android devices where the user has subscribed
-     * to get the sepcified SingleEventUpdate and has added the GCM key for the
+     * to get the specified SingleEventUpdate and has added the GCM key for the
      * device to his UserSettings.
      * 
      * @param update
@@ -41,14 +50,33 @@ public class GoogleCloudNotificationService extends NotificationService {
      */
     @Override
     public void notifyClients(SingleEventUpdate update) {
-	throw new UnsupportedOperationException("Not supported yet.");
-	// TODO send GCM messages to the registered GCM keys, regarding the
-	// communication interface specifications
-	// TODO add required methods to DatabaseService
-    }
+	// determine the single event ID
+        // Note: We have to get the Event-ID from the old single event, because
+	// the new single event might be null
+        int seID = update.getOldSingleEventID();
+	SingleEvent oldSingleEvent = super.dbservice().getSingleEvent(seID);
+	int eventID = oldSingleEvent.getEventID();        
+        // determine the users that should be informed about the update
+        List<Integer> subUsers = super.dbservice()
+		.getSubscribedUserIDs(eventID); 
+        //determine GCM keys of the users
+        Set<String> gcmKeys = new HashSet<>();
+        for (Integer userID : subUsers) {
+            UserSettings settings = super.dbservice().getUserSettings(userID);
+            Set<String> usrKeys = settings.getGCMKeys();
+            gcmKeys.addAll(usrKeys);
+        }       
+        //send using service
+        this.gcmService.notify(gcmKeys, NotificationEvent.SINGLE_EVENT_UPDATE.toString());      
+    }  
 
     @Override
-    public void notifyClients(NotificationEvent event) {
-	throw new UnsupportedOperationException("Not supported yet.");
+    public void notifyClient(NotificationEvent event, int userID) {       
+        UserSettings settings = super.dbservice().getUserSettings(userID);         
+        Set<String> usrKeys = settings.getGCMKeys();
+        //send using service
+        this.gcmService.notify(usrKeys, event.toString());          
     }
+    
+    
 }
