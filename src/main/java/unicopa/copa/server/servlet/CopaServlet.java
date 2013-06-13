@@ -21,6 +21,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import unicopa.copa.base.com.exception.APIException;
+import unicopa.copa.base.com.serialization.ServerSerializer;
 import unicopa.copa.server.CopaSystem;
 
 /**
@@ -56,10 +58,19 @@ public class CopaServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request,
 	    HttpServletResponse response) throws ServletException, IOException {
+	String resp;
 	response.setContentType(CONTENT_TYPE);
 	String userName = request.getUserPrincipal().getName();
-	String resp = system.processClientMessage(
-		request.getParameter(PARAM_REQUEST), userName);
+	String req = request.getParameter(PARAM_REQUEST);
+	if (req == null) {
+	    resp = ServerSerializer.serialize(new APIException(
+		    "The HTTP POST request does not contain"
+			    + " the required parameter \"req\"."
+			    + " The request to the system must "
+			    + " be the value of this parameter."));
+	} else {
+	    resp = system.processClientMessage(req, userName);
+	}
 	response.getWriter().print(resp);
     }
 
