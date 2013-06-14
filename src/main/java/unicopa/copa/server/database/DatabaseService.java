@@ -593,6 +593,26 @@ public class DatabaseService {
     }
 
     /**
+     * Inserts a the SingleEvent in the databases at the same time the new
+     * singleEventID is set in the SingleEvent Object
+     * 
+     * @param singleEvent
+     *            the singleEvent
+     * @throws ObjectNotFoundException
+     */
+    public void insertSingleEvent(SingleEvent singleEvent)
+	    throws ObjectNotFoundException {
+	getEvent(singleEvent.getEventID());
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    SingleEventMapper mapper = session
+		    .getMapper(SingleEventMapper.class);
+	    mapper.insertSingleEvent(singleEvent, singleEvent.getDate()
+		    .getTime());
+	    session.commit();
+	}
+    }
+
+    /**
      * 
      * @param database
      * @throws unicopa.copa.server.database.util.DatabaseUtil.ConnectException

@@ -435,4 +435,24 @@ public class DatabaseServiceTest {
 	    e.printStackTrace();
 	}
     }
+
+    @Test
+    public void testInsertSingleEvent() {
+	SingleEvent singleEvent = new SingleEvent(0, 2, "HU 103", new Date(
+		1234567), "Supervisor XY", 85);
+	SingleEvent res = null;
+	try {
+	    dbs.insertSingleEvent(singleEvent);
+	    res = dbs.getSingleEvent(singleEvent.getSingleEventID());
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+	assertEquals(singleEvent.getDate().getTime(), res.getDate().getTime());
+	assertEquals(singleEvent.getDurationMinutes(), res.getDurationMinutes());
+	assertEquals(singleEvent.getEventID(), res.getEventID());
+	assertEquals(singleEvent.getLocation(), res.getLocation());
+	assertEquals(singleEvent.getSingleEventID(), res.getSingleEventID());
+	assertEquals(singleEvent.getSupervisor(), res.getSupervisor());
+    }
 }

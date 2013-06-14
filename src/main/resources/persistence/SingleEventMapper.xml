@@ -39,5 +39,10 @@
 		From  singleEvents s
 		Where s.singleEventID=#{singleEventID}		
     </select>
+    
+    <insert id='insertSingleEvent' parameterType='map' useGeneratedKeys="true" keyProperty="singleEvent.singleEventID">
+        insert into singleEvents(eventID,location,sEventDate,duration,supervisor) values
+	   		(#{singleEvent.eventID},#{singleEvent.location},#{sEventDate},#{singleEvent.durationMinutes},#{singleEvent.supervisor})
+    </insert>
 
 </mapper>

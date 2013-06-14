@@ -67,16 +67,10 @@ public class GoogleCloudNotificationService extends NotificationService {
 	    // determine GCM keys of the users
 	    Set<String> gcmKeys = new HashSet<>();
 	    for (Integer userID : subUsers) {
-		try {
-		    UserSettings settings = super.dbservice().getUserSettings(
-			    userID);
-		    Set<String> usrKeys = settings.getGCMKeys();
-		    gcmKeys.addAll(usrKeys);
-		} catch (ObjectNotFoundException ex) {
-		    Logger.getLogger(
-			    GoogleCloudNotificationService.class.getName())
-			    .log(Level.SEVERE, null, ex);
-		}
+		UserSettings settings = super.dbservice().getUserSettings(
+			userID);
+		Set<String> usrKeys = settings.getGCMKeys();
+		gcmKeys.addAll(usrKeys);
 	    }
 	    // send using service
 	    this.gcmService.notify(gcmKeys, "SINGLE_EVENT_UPDATE");
