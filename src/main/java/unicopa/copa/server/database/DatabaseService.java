@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -558,6 +559,26 @@ public class DatabaseService {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    mapper.removePrivilege(userID, eventID);
+	}
+    }
+
+    /**
+     * Inserts a the SingleEvent in the databases at the same time the new
+     * singleEventID is set in the SingleEvent Object
+     * 
+     * @param singleEvent
+     *            the singleEvent
+     * @throws ObjectNotFoundException
+     */
+    public void insertSingleEvent(SingleEvent singleEvent)
+	    throws ObjectNotFoundException {
+	getEvent(singleEvent.getEventID());
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    SingleEventMapper mapper = session
+		    .getMapper(SingleEventMapper.class);
+	    mapper.insertSingleEvent(singleEvent, singleEvent.getDate()
+		    .getTime());
+	    session.commit();
 	}
     }
 
