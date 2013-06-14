@@ -46,7 +46,7 @@ public class GetUserSettingsRequestHandler extends RequestHandler {
 		    .getUserSettings(userID));
 	} catch (ObjectNotFoundException ex) {
 	    throw new RequestNotPracticableException(
-		    "The user with the specified ID could not be found.");
+		    ex.getMessage());
 	}
     }
 }
