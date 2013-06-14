@@ -17,6 +17,8 @@
 package unicopa.copa.server.database.data.persistence;
 
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface PersonMapper {
@@ -25,5 +27,10 @@ public interface PersonMapper {
 
     public List<Integer> getSubscribedUserIDs(@Param("eventID") int eventID);
 
-    public int getUserID(@Param("userName") String userName);
+    public Integer getUserID(@Param("userName") String userName);
+
+    public Map<String, Integer> isAdmin(@Param("userID") int userID);
+
+    public Integer getPrivilege(@Param("userID") int userID,
+	    @Param("eventID") int eventID);
 }
