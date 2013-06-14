@@ -26,6 +26,8 @@ import unicopa.copa.base.com.serialization.ServerSerializer;
 import unicopa.copa.server.CopaSystem;
 
 /**
+ * This servlet receives all requests (AbstractRequest) from the clients, passes
+ * them to the CopaSystem and sends the reponses back.
  * 
  * @author Felix Wiemuth
  */
@@ -40,7 +42,7 @@ public class CopaServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-	system = new CopaSystem();
+	system = CopaSystem.getInstance();
     }
 
     /**
@@ -60,6 +62,7 @@ public class CopaServlet extends HttpServlet {
 	    HttpServletResponse response) throws ServletException, IOException {
 	String resp;
 	response.setContentType(CONTENT_TYPE);
+	request.getReader().readLine();
 	String userName = request.getUserPrincipal().getName();
 	String req = request.getParameter(PARAM_REQUEST);
 	if (req == null) {

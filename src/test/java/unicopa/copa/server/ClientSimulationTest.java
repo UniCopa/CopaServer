@@ -42,7 +42,7 @@ public class ClientSimulationTest {
 
     @Before
     public void setUp() {
-	system = new CopaSystem();
+	system = CopaSystem.getInstance();
 	// TODO set up test database (or just use test database below,
 	// but content must be known and guaranteed)
     }

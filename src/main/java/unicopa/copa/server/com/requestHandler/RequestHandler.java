@@ -16,6 +16,8 @@
  */
 package unicopa.copa.server.com.requestHandler;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.com.request.AbstractRequest;
 import unicopa.copa.base.com.request.AbstractResponse;
@@ -23,6 +25,7 @@ import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
 import unicopa.copa.server.CopaSystemContext;
+import unicopa.copa.server.database.ObjectNotFoundException;
 
 /**
  * A RequestHandler handles a specific Request (subclass of AbstractRequest).
@@ -68,10 +71,17 @@ public abstract class RequestHandler {
      * @param role
      *            the role for which to check
      * @return true if the user holds the specified or any higher role
+     * @throws RequestNotPracticableException
      */
-    public boolean checkEventPermission(int userID, int eventID, UserRole role) {
-	UserRole hasRole = context.getDbservice().getUsersRoleForEvent(userID,
-		eventID);
-	return hasRole.level() >= role.level();
+    public boolean checkEventPermission(int userID, int eventID, UserRole role)
+	    throws RequestNotPracticableException {
+	UserRole hasRole;
+	try {
+	    hasRole = context.getDbservice().getUsersRoleForEvent(userID,
+		    eventID);
+	    return hasRole.level() >= role.level();
+	} catch (ObjectNotFoundException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
+	}
     }
 }

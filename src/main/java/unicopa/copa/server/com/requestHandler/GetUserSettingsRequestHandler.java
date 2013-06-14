@@ -37,12 +37,16 @@ public class GetUserSettingsRequestHandler extends RequestHandler {
     }
 
     @Override
-    public AbstractResponse handleRequest(AbstractRequest request, int userID) throws PermissionException, RequestNotPracticableException, InternalErrorException {
-        GetUserSettingsRequest req = (GetUserSettingsRequest) request;
-        try {
-            return new GetUserSettingsResponse(getContext().getDbservice().getUserSettings(userID));
-        } catch(ObjectNotFoundException ex) {
-            throw new RequestNotPracticableException("The user with the specified ID could not be found.");
-        }
+    public AbstractResponse handleRequest(AbstractRequest request, int userID)
+	    throws PermissionException, RequestNotPracticableException,
+	    InternalErrorException {
+	GetUserSettingsRequest req = (GetUserSettingsRequest) request;
+	try {
+	    return new GetUserSettingsResponse(getContext().getDbservice()
+		    .getUserSettings(userID));
+	} catch (ObjectNotFoundException ex) {
+	    throw new RequestNotPracticableException(
+		    "The user with the specified ID could not be found.");
+	}
     }
 }

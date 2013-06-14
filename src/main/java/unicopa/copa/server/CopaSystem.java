@@ -38,19 +38,25 @@ import unicopa.copa.base.com.request.TestRequest;
 import unicopa.copa.base.com.serialization.ServerSerializer;
 import unicopa.copa.server.com.requestHandler.RequestHandler;
 import unicopa.copa.server.database.DatabaseService;
+import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.notification.Notifier;
 
 /**
+ * This class represents the core of the system. It receives client messages,
+ * processes them and returns responses. It is to be used by a wrapper that
+ * provides the communication with clients. Due to allow simple access by these
+ * wrappers, the class is a singleton.
  * 
  * @author Felix Wiemuth
  */
 public class CopaSystem {
 
+    private static CopaSystem instance = new CopaSystem();
     private Properties systemProperties = new Properties(); // TODO use
     private CopaSystemContext context;
     private Map<Class<? extends AbstractRequest>, RequestHandler> requestHandlers = new HashMap<>();
 
-    public CopaSystem() {
+    private CopaSystem() {
 	try {
 	    // TODO get database from system properties
 	    context = new CopaSystemContext(new DatabaseService(new File(
@@ -64,6 +70,17 @@ public class CopaSystem {
     }
 
     /**
+     * Get the instance of the CopaSystem. Do not use this if not absolutely
+     * necessary. Components of the system are provided with the needed
+     * information by the system itself.
+     * 
+     * @return
+     */
+    public static CopaSystem getInstance() {
+	return instance;
+    }
+
+    /**
      * Load the request handlers for the specified requests. The requests for
      * which handlers should be loaded must be entered below.
      */
@@ -73,10 +90,10 @@ public class CopaSystem {
 	// registered below)
 	List<Class<? extends AbstractRequest>> requests = new ArrayList<Class<? extends AbstractRequest>>() {
 	    {
-                //sort alphabetically
+		// sort alphabetically
 		add(GetSingleEventRequest.class);
-                add(GetUserSettingsRequest.class);
-                add(TestRequest.class);
+		add(GetUserSettingsRequest.class);
+		add(TestRequest.class);
 	    }
 	};
 
@@ -127,8 +144,15 @@ public class CopaSystem {
     public String processClientMessage(String json, String userName) {
 	// TODO send back InternalErrorException or PermissionException if the
 	// user cannot be found
-	int userID = context.getDbservice().getUserID(userName);
 	try {
+	    int userID;
+	    try {
+		userID = context.getDbservice().getUserID(userName);
+	    } catch (ObjectNotFoundException ex) {
+		throw new InternalErrorException(
+			"Fatal: Cannot process client message because of missing user ID: "
+				+ ex.getMessage());
+	    }
 	    AbstractRequest request = AbstractRequest.deserialize(json);
 	    AbstractResponse response = getRequestHandler(request.getClass())
 		    .handleRequest(request, userID);
