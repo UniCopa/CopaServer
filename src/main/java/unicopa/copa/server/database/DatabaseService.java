@@ -56,21 +56,6 @@ import unicopa.copa.server.database.util.DatabaseUtil;
  * @author Felix Wiemuth
  */
 public class DatabaseService {
-
-    public static class ObjectNotFoundException extends Exception {
-
-	public ObjectNotFoundException(String message) {
-	    super(message);
-	}
-    }
-
-    public static class ItemNotFoundException extends Exception {
-
-	public ItemNotFoundException(String message) {
-	    super(message);
-	}
-    }
-
     private static final String RESOURCE_SQL_INITDB = "/sql/initializeDB.sql";
     private static final String RESOURCE_MYBATIS_CONFIG = "mybatis-config.xml";
     private final File database;
@@ -225,6 +210,7 @@ public class DatabaseService {
 	}
     }
 
+    // TODO throw exception if settings do not exist
     /**
      * Get the user settings of the given user.
      * 
@@ -232,7 +218,8 @@ public class DatabaseService {
      *            the user-ID
      * @return the UserSettings for the user
      */
-    public UserSettings getUserSettings(int userID) {
+    public UserSettings getUserSettings(int userID)
+	    throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    UserSettingMapper mapper = session
 		    .getMapper(UserSettingMapper.class);
@@ -241,7 +228,7 @@ public class DatabaseService {
 	    String language = mapper.getLanguage(userID);
 	    List<Map<String, Integer>> listEventColor = mapper
 		    .getEventColors(userID);
-	    Map<Integer, UserEventSettings> eventSettings = new HashMap<Integer, UserEventSettings>();
+	    Map<Integer, UserEventSettings> eventSettings = new HashMap<>();
 	    for (Map<String, Integer> map : listEventColor) {
 		eventSettings.put(map.get("EVENTID"), new UserEventSettings(
 			String.valueOf(map.get("COLOR"))));
