@@ -194,7 +194,7 @@ public class DatabaseService {
     public int getUserID(String userName) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
-	    int userID = mapper.getUserID(userName);
+	    Integer userID = mapper.getUserID(userName);
 	    return userID;
 	}
     }
@@ -339,7 +339,26 @@ public class DatabaseService {
      * @return the role the user holds for the specified event
      */
     public UserRole getUsersRoleForEvent(int userID, int eventID) {
-	throw new UnsupportedOperationException();
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    Map<String, Integer> result = mapper.isAdmin(userID);
+	    if (result == null) {
+		Integer priv = mapper.getPrivilege(userID, eventID);
+		if (priv == null)
+		    return UserRole.USER;
+		switch (priv) {
+		case 1:
+		    return UserRole.RIGHTHOLDER;
+		case 2:
+		    return UserRole.DEPUTY;
+		case 3:
+		    return UserRole.OWNER;
+		}
+
+	    } else
+		return UserRole.ADMINISTRATOR;
+	}
+	return null;
     }
 
     /**

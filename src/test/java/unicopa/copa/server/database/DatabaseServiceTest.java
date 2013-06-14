@@ -40,6 +40,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 
 import unicopa.copa.base.UserEventSettings;
+import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
 import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
@@ -310,5 +311,14 @@ public class DatabaseServiceTest {
     @Test
     public void testGetUserID() {
 	assertEquals(7, dbs.getUserID("test2"));
+    }
+
+    @Test
+    public void testGetUsersRoleForEvent() {
+	assertEquals(UserRole.ADMINISTRATOR, dbs.getUsersRoleForEvent(2, 6));
+	assertEquals(UserRole.RIGHTHOLDER, dbs.getUsersRoleForEvent(1, 1));
+	assertEquals(UserRole.DEPUTY, dbs.getUsersRoleForEvent(4, 2));
+	assertEquals(UserRole.OWNER, dbs.getUsersRoleForEvent(6, 2));
+	assertEquals(UserRole.USER, dbs.getUsersRoleForEvent(1, 2));
     }
 }

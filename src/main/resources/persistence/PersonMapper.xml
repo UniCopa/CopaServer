@@ -69,5 +69,17 @@
         Where userName=#{userName}
     </select>
     
+    <select id='isAdmin' parameterType='int' resultType='map'>
+        Select*
+        From admins
+        Where personID=#{userID}
+    </select>
+    
+    <select id='getPrivilege' parameterType='int' resultType='int'>
+        Select kindOfPrivilege
+        From privilege
+        Where personID=#{userID} and eventID=#{eventID}
+    </select>
+    
 
 </mapper>
