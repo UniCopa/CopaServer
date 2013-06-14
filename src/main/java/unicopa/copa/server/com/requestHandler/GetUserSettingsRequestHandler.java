@@ -45,8 +45,7 @@ public class GetUserSettingsRequestHandler extends RequestHandler {
 	    return new GetUserSettingsResponse(getContext().getDbservice()
 		    .getUserSettings(userID));
 	} catch (ObjectNotFoundException ex) {
-	    throw new RequestNotPracticableException(
-		    ex.getMessage());
+	    throw new RequestNotPracticableException(ex.getMessage());
 	}
     }
 }

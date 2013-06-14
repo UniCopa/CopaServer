@@ -41,10 +41,11 @@ public class GetSingleEventRequestHandler extends RequestHandler {
 	    throws RequestNotPracticableException, InternalErrorException,
 	    PermissionException {
 	GetSingleEventRequest req = (GetSingleEventRequest) request;
-        try {
-            return new GetSingleEventResponse(getContext().getDbservice().getSingleEvent(req.getSingleEventID()));
-        } catch (ObjectNotFoundException ex) {
-            throw new RequestNotPracticableException(ex.getMessage());
-        }
+	try {
+	    return new GetSingleEventResponse(getContext().getDbservice()
+		    .getSingleEvent(req.getSingleEventID()));
+	} catch (ObjectNotFoundException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
+	}
     }
 }
