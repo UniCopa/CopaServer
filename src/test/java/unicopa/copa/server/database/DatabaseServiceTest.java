@@ -239,7 +239,13 @@ public class DatabaseServiceTest {
 	eventSettings.put(4, new UserEventSettings("00FF00"));
 	UserSettings uS = new UserSettings(uGCMKeys, true, "english",
 		eventSettings);
-	UserSettings resUs = dbs.getUserSettings(2);
+	UserSettings resUs = null;
+	try {
+	    resUs = dbs.getUserSettings(2);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	assertEquals(uS.getLanguage(), resUs.getLanguage());
 	assertEquals(uS.getGCMKeys(), resUs.getGCMKeys());
 	assertEquals(uS.getEventSettings(1).getColorCode(), resUs
@@ -302,7 +308,13 @@ public class DatabaseServiceTest {
 	UserSettings uS = new UserSettings(uGCMKeys, false, "english",
 		eventSettings);
 	dbs.updateUserSetting(uS, 4);
-	UserSettings res = dbs.getUserSettings(4);
+	UserSettings res = null;
+	try {
+	    res = dbs.getUserSettings(4);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	assertEquals(false, res.isEmailNotificationEnabled());
 	assertEquals("english", res.getLanguage());
 	assertEquals("[test1, test2]", res.getGCMKeys().toString());
