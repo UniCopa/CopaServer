@@ -32,7 +32,7 @@ public class Notifier {
     private List<NotificationService> services = new LinkedList<>();
 
     /**
-     * For each notification service, use their 'notifyClients' interface with
+     * For each notification service, use their 'notifyClient' interface with
      * this update to inform clients about this update.
      * 
      * @param update
@@ -45,11 +45,13 @@ public class Notifier {
     }
 
     /**
-     * For each notification service, use their 'notifyClients' interface with
-     * this notification event to inform clients about the event.
+     * For each notification service, use their 'notifyClient' interface with
+     * this notification event to inform a client about an event.
      * 
      * @param event
      *            the notification event to inform about
+     * @param userID
+     *            the ID of the user whom to inform
      */
     public void notifyClient(NotificationEvent event, int userID) {
 	for (NotificationService service : services) {
