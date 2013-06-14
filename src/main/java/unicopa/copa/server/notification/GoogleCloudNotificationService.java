@@ -20,10 +20,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import unicopa.copa.base.UserSettings;
 import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.database.DatabaseService;
+import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.gcm.GoogleCloudMessagingService;
 
 /**
@@ -62,9 +65,15 @@ public class GoogleCloudNotificationService extends NotificationService {
 	// determine GCM keys of the users
 	Set<String> gcmKeys = new HashSet<>();
 	for (Integer userID : subUsers) {
-	    UserSettings settings = super.dbservice().getUserSettings(userID);
-	    Set<String> usrKeys = settings.getGCMKeys();
-	    gcmKeys.addAll(usrKeys);
+	    try {
+		UserSettings settings = super.dbservice().getUserSettings(
+			userID);
+		Set<String> usrKeys = settings.getGCMKeys();
+		gcmKeys.addAll(usrKeys);
+	    } catch (ObjectNotFoundException ex) {
+		Logger.getLogger(GoogleCloudNotificationService.class.getName())
+			.log(Level.SEVERE, null, ex);
+	    }
 	}
 	// send using service
 	this.gcmService.notify(gcmKeys,
@@ -81,10 +90,15 @@ public class GoogleCloudNotificationService extends NotificationService {
      */
     @Override
     public void notifyClient(NotificationEvent event, int userID) {
-	UserSettings settings = super.dbservice().getUserSettings(userID);
-	Set<String> usrKeys = settings.getGCMKeys();
-	// send using service
-	this.gcmService.notify(usrKeys, event.toString());
+	try {
+	    UserSettings settings = super.dbservice().getUserSettings(userID);
+	    Set<String> usrKeys = settings.getGCMKeys();
+	    // send using service
+	    this.gcmService.notify(usrKeys, event.toString());
+	} catch (ObjectNotFoundException ex) {
+	    Logger.getLogger(GoogleCloudNotificationService.class.getName())
+		    .log(Level.SEVERE, null, ex);
+	}
     }
 
 }
