@@ -33,4 +33,6 @@ public interface PersonMapper {
 
     public Integer getPrivilege(@Param("userID") int userID,
 	    @Param("eventID") int eventID);
+
+    public String getUserName(@Param("userID") int userID);
 }

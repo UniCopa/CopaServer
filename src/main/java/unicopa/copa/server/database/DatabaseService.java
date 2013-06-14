@@ -190,11 +190,15 @@ public class DatabaseService {
      * @param userName
      *            the user name of the user
      * @return
+     * @throws ObjectNotFoundException
      */
-    public int getUserID(String userName) {
+    public int getUserID(String userName) throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    Integer userID = mapper.getUserID(userName);
+	    if (userID == null)
+		throw new ObjectNotFoundException("There is no user with name="
+			+ userName + " in the database");
 	    return userID;
 	}
     }
@@ -205,8 +209,10 @@ public class DatabaseService {
      * @param userID
      *            the user-ID
      * @return the E-Mail address as String
+     * @throws ObjectNotFoundException
      */
-    public String getEmailAddress(int userID) {
+    public String getEmailAddress(int userID) throws ObjectNotFoundException {
+	getUserName(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    String email = mapper.getEmailAddress(userID);
@@ -224,6 +230,7 @@ public class DatabaseService {
      */
     public UserSettings getUserSettings(int userID)
 	    throws ObjectNotFoundException {
+	getUserName(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    UserSettingMapper mapper = session
 		    .getMapper(UserSettingMapper.class);
@@ -354,7 +361,6 @@ public class DatabaseService {
 		case 3:
 		    return UserRole.OWNER;
 		}
-
 	    } else
 		return UserRole.ADMINISTRATOR;
 	}
@@ -454,6 +460,25 @@ public class DatabaseService {
 			.getEventSettings(eventID).getColorCode(), userID);
 	    }
 	    session.commit();
+	}
+    }
+
+    /**
+     * Returns the userName to a given userID
+     * 
+     * @param userID
+     *            the ID of the user
+     * @return
+     * @throws ObjectNotFoundException
+     */
+    public String getUserName(int userID) throws ObjectNotFoundException {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    String userName = mapper.getUserName(userID);
+	    if (userName == null)
+		throw new ObjectNotFoundException("There is not User with ID="
+			+ userID + " in the database");
+	    return userName;
 	}
     }
 

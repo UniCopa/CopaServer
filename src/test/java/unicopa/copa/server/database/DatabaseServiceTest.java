@@ -166,7 +166,12 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetEmailAddress() {
-	assertEquals("derp@Derpenson.com", dbs.getEmailAddress(2));
+	try {
+	    assertEquals("derp@Derpenson.com", dbs.getEmailAddress(2));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 
     @Test
@@ -322,7 +327,12 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetUserID() {
-	assertEquals(7, dbs.getUserID("test2"));
+	try {
+	    assertEquals(7, dbs.getUserID("test2"));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 
     @Test
@@ -332,5 +342,15 @@ public class DatabaseServiceTest {
 	assertEquals(UserRole.DEPUTY, dbs.getUsersRoleForEvent(4, 2));
 	assertEquals(UserRole.OWNER, dbs.getUsersRoleForEvent(6, 2));
 	assertEquals(UserRole.USER, dbs.getUsersRoleForEvent(1, 2));
+    }
+
+    @Test
+    public void testGetUserName() {
+	try {
+	    assertEquals("user123", dbs.getUserName(1));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 }

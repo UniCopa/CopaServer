@@ -81,5 +81,11 @@
         Where personID=#{userID} and eventID=#{eventID}
     </select>
     
+    <select id='getUserName' parameterType='int' resultType='String'>
+        Select userName
+        From persons
+        Where personID=#{userID}
+    </select>
+    
 
 </mapper>
