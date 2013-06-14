@@ -542,6 +542,26 @@ public class DatabaseService {
     }
 
     /**
+     * Removes the Privilege from the user with ID=userID for the event with
+     * ID=evenID
+     * 
+     * @param userID
+     *            the ID of the user
+     * @param eventID
+     *            the ID of the event
+     * @throws ObjectNotFoundException
+     */
+    public void removePrivilege(int userID, int eventID)
+	    throws ObjectNotFoundException {
+	getEvent(eventID);
+	getUserName(userID);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    mapper.removePrivilege(userID, eventID);
+	}
+    }
+
+    /**
      * 
      * @param database
      * @throws unicopa.copa.server.database.util.DatabaseUtil.ConnectException
