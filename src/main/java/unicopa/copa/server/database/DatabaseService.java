@@ -192,7 +192,11 @@ public class DatabaseService {
      * @return
      */
     public int getUserID(String userName) {
-	return 0; // TODO implement
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    int userID = mapper.getUserID(userName);
+	    return userID;
+	}
     }
 
     /**

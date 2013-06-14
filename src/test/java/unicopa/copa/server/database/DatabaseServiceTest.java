@@ -123,8 +123,8 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetSingleEvent() {
-	SingleEvent sE = new SingleEvent(10, 15, "Raumtest",
-		new Date(21024000), "Prof. Test", 14);
+	SingleEvent sE = new SingleEvent(10, 15, "test", new Date(21024000),
+		"Prof. Test", 14);
 	SingleEvent ressE = dbs.getSingleEvent(10);
 	assertEquals("SEID", sE.getSingleEventID(), ressE.getSingleEventID());
 	assertEquals("Duration", sE.getDurationMinutes(),
@@ -305,6 +305,10 @@ public class DatabaseServiceTest {
 	assertEquals(false, res.isEmailNotificationEnabled());
 	assertEquals("english", res.getLanguage());
 	assertEquals("[test1, test2]", res.getGCMKeys().toString());
+    }
 
+    @Test
+    public void testGetUserID() {
+	assertEquals(7, dbs.getUserID("test2"));
     }
 }
