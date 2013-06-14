@@ -4,8 +4,16 @@
         <servlet-name>CopaService</servlet-name>
         <servlet-class>unicopa.copa.server.servlet.CopaServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Registration</servlet-name>
+        <servlet-class>unicopa.copa.server.servlet.RegistrationServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>CopaService</servlet-name>
         <url-pattern>/service</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Registration</servlet-name>
+        <url-pattern>/registration</url-pattern>
     </servlet-mapping>
 </web-app>
