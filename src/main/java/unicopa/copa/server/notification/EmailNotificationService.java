@@ -24,6 +24,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import unicopa.copa.server.database.DatabaseService;
 import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.email.EmailContext;
 import unicopa.copa.server.email.EmailService;
+import unicopa.copa.server.email.UpdateInformation;
 
 /**
  * This NotificationService informs users about updates by sending E-Mails.
@@ -140,101 +142,131 @@ public class EmailNotificationService extends NotificationService {
      */
     @Override
     public void notifyClients(SingleEventUpdate update) {
-	// determine kind of update
-	String kindOfUpd;
-	if (update.isSingleEventCreation()) {
-	    kindOfUpd = "new_";
-	} else if (update.isCancellation()) {
-	    kindOfUpd = "cncld_";
-	} else {
-	    kindOfUpd = "upd_";
-	}
-
-	// obtain EventGroupName, EventName from db.
-	// Note: We have to get the Event-ID from the old single event, because
-	// the new single event might be null
-	int oldID = update.getOldSingleEventID();
-	SingleEvent oldSingleEvent = super.dbservice().getSingleEvent(oldID);
-	int eventID = oldSingleEvent.getEventID();
-	Event event = super.dbservice().getEvent(eventID);
-	int eventGroupID = event.getEventGroupID();
-	String eventName = event.getEventName();
-	String eventGroupName = super.dbservice().getEventGroup(eventGroupID)
-		.getEventGroupName();
-
-	// search for clients who want to be notified about this update
-	List<Integer> subUsers = super.dbservice()
-		.getSubscribedUserIDs(eventID);
-
-	// get the Email addresses and user settings for those users
-	Map<Integer, String> emailStrings = new HashMap<>();
-	Map<Integer, UserSettings> usrSettings = new HashMap<>();
-	for (int usrID : subUsers) {
-	    try {
-		String addr = super.dbservice().getEmailAddress(usrID);
-		emailStrings.put(usrID, addr);
-		UserSettings settings = super.dbservice()
-			.getUserSettings(usrID);
-		usrSettings.put(usrID, settings);
-	    } catch (ObjectNotFoundException ex) {
-		Logger.getLogger(EmailNotificationService.class.getName()).log(
-			Level.SEVERE, null, ex);
+	try {
+	    // determine kind of update
+	    String kindOfUpd;
+	    if (update.isSingleEventCreation()) {
+		kindOfUpd = "new_";
+	    } else if (update.isCancellation()) {
+		kindOfUpd = "cncld_";
+	    } else {
+		kindOfUpd = "upd_";
 	    }
-	}
+	    // === gather create the update information ===
+	    // obtain EventGroupName, EventName from db.
+	    // Note: We have to get the Event-ID from the old single event,
+	    // because
+	    // the new single event might be null
+	    int oldID = update.getOldSingleEventID();
+	    SingleEvent oldSingleEvent = super.dbservice()
+		    .getSingleEvent(oldID);
+	    int eventID = oldSingleEvent.getEventID();
+	    Event event = super.dbservice().getEvent(eventID);
+	    int eventGroupID = event.getEventGroupID();
+	    String eventGroupName = super.dbservice()
+		    .getEventGroup(eventGroupID).getEventGroupName();
+	    String eventName = event.getEventName();
+	    Date updateDate = update.getUpdateDate();
+	    String creatorName = update.getCreatorName();
+	    String comment = update.getComment();
+	    String location;
+	    Date date;
+	    String supervisor;
+	    // if the update is _no_ cancellation use data from new single event
+	    // else use data from old single event
+	    if (!update.isCancellation()) {
+		location = update.getUpdatedSingleEvent().getLocation();
+		date = update.getUpdatedSingleEvent().getDate();
+		supervisor = update.getUpdatedSingleEvent().getSupervisor();
+	    } else {
+		location = oldSingleEvent.getLocation();
+		date = oldSingleEvent.getDate();
+		supervisor = oldSingleEvent.getSupervisor();
+	    }
+	    UpdateInformation info = new UpdateInformation(eventGroupName,
+		    eventName, updateDate, creatorName, comment, location,
+		    date, supervisor);
 
-	// === create the list of EmailContext ===
+	    // search for clients who want to be notified about this update
+	    List<Integer> subUsers = super.dbservice().getSubscribedUserIDs(
+		    eventID);
 
-	// begin with default users from db
-	List<EmailContext> emailContexts = new ArrayList<>();
-	for (int userID : subUsers) {
-	    UserSettings usrSet = usrSettings.get(userID);
-	    if (usrSet.isEmailNotificationEnabled()) {
-		// E-Mail address
-		String emailString = emailStrings.get(userID);
-		InternetAddress EmailAddr = null;
+	    // get the Email addresses and user settings for those users
+	    Map<Integer, String> emailStrings = new HashMap<>();
+	    Map<Integer, UserSettings> usrSettings = new HashMap<>();
+	    for (int usrID : subUsers) {
 		try {
-		    EmailAddr = new InternetAddress(emailString);
-		} catch (AddressException ex) {
+		    String addr = super.dbservice().getEmailAddress(usrID);
+		    emailStrings.put(usrID, addr);
+		    UserSettings settings = super.dbservice().getUserSettings(
+			    usrID);
+		    usrSettings.put(usrID, settings);
+		} catch (ObjectNotFoundException ex) {
 		    Logger.getLogger(EmailNotificationService.class.getName())
 			    .log(Level.SEVERE, null, ex);
 		}
+	    }
 
-		// Text-ID
-		StringBuilder textID = new StringBuilder();
-		textID.append("default_");
-		textID.append(kindOfUpd);
-		textID.append(usrSet.getLanguage());
+	    // === create the list of EmailContext ===
 
-		// add EmailContext to list
-		if (EmailAddr != null) {
-		    EmailContext ctx = new EmailContext(EmailAddr,
-			    textID.toString());
-		    emailContexts.add(ctx);
+	    // begin with default users from db
+	    List<EmailContext> emailContexts = new ArrayList<>();
+	    for (int userID : subUsers) {
+		UserSettings usrSet = usrSettings.get(userID);
+		if (usrSet.isEmailNotificationEnabled()) {
+		    // E-Mail address
+		    String emailString = emailStrings.get(userID);
+		    InternetAddress EmailAddr = null;
+		    try {
+			EmailAddr = new InternetAddress(emailString);
+		    } catch (AddressException ex) {
+			Logger.getLogger(
+				EmailNotificationService.class.getName()).log(
+				Level.SEVERE, null, ex);
+		    }
+
+		    // Text-ID
+		    StringBuilder textID = new StringBuilder();
+		    textID.append("default_");
+		    textID.append(kindOfUpd);
+		    textID.append(usrSet.getLanguage());
+		    textID.append(".txt");
+
+		    // add EmailContext to list
+		    if (EmailAddr != null) {
+			EmailContext ctx = new EmailContext(EmailAddr,
+				textID.toString());
+			emailContexts.add(ctx);
+		    }
 		}
 	    }
-	}
 
-	// next we have to add the contexts for external users.
-	// The E-Mail addresses of those users are located in a configuration
-	// file and have already been gathered by the constructor.
-	for (Map.Entry<InternetAddress, String> entry : centralInstances
-		.entrySet()) {
-	    // Text-ID
-	    String lang = entry.getValue();
-	    StringBuilder textID = new StringBuilder();
-	    textID.append("general_");
-	    textID.append(kindOfUpd);
-	    textID.append(lang);
-	    EmailContext ctx = new EmailContext(entry.getKey(),
-		    textID.toString());
-	    emailContexts.add(ctx);
-	}
+	    // next we have to add the contexts for external users.
+	    // The E-Mail addresses of those users are located in a
+	    // configuration
+	    // file and have already been gathered by the constructor.
+	    for (Map.Entry<InternetAddress, String> entry : centralInstances
+		    .entrySet()) {
+		// Text-ID
+		String lang = entry.getValue();
+		StringBuilder textID = new StringBuilder();
+		textID.append("general_");
+		textID.append(kindOfUpd);
+		textID.append(lang);
+		textID.append(".txt");
+		EmailContext ctx = new EmailContext(entry.getKey(),
+			textID.toString());
+		emailContexts.add(ctx);
+	    }
 
-	// use EmailService to send emails
-	try {
-	    this.emailService.notifySingleEventUpdate(emailContexts, update,
-		    eventGroupName, eventName);
-	} catch (MessagingException ex) {
+	    // use EmailService to send emails
+	    try {
+		this.emailService.notifySingleEventUpdate(emailContexts, info);
+	    } catch (MessagingException ex) {
+		Logger.getLogger(EmailNotificationService.class.getName()).log(
+			Level.SEVERE, null, ex);
+	    }
+	} catch (ObjectNotFoundException ex) {
 	    Logger.getLogger(EmailNotificationService.class.getName()).log(
 		    Level.SEVERE, null, ex);
 	}

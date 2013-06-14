@@ -1,0 +1,21 @@
+Appointment changed
+Dear Sir / Madam,
+
+We are writing to inform you that _CREATOR_NAME recently changed an appointment.
+You can see the updated information below.
+
+Creator of the update: _CREATOR_NAME
+Date of the update:    _UPDATE_DATE
+Comment on the update: _COMMENT
+
+Group of the event: _EVENTGROUP_NAME
+Name of the event:  _EVENT_NAME
+
+Date of the updated appointment:        _DATE
+Supervisor for the updated appointment: _SUPERVISOR
+Location of the updated appointment:  	_LOCATION
+
+
+Yours sincerely,
+
+CoPA - Change of Plan Application

@@ -51,7 +51,7 @@ public class Notifier {
      * @param event
      *            the notification event to inform about
      */
-    public void notifyClients(NotificationEvent event, int userID) {
+    public void notifyClient(NotificationEvent event, int userID) {
 	for (NotificationService service : services) {
 	    service.notifyClient(event, userID);
 	}

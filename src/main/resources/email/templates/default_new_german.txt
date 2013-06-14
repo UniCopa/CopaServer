@@ -1,0 +1,22 @@
+Neuer Termin
+Sehr geehrter CoPA-Nutzer,
+
+Es liegt ein neuer Termin für sie vor:
+
+Erstellt von: _CREATOR_NAME
+Erstelldatum: _UPDATE_DATE
+Kommentar: 					
+_COMMENT
+
+Event-Gruppe: _EVENTGROUP_NAME
+Event-Name:   _EVENT_NAME
+
+Datum des neuen Termins:            _DATE
+Verantwortlicher des neuen Termins: _SUPERVISOR
+Ort des neuen Termins:   			_LOCATION
+
+
+Mit freundlichen Grüßen
+
+CoPA - Change of Plan Application
+

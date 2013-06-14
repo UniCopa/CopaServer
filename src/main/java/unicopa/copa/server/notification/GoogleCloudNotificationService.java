@@ -53,31 +53,37 @@ public class GoogleCloudNotificationService extends NotificationService {
      */
     @Override
     public void notifyClients(SingleEventUpdate update) {
-	// determine the single event ID
-	// Note: We have to get the Event-ID from the old single event, because
-	// the new single event might be null
-	int seID = update.getOldSingleEventID();
-	SingleEvent oldSingleEvent = super.dbservice().getSingleEvent(seID);
-	int eventID = oldSingleEvent.getEventID();
-	// determine the users that should be informed about the update
-	List<Integer> subUsers = super.dbservice()
-		.getSubscribedUserIDs(eventID);
-	// determine GCM keys of the users
-	Set<String> gcmKeys = new HashSet<>();
-	for (Integer userID : subUsers) {
-	    try {
-		UserSettings settings = super.dbservice().getUserSettings(
-			userID);
-		Set<String> usrKeys = settings.getGCMKeys();
-		gcmKeys.addAll(usrKeys);
-	    } catch (ObjectNotFoundException ex) {
-		Logger.getLogger(GoogleCloudNotificationService.class.getName())
-			.log(Level.SEVERE, null, ex);
+	try {
+	    // determine the single event ID
+	    // Note: We have to get the Event-ID from the old single event,
+	    // because
+	    // the new single event might be null
+	    int seID = update.getOldSingleEventID();
+	    SingleEvent oldSingleEvent = super.dbservice().getSingleEvent(seID);
+	    int eventID = oldSingleEvent.getEventID();
+	    // determine the users that should be informed about the update
+	    List<Integer> subUsers = super.dbservice().getSubscribedUserIDs(
+		    eventID);
+	    // determine GCM keys of the users
+	    Set<String> gcmKeys = new HashSet<>();
+	    for (Integer userID : subUsers) {
+		try {
+		    UserSettings settings = super.dbservice().getUserSettings(
+			    userID);
+		    Set<String> usrKeys = settings.getGCMKeys();
+		    gcmKeys.addAll(usrKeys);
+		} catch (ObjectNotFoundException ex) {
+		    Logger.getLogger(
+			    GoogleCloudNotificationService.class.getName())
+			    .log(Level.SEVERE, null, ex);
+		}
 	    }
+	    // send using service
+	    this.gcmService.notify(gcmKeys, "SINGLE_EVENT_UPDATE");
+	} catch (ObjectNotFoundException ex) {
+	    Logger.getLogger(GoogleCloudNotificationService.class.getName())
+		    .log(Level.SEVERE, null, ex);
 	}
-	// send using service
-	this.gcmService.notify(gcmKeys,
-		NotificationEvent.SINGLE_EVENT_UPDATE.toString());
     }
 
     /**

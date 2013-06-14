@@ -31,7 +31,7 @@ public abstract class NotificationService {
      * special data has to be sent.
      */
     public enum NotificationEvent {
-	USER_SETTINGS_CHANGED, SERVER_STATUS_NOTE, SINGLE_EVENT_UPDATE;
+	USER_SETTINGS_CHANGED, SERVER_STATUS_NOTE;
     }
 
     private DatabaseService dbservice;

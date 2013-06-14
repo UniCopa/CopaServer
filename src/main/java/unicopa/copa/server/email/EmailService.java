@@ -152,13 +152,12 @@ public class EmailService {
      * @see unicopa.copa.server.email.EmailContext
      */
     public void notifySingleEventUpdate(List<EmailContext> contexts,
-	    SingleEventUpdate update, String eventGroupName, String eventName)
-	    throws MessagingException {
+	    UpdateInformation info) throws MessagingException {
 	// compose texts
 	Map<String, String> processedBodies = replaceTextPatterns(this.bodies,
-		update, eventGroupName, eventName);
+		info);
 	Map<String, String> processedSubjects = replaceTextPatterns(
-		this.subjects, update, eventGroupName, eventName);
+		this.subjects, info);
 
 	// send E-Mails
 	Session session = Session.getInstance(this.smtpProps, this.auth);
@@ -219,33 +218,29 @@ public class EmailService {
      */
 
     private static Map<String, String> replaceTextPatterns(
-	    final Map<String, String> inputMap, final SingleEventUpdate update,
-	    final String eventGroupName, final String eventName) {
+	    final Map<String, String> inputMap, final UpdateInformation info) {
 	Map<String, String> messages = new HashMap<>();
 	messages.putAll(inputMap);
-
-	String updateDate = update.getUpdateDate().toString();
-	String creatorName = update.getCreatorName();
-	String comment = update.getComment();
-	String newLocation = update.getUpdatedSingleEvent().getLocation();
-	String newDate = update.getUpdatedSingleEvent().getDate().toString();
-	String newSupervisor = update.getUpdatedSingleEvent().getSupervisor();
 
 	for (Map.Entry<String, String> entry : messages.entrySet()) {
 	    String text = entry.getValue();
 	    text = text
 		    .replaceAll(TextPatterns._UPDATE_DATE.toString(),
-			    updateDate)
+			    info.getUpdateDate().toString())
 		    .replaceAll(TextPatterns._CREATOR_NAME.toString(),
-			    creatorName)
-		    .replaceAll(TextPatterns._COMMENT.toString(), comment)
-		    .replaceAll(TextPatterns._LOCATION.toString(), newLocation)
-		    .replaceAll(TextPatterns._DATE.toString(), newDate)
+			    info.getCreatorName())
+		    .replaceAll(TextPatterns._COMMENT.toString(),
+			    info.getComment())
+		    .replaceAll(TextPatterns._LOCATION.toString(),
+			    info.getLocation())
+		    .replaceAll(TextPatterns._DATE.toString(),
+			    info.getDate().toString())
 		    .replaceAll(TextPatterns._SUPERVISOR.toString(),
-			    newSupervisor)
+			    info.getSupervisor())
 		    .replaceAll(TextPatterns._EVENTGROUP_NAME.toString(),
-			    eventGroupName)
-		    .replaceAll(TextPatterns._EVENT_NAME.toString(), eventName);
+			    info.getEventGroupName())
+		    .replaceAll(TextPatterns._EVENT_NAME.toString(),
+			    info.getEventName());
 	    entry.setValue(text);
 	}
 
