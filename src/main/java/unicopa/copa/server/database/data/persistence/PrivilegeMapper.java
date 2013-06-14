@@ -25,4 +25,7 @@ public interface PrivilegeMapper {
     public List<String> getPrivileged(@Param("eventID") int eventID,
 	    @Param("appointedByUserID") int appointedByUserID,
 	    @Param("kindOfPriv") int kindOfPriv);
+
+    public void removePrivilege(@Param("userID") int userID,
+	    @Param("eventID") int eventID);
 }

@@ -26,9 +26,12 @@
 		where p.personID=r.personID and r.eventID=#{eventID} and kindOfPrivilege = #{kindOfPriv}
 		<if test="appointedByUserID != -1">
 		    and r.gavePrivilege=#{appointedByUserID}
-		</if>
-		   
-		
+		</if>	
     </select>
+    
+    <delete id='removePrivilege' parameterType='map'>
+        delete from privilege
+        where personID=#{userID} and eventID=#{eventID}
+    </delete>
 
 </mapper>
