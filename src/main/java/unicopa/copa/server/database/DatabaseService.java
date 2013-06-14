@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +46,7 @@ import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
+import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.database.data.db.DBCategoryNode;
 import unicopa.copa.server.database.data.persistence.*;
 import unicopa.copa.server.database.util.DatabaseUtil;
@@ -181,6 +183,35 @@ public class DatabaseService {
 			+ eventID + "in the database");
 	    return e;
 	}
+    }
+
+    /**
+     * Get the SingleEventUpdates of SingleEvents that belong to an event the
+     * user subscribed and that occured since the given date
+     * 
+     * @param since
+     *            the data from when to return updates
+     * @param userID
+     *            the ID of the user
+     * @return
+     */
+    public List<SingleEventUpdate> getSubscribedSingleEventUpdates(int userID,
+	    Date since) {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Get the SingleEventUpdates that belong to the specified event and that
+     * occured since the given date
+     * 
+     * @param eventID
+     *            the ID of the event where to get updates from
+     * @param since
+     *            the data from when to return updates
+     * @return
+     */
+    public List<SingleEventUpdate> getSingleEventUpdates(int eventID, Date since) {
+	throw new UnsupportedOperationException();
     }
 
     /**
