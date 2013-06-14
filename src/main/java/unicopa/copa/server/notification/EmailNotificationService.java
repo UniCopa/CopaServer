@@ -39,6 +39,7 @@ import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.server.database.DatabaseService;
+import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.email.EmailContext;
 import unicopa.copa.server.email.EmailService;
 
@@ -169,10 +170,16 @@ public class EmailNotificationService extends NotificationService {
 	Map<Integer, String> emailStrings = new HashMap<>();
 	Map<Integer, UserSettings> usrSettings = new HashMap<>();
 	for (int usrID : subUsers) {
-	    String addr = super.dbservice().getEmailAddress(usrID);
-	    emailStrings.put(usrID, addr);
-	    UserSettings settings = super.dbservice().getUserSettings(usrID);
-	    usrSettings.put(usrID, settings);
+	    try {
+		String addr = super.dbservice().getEmailAddress(usrID);
+		emailStrings.put(usrID, addr);
+		UserSettings settings = super.dbservice()
+			.getUserSettings(usrID);
+		usrSettings.put(usrID, settings);
+	    } catch (ObjectNotFoundException ex) {
+		Logger.getLogger(EmailNotificationService.class.getName()).log(
+			Level.SEVERE, null, ex);
+	    }
 	}
 
 	// === create the list of EmailContext ===
