@@ -62,7 +62,6 @@ public class CopaServlet extends HttpServlet {
 	    HttpServletResponse response) throws ServletException, IOException {
 	String resp;
 	response.setContentType(CONTENT_TYPE);
-	request.getReader().readLine();
 	String userName = request.getUserPrincipal().getName();
 	String req = request.getParameter(PARAM_REQUEST);
 	if (req == null) {
