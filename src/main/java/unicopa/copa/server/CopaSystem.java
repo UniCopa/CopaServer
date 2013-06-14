@@ -33,7 +33,11 @@ import unicopa.copa.base.com.request.GetSingleEventRequest;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
+import unicopa.copa.base.com.request.GetCategoriesRequest;
+import unicopa.copa.base.com.request.GetEventGroupRequest;
+import unicopa.copa.base.com.request.GetEventsRequest;
 import unicopa.copa.base.com.request.GetUserSettingsRequest;
+import unicopa.copa.base.com.request.SetUserSettingsRequest;
 import unicopa.copa.base.com.request.TestRequest;
 import unicopa.copa.base.com.serialization.ServerSerializer;
 import unicopa.copa.server.com.requestHandler.RequestHandler;
@@ -91,8 +95,12 @@ public class CopaSystem {
 	List<Class<? extends AbstractRequest>> requests = new ArrayList<Class<? extends AbstractRequest>>() {
 	    {
 		// sort alphabetically
+		add(GetCategoriesRequest.class);
+		add(GetEventGroupRequest.class);
+		add(GetEventsRequest.class);
 		add(GetSingleEventRequest.class);
 		add(GetUserSettingsRequest.class);
+		add(SetUserSettingsRequest.class);
 		add(TestRequest.class);
 	    }
 	};
