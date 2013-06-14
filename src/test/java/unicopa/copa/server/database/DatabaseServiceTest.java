@@ -103,7 +103,13 @@ public class DatabaseServiceTest {
 	res.add(5);
 	EventGroup eG = new EventGroup(1, "TestEvent1",
 		"This is the first TestEvent", res);
-	EventGroup reseG = dbs.getEventGroups(5, "TEST").get(0);
+	EventGroup reseG = null;
+	try {
+	    reseG = dbs.getEventGroups(5, "TEST").get(0);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	assertEquals(eG.getEventGroupName(), reseG.getEventGroupName());
 	assertEquals(eG.getEventGroupInfo(), reseG.getEventGroupInfo());
 	assertEquals(eG.getEventGroupID(), reseG.getEventGroupID());
@@ -115,7 +121,13 @@ public class DatabaseServiceTest {
 	ArrayList<Integer> res = new ArrayList<Integer>();
 	res.add(6);
 	Event e = new Event(9, 2, "Vorlesung", res);
-	Event resE = dbs.getEvents(2, 1).get(0);
+	Event resE = null;
+	try {
+	    resE = dbs.getEvents(2, 1).get(0);
+	} catch (ObjectNotFoundException e1) {
+	    // TODO Auto-generated catch block
+	    e1.printStackTrace();
+	}
 	assertEquals(e.getCategories(), resE.getCategories());
 	assertEquals(e.getEventGroupID(), resE.getEventGroupID());
 	assertEquals(e.getEventID(), resE.getEventID());
@@ -126,7 +138,13 @@ public class DatabaseServiceTest {
     public void testGetSingleEvent() {
 	SingleEvent sE = new SingleEvent(10, 15, "test", new Date(21024000),
 		"Prof. Test", 14);
-	SingleEvent ressE = dbs.getSingleEvent(10);
+	SingleEvent ressE = null;
+	try {
+	    ressE = dbs.getSingleEvent(10);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	assertEquals("SEID", sE.getSingleEventID(), ressE.getSingleEventID());
 	assertEquals("Duration", sE.getDurationMinutes(),
 		ressE.getDurationMinutes());
@@ -144,7 +162,13 @@ public class DatabaseServiceTest {
 	res.add(9);
 	EventGroup eG = new EventGroup(1, "TestEvent1",
 		"This is the first TestEvent", res);
-	EventGroup resG = dbs.getEventGroup(1);
+	EventGroup resG = null;
+	try {
+	    resG = dbs.getEventGroup(1);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	assertEquals(eG.getEventGroupName(), resG.getEventGroupName());
 	assertEquals(eG.getEventGroupInfo(), resG.getEventGroupInfo());
 	assertEquals(eG.getEventGroupID(), resG.getEventGroupID());
@@ -157,7 +181,13 @@ public class DatabaseServiceTest {
 	res.add(5);
 	res.add(6);
 	Event e = new Event(2, 1, "Uebung", res);
-	Event resE = dbs.getEvent(2);
+	Event resE = null;
+	try {
+	    resE = dbs.getEvent(2);
+	} catch (ObjectNotFoundException e1) {
+	    // TODO Auto-generated catch block
+	    e1.printStackTrace();
+	}
 	assertEquals(e.getCategories(), resE.getCategories());
 	assertEquals(e.getEventGroupID(), resE.getEventGroupID());
 	assertEquals(e.getEventID(), resE.getEventID());
@@ -180,12 +210,23 @@ public class DatabaseServiceTest {
 	res.add(2);
 	res.add(5);
 	res.add(7);
-	assertEquals(res, dbs.getSubscribedUserIDs(1));
+	try {
+	    assertEquals(res, dbs.getSubscribedUserIDs(1));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 
     @Test
     public void testGetRightholders() {
-	List<String> resN = dbs.getRightholders(1, 2);
+	List<String> resN = null;
+	try {
+	    resN = dbs.getRightholders(1, 2);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	ArrayList<String> nList = new ArrayList<String>();
 	nList.add("Max Mustermann");
 	nList.add("Max1 Mustermann4");
@@ -195,7 +236,13 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetRightholders2() {
-	List<String> resN = dbs.getRightholders(1);
+	List<String> resN = null;
+	try {
+	    resN = dbs.getRightholders(1);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	ArrayList<String> nList = new ArrayList<String>();
 	nList.add("Max Mustermann");
 	nList.add("Test Mustermann");
@@ -207,7 +254,13 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetDeputies() {
-	List<String> resN = dbs.getDeputies(2, 2);
+	List<String> resN = null;
+	try {
+	    resN = dbs.getDeputies(2, 2);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	ArrayList<String> nList = new ArrayList<String>();
 	nList.add("Max1 Mustermann4");
 	assertEquals(nList.get(0), resN.get(0));
@@ -215,7 +268,13 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetDeputies2() {
-	List<String> resN = dbs.getDeputies(2);
+	List<String> resN = null;
+	try {
+	    resN = dbs.getDeputies(2);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	ArrayList<String> nList = new ArrayList<String>();
 	nList.add("Max1 Mustermann4");
 	nList.add("Max2 Mustermann3");
@@ -225,7 +284,13 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetOwners() {
-	List<String> resN = dbs.getOwners(2);
+	List<String> resN = null;
+	try {
+	    resN = dbs.getOwners(2);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	ArrayList<String> nList = new ArrayList<String>();
 	nList.add("Max3 Mustermann2");
 	assertEquals(nList.get(0), resN.get(0));
@@ -270,7 +335,13 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetCategoryNodes() {
-	CategoryNodeImpl resCNI = dbs.getCategoryTree(2);
+	CategoryNodeImpl resCNI = null;
+	try {
+	    resCNI = dbs.getCategoryTree(2);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	CategoryNodeImpl cNI1 = new CategoryNodeImpl(2, "BA");
 	CategoryNodeImpl cNI2 = new CategoryNodeImpl(4, "INF");
 	cNI2.addChildNode(new CategoryNodeImpl(7, "S2"));
@@ -312,7 +383,12 @@ public class DatabaseServiceTest {
 	eventSettings.put(6, new UserEventSettings("654321"));
 	UserSettings uS = new UserSettings(uGCMKeys, false, "english",
 		eventSettings);
-	dbs.updateUserSetting(uS, 4);
+	try {
+	    dbs.updateUserSetting(uS, 4);
+	} catch (ObjectNotFoundException e1) {
+	    // TODO Auto-generated catch block
+	    e1.printStackTrace();
+	}
 	UserSettings res = null;
 	try {
 	    res = dbs.getUserSettings(4);
@@ -337,11 +413,17 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetUsersRoleForEvent() {
-	assertEquals(UserRole.ADMINISTRATOR, dbs.getUsersRoleForEvent(2, 6));
-	assertEquals(UserRole.RIGHTHOLDER, dbs.getUsersRoleForEvent(1, 1));
-	assertEquals(UserRole.DEPUTY, dbs.getUsersRoleForEvent(4, 2));
-	assertEquals(UserRole.OWNER, dbs.getUsersRoleForEvent(6, 2));
-	assertEquals(UserRole.USER, dbs.getUsersRoleForEvent(1, 2));
+	try {
+	    assertEquals(UserRole.ADMINISTRATOR, dbs.getUsersRoleForEvent(2, 6));
+	    assertEquals(UserRole.RIGHTHOLDER, dbs.getUsersRoleForEvent(1, 1));
+	    assertEquals(UserRole.DEPUTY, dbs.getUsersRoleForEvent(4, 2));
+	    assertEquals(UserRole.OWNER, dbs.getUsersRoleForEvent(6, 2));
+	    assertEquals(UserRole.USER, dbs.getUsersRoleForEvent(1, 2));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
     }
 
     @Test

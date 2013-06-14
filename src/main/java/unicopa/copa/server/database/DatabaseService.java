@@ -102,8 +102,10 @@ public class DatabaseService {
      * @param searchTerm
      *            the exact string the name of the event group must contain
      * @return
+     * @throws ObjectNotFoundException
      */
-    public List<EventGroup> getEventGroups(int categoryNodeID, String searchTerm) {
+    public List<EventGroup> getEventGroups(int categoryNodeID, String searchTerm)
+	    throws ObjectNotFoundException {
 	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
 	if (categoryNodeID != 0) {
 	    nodeList.add(categoryNodeID);
@@ -125,8 +127,11 @@ public class DatabaseService {
      *            the ID of the category node in the category tree whose subtree
      *            must contain a category node of the event
      * @return
+     * @throws ObjectNotFoundException
      */
-    public List<Event> getEvents(int eventGroupID, int categoryNodeID) {
+    public List<Event> getEvents(int eventGroupID, int categoryNodeID)
+	    throws ObjectNotFoundException {
+	getEventGroup(eventGroupID);
 	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
 	if (categoryNodeID != 0) {
 	    nodeList.add(categoryNodeID);
@@ -144,11 +149,17 @@ public class DatabaseService {
      * @param eventGroupID
      *            the ID of the eventGroup.
      * @return
+     * @throws ObjectNotFoundException
      */
-    public EventGroup getEventGroup(int eventGroupID) {
+    public EventGroup getEventGroup(int eventGroupID)
+	    throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
 	    EventGroup eGroup = mapper.getEventGroup(eventGroupID);
+	    if (eGroup == null)
+		throw new ObjectNotFoundException(
+			"There is no EventGroup with ID=" + eventGroupID
+				+ " in the database");
 	    return eGroup;
 	}
     }
@@ -159,11 +170,15 @@ public class DatabaseService {
      * @param eventID
      *            the ID of the event.
      * @return
+     * @throws ObjectNotFoundException
      */
-    public Event getEvent(int eventID) {
+    public Event getEvent(int eventID) throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventMapper mapper = session.getMapper(EventMapper.class);
 	    Event e = mapper.getEvent(eventID);
+	    if (e == null)
+		throw new ObjectNotFoundException("There is no Event with ID="
+			+ eventID + "in the database");
 	    return e;
 	}
     }
@@ -175,8 +190,11 @@ public class DatabaseService {
      *            the event ID for the event the users should have subscribed
      *            to.
      * @return
+     * @throws ObjectNotFoundException
      */
-    public List<Integer> getSubscribedUserIDs(int eventID) {
+    public List<Integer> getSubscribedUserIDs(int eventID)
+	    throws ObjectNotFoundException {
+	getEvent(eventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    List<Integer> iDList = mapper.getSubscribedUserIDs(eventID);
@@ -254,13 +272,18 @@ public class DatabaseService {
      * 
      * @param id
      *            the ID of the SingleEvent
+     * @throws ObjectNotFoundException
      * @returns
      */
-    public SingleEvent getSingleEvent(int id) {
+    public SingleEvent getSingleEvent(int id) throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);
 	    SingleEvent sEH = mapper.getSingleEvent(id);
+	    if (sEH == null)
+		throw new ObjectNotFoundException(
+			"There is no SingleEvent with ID=" + id
+				+ " in the database");
 	    return sEH;
 	}
     }
@@ -274,8 +297,13 @@ public class DatabaseService {
      *            the ID of the user that appointed the rightholders to be
      *            returned, '-1' means all users
      * @return
+     * @throws ObjectNotFoundException
      */
-    public List<String> getRightholders(int eventID, int appointedByUserID) {
+    public List<String> getRightholders(int eventID, int appointedByUserID)
+	    throws ObjectNotFoundException {
+	getEvent(eventID);
+	if (appointedByUserID != -1)
+	    getUserName(appointedByUserID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    List<String> privList = mapper.getPrivileged(eventID,
@@ -290,8 +318,10 @@ public class DatabaseService {
      * @param eventID
      *            the ID of the event
      * @return
+     * @throws ObjectNotFoundException
      */
-    public List<String> getRightholders(int eventID) {
+    public List<String> getRightholders(int eventID)
+	    throws ObjectNotFoundException {
 	return getRightholders(eventID, -1);
     }
 
@@ -301,11 +331,17 @@ public class DatabaseService {
      * @param categoryID
      *            the ID of the node
      * @return
+     * @throws ObjectNotFoundException
      */
-    private List<Integer> getChildNodeIDs(int categoryID) {
+    private List<Integer> getChildNodeIDs(int categoryID)
+	    throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
 	    List<Integer> nodeList = mapper.getChildNodeIDs(categoryID);
+	    if (nodeList == null)
+		throw new ObjectNotFoundException(
+			"There is no Category with ID=" + categoryID
+				+ " in the database");
 	    return nodeList;
 	}
     }
@@ -317,8 +353,10 @@ public class DatabaseService {
      * @param categoryID
      *            the ID of the node
      * @return
+     * @throws ObjectNotFoundException
      */
-    private List<Integer> getAllChildNodes(int categoryID) {
+    private List<Integer> getAllChildNodes(int categoryID)
+	    throws ObjectNotFoundException {
 	List<Integer> nodeList = new ArrayList<>();
 	nodeList.clear();
 	if (getChildNodeIDs(categoryID).isEmpty()) {
@@ -344,8 +382,12 @@ public class DatabaseService {
      * @param eventID
      *            the ID of the event
      * @return the role the user holds for the specified event
+     * @throws ObjectNotFoundException
      */
-    public UserRole getUsersRoleForEvent(int userID, int eventID) {
+    public UserRole getUsersRoleForEvent(int userID, int eventID)
+	    throws ObjectNotFoundException {
+	getEvent(eventID);
+	getUserName(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    Map<String, Integer> result = mapper.isAdmin(userID);
@@ -376,8 +418,13 @@ public class DatabaseService {
      *            the ID of the user that appointed the deputies to be returned,
      *            '-1' means all users
      * @return
+     * @throws ObjectNotFoundException
      */
-    public List<String> getDeputies(int eventID, int appointedByUserID) {
+    public List<String> getDeputies(int eventID, int appointedByUserID)
+	    throws ObjectNotFoundException {
+	getEvent(eventID);
+	if (appointedByUserID != -1)
+	    getUserName(appointedByUserID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    List<String> privList = mapper.getPrivileged(eventID,
@@ -392,8 +439,9 @@ public class DatabaseService {
      * @param eventID
      *            the ID of the event
      * @return
+     * @throws ObjectNotFoundException
      */
-    public List<String> getDeputies(int eventID) {
+    public List<String> getDeputies(int eventID) throws ObjectNotFoundException {
 	return getDeputies(eventID, -1);
     }
 
@@ -403,8 +451,10 @@ public class DatabaseService {
      * @param eventID
      *            the ID of the event
      * @return
+     * @throws ObjectNotFoundException
      */
-    public List<String> getOwners(int eventID) {
+    public List<String> getOwners(int eventID) throws ObjectNotFoundException {
+	getEvent(eventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    List<String> privList = mapper.getPrivileged(eventID, -1, 3);
@@ -418,8 +468,10 @@ public class DatabaseService {
      * @param categoryID
      *            the ID of the category
      * @return
+     * @throws ObjectNotFoundException
      */
-    public CategoryNodeImpl getCategoryTree(int categoryID) {
+    public CategoryNodeImpl getCategoryTree(int categoryID)
+	    throws ObjectNotFoundException {
 	CategoryNodeImpl catTree = null;
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
@@ -429,6 +481,10 @@ public class DatabaseService {
 	    } else {
 		dBCategoryNode = mapper.getDBCategoryNode(categoryID);
 	    }
+	    if (dBCategoryNode == null)
+		throw new ObjectNotFoundException(
+			"There is no Category with ID=" + categoryID
+				+ " in the database");
 	    catTree = new CategoryNodeImpl(dBCategoryNode.getId(),
 		    dBCategoryNode.getName());
 	    for (int child : dBCategoryNode.getChildren()) {
@@ -445,8 +501,11 @@ public class DatabaseService {
      *            the new UserSettings
      * @param userID
      *            the userID
+     * @throws ObjectNotFoundException
      */
-    public void updateUserSetting(UserSettings userSetting, int userID) {
+    public void updateUserSetting(UserSettings userSetting, int userID)
+	    throws ObjectNotFoundException {
+	getUserName(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    UserSettingMapper mapper = session
 		    .getMapper(UserSettingMapper.class);
