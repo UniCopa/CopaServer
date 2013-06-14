@@ -63,5 +63,11 @@
         Where p.personID=#{userID}
     </select>
     
+    <select id='getUserID' parameterType='String' resultType='int'>
+        Select personID
+        From persons
+        Where userName=#{userName}
+    </select>
+    
 
 </mapper>

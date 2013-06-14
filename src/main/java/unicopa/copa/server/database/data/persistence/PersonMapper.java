@@ -24,4 +24,6 @@ public interface PersonMapper {
     public String getEmailAddress(@Param("userID") int userID);
 
     public List<Integer> getSubscribedUserIDs(@Param("eventID") int eventID);
+
+    public int getUserID(@Param("userName") String userName);
 }

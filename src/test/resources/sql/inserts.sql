@@ -78,20 +78,20 @@ insert into event_has_Categories(categoryID, eventID) values
 	  (10,16);
 
 insert into singleEvents(eventID,location,sEventDate,duration,supervisor) values
-	   (1,'Raum 1',1999101,20,'Dr. Test'),
-	   (1,'Raum 5',5345345,90,'Dr. Test'),
-	   (3,'Raum bla',8765445,120,'Dr. Test'),
-	   (4,'Raumtest',1234123,10,'Prof. Test'),
-	   (6,'Raum 5',5323452,5,'Prof. Test'),
-	   (7,'Raum bla',2323452,11,'Prof. Test'),
-	   (4,'Raumtest',5145213,100,'Dr. Test'),
-	   (8,'Raum bla',12342135,80,'Dr. Test'),
-	   (10,'Raum bla',531234,12,'Dr. Test'),
-	   (15,'Raumtest',21024000,14,'Prof. Test'),
-	   (12,'Raum 5',131234,523,'Dr. Test'),
-	   (5,'Raumtest',61354,12,'Prof. Test'),
-	   (9,'Raum 5',34634,253,'Dr. Test'),
-	   (11,'Raumtest',8765,2345,'Dr. Test');
+	   (1,'1',1999101,20,'Dr. Test'),
+	   (1,'5',5345345,90,'Dr. Test'),
+	   (3,'bla',8765445,120,'Dr. Test'),
+	   (4,'test',1234123,10,'Prof. Test'),
+	   (6,'5',5323452,5,'Prof. Test'),
+	   (7,'bla',2323452,11,'Prof. Test'),
+	   (4,'test',5145213,100,'Dr. Test'),
+	   (8,'bla',12342135,80,'Dr. Test'),
+	   (10,'bla',531234,12,'Dr. Test'),
+	   (15,'test',21024000,14,'Prof. Test'),
+	   (12,'5',131234,523,'Dr. Test'),
+	   (5,'test',61354,12,'Prof. Test'),
+	   (9,'5',34634,253,'Dr. Test'),
+	   (11,'test',8765,2345,'Dr. Test');
 	   
 	   
 
