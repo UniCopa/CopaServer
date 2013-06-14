@@ -18,6 +18,7 @@ package unicopa.copa.server;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import unicopa.copa.base.com.request.AbstractRequest;
 import unicopa.copa.base.com.request.AbstractResponse;
@@ -33,6 +34,7 @@ import unicopa.copa.base.com.request.GetSingleEventResponse;
  * 
  * @author Felix Wiemuth
  */
+@Ignore
 public class ClientSimulationTest {
 
     private CopaSystem system;
