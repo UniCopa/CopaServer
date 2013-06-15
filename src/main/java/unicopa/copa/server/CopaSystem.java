@@ -34,7 +34,7 @@ import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
 import unicopa.copa.base.com.request.GetCategoriesRequest;
-import unicopa.copa.base.com.request.GetEventGroupRequest;
+import unicopa.copa.base.com.request.GetEventGroupsRequest;
 import unicopa.copa.base.com.request.GetEventsRequest;
 import unicopa.copa.base.com.request.GetSingleEventUpdatesRequest;
 import unicopa.copa.base.com.request.GetSubscribedSingleEventUpdatesRequest;
@@ -98,7 +98,7 @@ public class CopaSystem {
 	    {
 		// sort alphabetically
 		add(GetCategoriesRequest.class);
-		add(GetEventGroupRequest.class);
+		add(GetEventGroupsRequest.class);
 		add(GetEventsRequest.class);
 		add(GetEventsRequest.class);
 		add(GetSingleEventRequest.class);
