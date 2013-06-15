@@ -17,9 +17,11 @@
 package unicopa.copa.server.gcm;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.Properties;
 import java.util.Set;
@@ -28,6 +30,7 @@ import java.util.logging.Logger;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import unicopa.copa.server.CopaSystemContext;
 
 /**
  * With the GoogleCloudMessagingSerive it is possible to send push messages to
@@ -36,7 +39,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
  * @author Philip Wendland
  */
 public class GoogleCloudMessagingService {
-    private static GoogleCloudMessagingService instance = null;
     private HttpClient client;
     private Properties gcmProps;
 
@@ -48,10 +50,28 @@ public class GoogleCloudMessagingService {
      * to work.
      * 
      */
-    private GoogleCloudMessagingService() {
+    public GoogleCloudMessagingService(CopaSystemContext context) {
 	this.gcmProps = new Properties();
-	try (BufferedInputStream stream = new BufferedInputStream(
-		new FileInputStream("/gcm/googleCloudMessaging.properties"))) {
+	File settingsDirectory = new File(context.getSettingsDirectory(), "gcm");
+	settingsDirectory.mkdirs();
+	File gcmConfig = new File(settingsDirectory,
+		"googleCloudMessaging.properties");
+
+	if (!gcmConfig.exists()) {
+	    File src;
+	    try {
+		src = new File(this.getClass()
+			.getResource("/gcm/googleCloudMessaging.properties")
+			.toURI());
+		unicopa.copa.server.util.IOutils.copyFile(src, gcmConfig);
+	    } catch (URISyntaxException | IOException ex) {
+		Logger.getLogger(GoogleCloudMessagingService.class.getName())
+			.log(Level.SEVERE, null, ex);
+	    }
+	}
+	BufferedInputStream stream;
+	try {
+	    stream = new BufferedInputStream(new FileInputStream(gcmConfig));
 	    this.gcmProps.load(stream);
 	} catch (FileNotFoundException ex) {
 	    Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(
@@ -60,6 +80,7 @@ public class GoogleCloudMessagingService {
 	    Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(
 		    Level.SEVERE, null, ex);
 	}
+
 	// Instantiate and configure the SslContextFactory
 	SslContextFactory sslContextFactory = new SslContextFactory();
 	sslContextFactory.setTrustAll(true);
@@ -74,13 +95,13 @@ public class GoogleCloudMessagingService {
 	}
     }
 
-    public static synchronized GoogleCloudMessagingService getInstance() {
-	if (instance == null) {
-	    instance = new GoogleCloudMessagingService();
-	}
-	return instance;
-    }
-
+    /**
+     * Send Push-messages to Android devices.
+     * 
+     * @param gcmKeys
+     *            the keys to identify the recipients
+     * @param msg
+     */
     public void notify(Set<String> gcmKeys, String msg) {
 	for (String key : gcmKeys) {
 	    // async POST
