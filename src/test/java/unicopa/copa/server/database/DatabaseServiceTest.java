@@ -551,4 +551,16 @@ public class DatabaseServiceTest {
     public void testInsertPerson3() throws Exception {
 	dbs.insertPerson("F", "B", "C", "D", "E", "english", false);
     }
+
+    @Test
+    public void testInsertSingleEventUpdate() {
+	try {
+	    dbs.insertSingleEventUpdate(new SingleEventUpdate(new SingleEvent(
+		    0, 2, "HU 000", new Date(200000), "Mr.Supervise", 50), 8,
+		    new Date(195000), "Mr. Creator", "A new Test update"));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
 }

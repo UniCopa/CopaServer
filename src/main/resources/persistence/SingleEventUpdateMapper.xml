@@ -36,5 +36,10 @@
 		From singleEventUpdates u, singleEvents s
 		Where u.sEventUpdateDate>#{since} and oldSingleEventID=s.singleEventID and s.eventID=#{eventID}		
     </select>
+    
+    <insert id='insertSingleEventUpdate' parameterType='map'>
+        insert into singleEventUpdates(oldSingleEventID,newSingleEventID,sEventUpdateDate,comment,creator) values
+			(#{singleEventUpdate.oldSingleEventID},#{singleEventUpdate.updatedSingleEvent},#{singleEventUpdate.updateDate},#{singleEventUpdate.comment},#{singleEventUpdate.creatorName})
+    </insert>
 
 </mapper>

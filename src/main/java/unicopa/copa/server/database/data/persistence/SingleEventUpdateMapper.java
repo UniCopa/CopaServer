@@ -27,4 +27,7 @@ public interface SingleEventUpdateMapper {
     public List<DBSingleEventUpdate> getDBSingleEventUpdates(
 	    @Param("eventID") int eventID, @Param("since") long since);
 
+    public void insertSingleEventUpdate(
+	    @Param("singleEventUpdate") DBSingleEventUpdate singleEventUpdate);
+
 }
