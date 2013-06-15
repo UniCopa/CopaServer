@@ -14,24 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package unicopa.copa.server.database.data.persistence;
+package unicopa.copa.server.database;
 
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
-
-import unicopa.copa.base.event.Event;
-
-public interface EventMapper {
-
-    public List<Event> getEvents(@Param("eventGroupID") int eventGroupID,
-	    @Param("categoryNodeID") List<Integer> categoryNodeID);
-
-    public Event getEvent(@Param("eventID") int eventID);
-
-    public Integer eventExists(@Param("eventID") int eventID);
-
-    public void insertEvent(@Param("event") Event event);
-
-    public void insertEventCategorie(@Param("eventID") int eventID,
-	    @Param("categoryID") List<Integer> categoryList);
+/**
+ * Indicated that an object queried does already exist.
+ * 
+ * @author Nintaro
+ * 
+ */
+public class IncorrectObjectException extends Exception {
+    public IncorrectObjectException(String message) {
+	super(message);
+    }
 }

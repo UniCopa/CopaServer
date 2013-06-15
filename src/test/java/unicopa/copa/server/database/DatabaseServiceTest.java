@@ -42,7 +42,6 @@ import org.junit.Test;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
-import unicopa.copa.base.com.exception.APIException;
 import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
@@ -523,6 +522,9 @@ public class DatabaseServiceTest {
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
 	assertEquals(singleEvent.getDate().getTime(), res.getDate().getTime());
 	assertEquals(singleEvent.getDurationMinutes(), res.getDurationMinutes());
@@ -559,6 +561,26 @@ public class DatabaseServiceTest {
 		    0, 2, "HU 000", new Date(200000), "Mr.Supervise", 50), 8,
 		    new Date(195000), "Mr. Creator", "A new Test update"));
 	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
+    public void testInsertEvent() {
+	List<Integer> list = new ArrayList<>();
+	list.add(4);
+	list.add(6);
+	list.add(1);
+	try {
+	    dbs.insertEvent(new Event(0, 2, "FunnyStuff", list));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (IncorrectObjectException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}

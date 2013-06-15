@@ -51,6 +51,12 @@
 		from categories c
 		where c.categoryID=#{categoryID}
     </select>
+    
+    <select id='categoryExsists' parameterType='int' resultType='int'>
+        select count(*)
+        from categories
+        where categoryID=#{categoryID}
+    </select>
         
 </mapper>
  

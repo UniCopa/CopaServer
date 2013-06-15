@@ -649,9 +649,14 @@ public class DatabaseService {
      * @param singleEvent
      *            the singleEvent
      * @throws ObjectNotFoundException
+     *             is thrown when there is no Event entry in the database with
+     *             eventID that is given in the singleEvent object
+     * @throws IncorrectObjectException
+     *             is thrown when the give singleEvent object is null
      */
     public void insertSingleEvent(SingleEvent singleEvent)
-	    throws ObjectNotFoundException {
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	checkNull(singleEvent);
 	eventExists(singleEvent.getEventID());
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
@@ -660,6 +665,20 @@ public class DatabaseService {
 		    .getTime());
 	    session.commit();
 	}
+    }
+
+    /**
+     * Checks weather a Object is null. If so a Incorrect ObjectException is
+     * thrown
+     * 
+     * @param o
+     * @throws IncorrectObjectException
+     *             throws if the given object is null
+     */
+    private void checkNull(Object o) throws IncorrectObjectException {
+	if (o == null)
+	    throw new IncorrectObjectException(o.toString()
+		    + " should not be null");
     }
 
     /**
@@ -761,8 +780,20 @@ public class DatabaseService {
 		    + userID + " in the database");
     }
 
+    /**
+     * Inserts the given singleEventUpdate into the database
+     * 
+     * @param singleEventUpdate
+     * @throws ObjectNotFoundException
+     *             is thrown when there is no Event entry in the database with
+     *             oldSingleEventID that is given in the singleEventUpdate
+     *             object
+     * @throws IncorrectObjectException
+     *             is thrown if the given singleEventUpdate object is null
+     */
     public void insertSingleEventUpdate(SingleEventUpdate singleEventUpdate)
-	    throws ObjectNotFoundException {
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	checkNull(singleEventUpdate);
 	eventExists(singleEventUpdate.getOldSingleEventID());
 	insertSingleEvent(singleEventUpdate.getUpdatedSingleEvent());
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -775,6 +806,55 @@ public class DatabaseService {
 			    .getUpdateDate().getTime(), singleEventUpdate
 			    .getCreatorName(), singleEventUpdate.getComment()));
 	    session.commit();
+
+	}
+    }
+
+    /**
+     * Inserts the given Event into the database
+     * 
+     * @param event
+     * @throws ObjectNotFoundException
+     *             is thrown if one of the categoryIDs in the given event object
+     *             does not exists in the database
+     * @throws IncorrectObjectException
+     *             is thrown it the given event object is null
+     */
+    public void insertEvent(Event event) throws ObjectNotFoundException,
+	    IncorrectObjectException {
+	checkNull(event);
+	for (int categoryID : event.getCategories()) {
+	    if (!categoryExsists(categoryID))
+		throw new ObjectNotFoundException(
+			"There is not category with ID=" + categoryID
+				+ " in the database");
+	}
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventMapper mapper = session.getMapper(EventMapper.class);
+	    mapper.insertEvent(event);
+	    System.out.println(event.getEventID());
+	    session.commit();
+	    System.out.println(event.getEventID());
+	    mapper.insertEventCategorie(event.getEventID(),
+		    event.getCategories());
+	    session.commit();
+	}
+    }
+
+    /**
+     * Returns true if there is a category with given ID in the database, false
+     * if not.
+     * 
+     * @param categoryID
+     * @return
+     */
+    public boolean categoryExsists(int categoryID) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
+	    int a = mapper.categoryExsists(categoryID);
+	    if (a == 0)
+		return false;
+	    return true;
 
 	}
     }

@@ -30,4 +30,6 @@ public interface CategoryMapper {
 
     public DBCategoryNode getDBCategoryNodeLeaf(
 	    @Param("categoryID") int categoryID);
+
+    public Integer categoryExsists(@Param("categoryID") int categoryID);
 }
