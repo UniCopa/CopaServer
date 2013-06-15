@@ -56,5 +56,17 @@
 		From events
 		where eventID=#{eventID}
     </select>
+    
+    <insert id='insertEvent' parameterType='map'  useGeneratedKeys="true" keyProperty="event.eventID">
+        insert into events(eventGroupID, kindOfEvent) values
+	   		(#{event.eventGroupID},#{event.eventName})
+    </insert>
         
+    <insert id='insertEventCategorie' parameterType='map'>
+        insert into event_has_Categories(categoryID,eventID) values
+		<foreach item="item" index="index" collection="categoryID"
+            open="" separator="," close="">
+            (#{item},#{eventID})
+        </foreach>
+    </insert>
 </mapper>
