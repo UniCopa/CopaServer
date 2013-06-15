@@ -68,12 +68,15 @@ public class CopaSystem {
 	try {
 	    // TODO get database from system properties
 	    context = new CopaSystemContext(new DatabaseService(new File(
-		    "database")), new Notifier());
+		    "database")), new Notifier(), new File(
+		    System.getProperty("user.home") + File.separator
+			    + ".unicopa" + File.separator + "copa"));
 	} catch (IOException ex) {
 	    Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
 		    null, ex);
 	    throw new RuntimeException();
 	}
+	loadProperties();
 	loadRequestHandlers();
     }
 
@@ -86,6 +89,18 @@ public class CopaSystem {
      */
     public static CopaSystem getInstance() {
 	return instance;
+    }
+
+    /**
+     * Create the systems settings directory if necessary and load properties.
+     */
+    private void loadProperties() {
+	if (!context.getSettingsDirectory().isDirectory()) {
+	    context.getSettingsDirectory().mkdirs();
+	    // TODO log
+	    // TODO copy default files to the directory
+	}
+	// TODO load properties if necessary
     }
 
     /**
