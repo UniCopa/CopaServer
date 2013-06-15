@@ -50,5 +50,11 @@
 		Where e.eventID=#{eventID} and e.eventID=c.eventID
 		Order By (c.categoryID)
     </select>
+    
+    <select id='eventExists' parameterType='int' resultType="int">
+        Select Count(*)
+		From events
+		where eventID=#{eventID}
+    </select>
         
 </mapper>

@@ -17,16 +17,14 @@
 package unicopa.copa.server.database.data.persistence;
 
 import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
-import unicopa.copa.base.event.Event;
+import unicopa.copa.server.database.data.db.DBSingleEventUpdate;
 
-public interface EventMapper {
+public interface SingleEventUpdateMapper {
 
-    public List<Event> getEvents(@Param("eventGroupID") int eventGroupID,
-	    @Param("categoryNodeID") List<Integer> categoryNodeID);
+    public List<DBSingleEventUpdate> getDBSingleEventUpdates(
+	    @Param("eventID") int eventID, @Param("since") long since);
 
-    public Event getEvent(@Param("eventID") int eventID);
-
-    public Integer eventExists(@Param("eventID") int eventID);
 }

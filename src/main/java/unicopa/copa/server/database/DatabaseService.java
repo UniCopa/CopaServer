@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSession;
@@ -48,6 +50,7 @@ import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.database.data.db.DBCategoryNode;
+import unicopa.copa.server.database.data.db.DBSingleEventUpdate;
 import unicopa.copa.server.database.data.persistence.*;
 import unicopa.copa.server.database.util.DatabaseUtil;
 
@@ -194,10 +197,18 @@ public class DatabaseService {
      * @param userID
      *            the ID of the user
      * @return
+     * @throws ObjectNotFoundException
      */
     public List<SingleEventUpdate> getSubscribedSingleEventUpdates(int userID,
-	    Date since) {
-	throw new UnsupportedOperationException();
+	    Date since) throws ObjectNotFoundException {
+	getUserName(userID);
+	Set<Integer> subscribedEvents = getUserSettings(userID)
+		.getSubscriptions();
+	List<SingleEventUpdate> singleEventUpdateList = new ArrayList<>();
+	for (int eventID : subscribedEvents) {
+	    singleEventUpdateList.addAll(getSingleEventUpdates(eventID, since));
+	}
+	return singleEventUpdateList;
     }
 
     /**
@@ -209,9 +220,45 @@ public class DatabaseService {
      * @param since
      *            the data from when to return updates
      * @return
+     * @throws ObjectNotFoundException
      */
-    public List<SingleEventUpdate> getSingleEventUpdates(int eventID, Date since) {
-	throw new UnsupportedOperationException();
+    public List<SingleEventUpdate> getSingleEventUpdates(int eventID, Date since)
+	    throws ObjectNotFoundException {
+	eventExists(eventID);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    SingleEventUpdateMapper mapper = session
+		    .getMapper(SingleEventUpdateMapper.class);
+	    List<DBSingleEventUpdate> dbSingleEventUpdates = mapper
+		    .getDBSingleEventUpdates(eventID, since.getTime());
+	    List<SingleEventUpdate> singleEventUpdates = new ArrayList<>();
+	    for (DBSingleEventUpdate dbSingleEvent : dbSingleEventUpdates) {
+		singleEventUpdates.add(new SingleEventUpdate(
+			getSingleEvent(dbSingleEvent.getUpdatedSingleEvent()),
+			dbSingleEvent.getOldSingleEventID(), new Date(
+				dbSingleEvent.getUpdateDate()), dbSingleEvent
+				.getCreatorName(), dbSingleEvent.getComment()));
+	    }
+	    return singleEventUpdates;
+	}
+    }
+
+    /**
+     * Checks if there is a Event with ID = eventID in the database, if not a
+     * ObjectNotFound Exception is thrown, else true is returned
+     * 
+     * @param eventID
+     * @return
+     * @throws ObjectNotFoundException
+     */
+    public boolean eventExists(int eventID) throws ObjectNotFoundException {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventMapper mapper = session.getMapper(EventMapper.class);
+	    int a = mapper.eventExists(eventID);
+	    if (a == 0)
+		throw new ObjectNotFoundException("There is no Event with ID="
+			+ eventID + " in the database");
+	    return true;
+	}
     }
 
     /**
@@ -225,7 +272,7 @@ public class DatabaseService {
      */
     public List<Integer> getSubscribedUserIDs(int eventID)
 	    throws ObjectNotFoundException {
-	getEvent(eventID);
+	eventExists(eventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    List<Integer> iDList = mapper.getSubscribedUserIDs(eventID);
@@ -269,7 +316,6 @@ public class DatabaseService {
 	}
     }
 
-    // TODO throw exception if settings do not exist
     /**
      * Get the user settings of the given user.
      * 
@@ -332,7 +378,7 @@ public class DatabaseService {
      */
     public List<String> getRightholders(int eventID, int appointedByUserID)
 	    throws ObjectNotFoundException {
-	getEvent(eventID);
+	eventExists(eventID);
 	if (appointedByUserID != -1)
 	    getUserName(appointedByUserID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -417,7 +463,7 @@ public class DatabaseService {
      */
     public UserRole getUsersRoleForEvent(int userID, int eventID)
 	    throws ObjectNotFoundException {
-	getEvent(eventID);
+	eventExists(eventID);
 	getUserName(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
@@ -453,7 +499,7 @@ public class DatabaseService {
      */
     public List<String> getDeputies(int eventID, int appointedByUserID)
 	    throws ObjectNotFoundException {
-	getEvent(eventID);
+	eventExists(eventID);
 	if (appointedByUserID != -1)
 	    getUserName(appointedByUserID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -485,7 +531,7 @@ public class DatabaseService {
      * @throws ObjectNotFoundException
      */
     public List<String> getOwners(int eventID) throws ObjectNotFoundException {
-	getEvent(eventID);
+	eventExists(eventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    List<String> privList = mapper.getPrivileged(eventID, -1, 3);
@@ -584,7 +630,7 @@ public class DatabaseService {
      */
     public void removePrivilege(int userID, int eventID)
 	    throws ObjectNotFoundException {
-	getEvent(eventID);
+	eventExists(eventID);
 	getUserName(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
@@ -602,7 +648,7 @@ public class DatabaseService {
      */
     public void insertSingleEvent(SingleEvent singleEvent)
 	    throws ObjectNotFoundException {
-	getEvent(singleEvent.getEventID());
+	eventExists(singleEvent.getEventID());
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);

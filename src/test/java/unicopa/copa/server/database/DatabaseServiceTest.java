@@ -46,6 +46,7 @@ import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
+import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.database.util.DatabaseUtil;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -95,6 +96,83 @@ public class DatabaseServiceTest {
 	runner.setLogWriter(null);
 	// runner.setErrorLogWriter(null);
 	runner.runScript(reader);
+    }
+
+    @Test
+    public void testGetSubscribedSingleEventUpdates() {
+	SingleEventUpdate sEU1 = new SingleEventUpdate(new SingleEvent(3, 3,
+		"bla", new Date(8765445), "Dr. Test", 120), 1,
+		new Date(234234), "Der Cheff", "Nope");
+	SingleEventUpdate sEU2 = new SingleEventUpdate(new SingleEvent(6, 7,
+		"bla", new Date(2323452), "Prof. Test", 11), 2,
+		new Date(13513), "ABC", "");
+	List<SingleEventUpdate> sEUList = new ArrayList<>();
+	sEUList.add(sEU1);
+	sEUList.add(sEU2);
+	List<SingleEventUpdate> resSEUList = new ArrayList<>();
+	try {
+	    resSEUList = dbs.getSubscribedSingleEventUpdates(2, new Date(100));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+	assertEquals(sEUList.get(0).getComment(), resSEUList.get(0)
+		.getComment());
+	assertEquals(sEUList.get(0).getCreatorName(), resSEUList.get(0)
+		.getCreatorName());
+	assertEquals(sEUList.get(0).getOldSingleEventID(), resSEUList.get(0)
+		.getOldSingleEventID());
+	assertEquals(sEUList.get(0).getUpdateDate(), resSEUList.get(0)
+		.getUpdateDate());
+	assertEquals(
+		sEUList.get(0).getUpdatedSingleEvent().getDate().getTime(),
+		resSEUList.get(0).getUpdatedSingleEvent().getDate().getTime());
+	assertEquals(sEUList.get(0).getUpdatedSingleEvent()
+		.getDurationMinutes(), resSEUList.get(0)
+		.getUpdatedSingleEvent().getDurationMinutes());
+	assertEquals(sEUList.get(0).getUpdatedSingleEvent().getEventID(),
+		resSEUList.get(0).getUpdatedSingleEvent().getEventID());
+	assertEquals(sEUList.get(0).getUpdatedSingleEvent().getLocation(),
+		resSEUList.get(0).getUpdatedSingleEvent().getLocation());
+	assertEquals(sEUList.get(0).getUpdatedSingleEvent().getSingleEventID(),
+		resSEUList.get(0).getUpdatedSingleEvent().getSingleEventID());
+	assertEquals(sEUList.get(0).getUpdatedSingleEvent().getSupervisor(),
+		resSEUList.get(0).getUpdatedSingleEvent().getSupervisor());
+	assertEquals(sEUList.get(1).getComment(), resSEUList.get(1)
+		.getComment());
+	assertEquals(sEUList.get(1).getCreatorName(), resSEUList.get(1)
+		.getCreatorName());
+	assertEquals(sEUList.get(1).getOldSingleEventID(), resSEUList.get(1)
+		.getOldSingleEventID());
+	assertEquals(sEUList.get(1).getUpdateDate(), resSEUList.get(1)
+		.getUpdateDate());
+	assertEquals(
+		sEUList.get(1).getUpdatedSingleEvent().getDate().getTime(),
+		resSEUList.get(1).getUpdatedSingleEvent().getDate().getTime());
+	assertEquals(sEUList.get(1).getUpdatedSingleEvent()
+		.getDurationMinutes(), resSEUList.get(1)
+		.getUpdatedSingleEvent().getDurationMinutes());
+	assertEquals(sEUList.get(1).getUpdatedSingleEvent().getEventID(),
+		resSEUList.get(1).getUpdatedSingleEvent().getEventID());
+	assertEquals(sEUList.get(1).getUpdatedSingleEvent().getLocation(),
+		resSEUList.get(1).getUpdatedSingleEvent().getLocation());
+	assertEquals(sEUList.get(1).getUpdatedSingleEvent().getSingleEventID(),
+		resSEUList.get(1).getUpdatedSingleEvent().getSingleEventID());
+	assertEquals(sEUList.get(1).getUpdatedSingleEvent().getSupervisor(),
+		resSEUList.get(1).getUpdatedSingleEvent().getSupervisor());
+
+    }
+
+    public void testEventExists() {
+	try {
+	    assertEquals(true, dbs.eventExists(1));
+	    assertEquals(new ObjectNotFoundException(
+		    "There is no Event with ID=100 in the database"),
+		    dbs.eventExists(100));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 
     @Test
