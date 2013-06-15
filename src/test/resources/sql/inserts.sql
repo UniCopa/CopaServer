@@ -21,27 +21,27 @@ insert into categories(name) values
 	   ('HEY');
 	   
 insert into category_Connections(categoryNodeParent,categoryNodeChild) values
-		(1,2),
+		(0,1),
+		(0,2),
 		(1,3),
-		(2,4),
-		(2,5),
-		(2,6),
-		(4,7),
-		(3,8),
-		(3,10),
-		(8,9);
+		(1,4),
+		(1,5),
+		(3,6),
+		(2,7),
+		(2,9),
+		(7,8);
 		
 		
 insert into eventGroup_has_Categories(categoryID,eventGroupID) values
-		(7,1),
-		(7,3),
-		(7,4),
-		(5,1),
-		(6,6),
-		(9,1),
-		(9,2),
-		(9,3),
-		(6,5);
+		(6,1),
+		(6,3),
+		(6,4),
+		(4,1),
+		(5,6),
+		(8,1),
+		(8,2),
+		(8,3),
+		(5,5);
 		
 
 insert into events(eventGroupID, kindOfEvent) values
@@ -64,18 +64,18 @@ insert into events(eventGroupID, kindOfEvent) values
 	 
 	 
 insert into event_has_Categories(categoryID, eventID) values
-	  (7,1),
-	  (7,8),
-	  (7,6),
+	  (6,1),
+	  (6,8),
+	  (6,6),
+	  (4,2),
+	  (4,8),
 	  (5,2),
 	  (5,8),
-	  (6,2),
-	  (6,8),
-	  (6,9),
-	  (9,12),
-	  (10,14),
-	  (10,13),
-	  (10,16);
+	  (5,9),
+	  (8,12),
+	  (9,14),
+	  (9,13),
+	  (9,16);
 
 insert into singleEvents(eventID,location,sEventDate,duration,supervisor) values
 	   (1,'1',1999101,20,'Dr. Test'),

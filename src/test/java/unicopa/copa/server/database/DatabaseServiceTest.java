@@ -176,12 +176,12 @@ public class DatabaseServiceTest {
     @Test
     public void testGetEventGroups() {
 	List<Integer> res = new ArrayList<Integer>();
-	res.add(5);
+	res.add(4);
 	EventGroup eG = new EventGroup(1, "TestEvent1",
 		"This is the first TestEvent", res);
 	EventGroup reseG = null;
 	try {
-	    reseG = dbs.getEventGroups(5, "TEST").get(0);
+	    reseG = dbs.getEventGroups(4, "TEST").get(0);
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -195,11 +195,11 @@ public class DatabaseServiceTest {
     @Test
     public void testGetEvents() {
 	ArrayList<Integer> res = new ArrayList<Integer>();
-	res.add(6);
+	res.add(5);
 	Event e = new Event(9, 2, "Vorlesung", res);
 	Event resE = null;
 	try {
-	    resE = dbs.getEvents(2, 1).get(0);
+	    resE = dbs.getEvents(2, 0).get(0);
 	} catch (ObjectNotFoundException e1) {
 	    // TODO Auto-generated catch block
 	    e1.printStackTrace();
@@ -233,9 +233,9 @@ public class DatabaseServiceTest {
     @Test
     public void testGetEventGroup() {
 	List<Integer> res = new ArrayList<Integer>();
-	res.add(5);
-	res.add(7);
-	res.add(9);
+	res.add(4);
+	res.add(6);
+	res.add(8);
 	EventGroup eG = new EventGroup(1, "TestEvent1",
 		"This is the first TestEvent", res);
 	EventGroup resG = null;
@@ -254,8 +254,8 @@ public class DatabaseServiceTest {
     @Test
     public void testGetEvent() {
 	ArrayList<Integer> res = new ArrayList<Integer>();
+	res.add(4);
 	res.add(5);
-	res.add(6);
 	Event e = new Event(2, 1, "Uebung", res);
 	Event resE = null;
 	try {
@@ -413,17 +413,17 @@ public class DatabaseServiceTest {
     public void testGetCategoryNodes() {
 	CategoryNodeImpl resCNI = null;
 	try {
-	    resCNI = dbs.getCategoryTree(2);
+	    resCNI = dbs.getCategoryTree(1);
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-	CategoryNodeImpl cNI1 = new CategoryNodeImpl(2, "BA");
-	CategoryNodeImpl cNI2 = new CategoryNodeImpl(4, "INF");
-	cNI2.addChildNode(new CategoryNodeImpl(7, "S2"));
+	CategoryNodeImpl cNI1 = new CategoryNodeImpl(1, "BA");
+	CategoryNodeImpl cNI2 = new CategoryNodeImpl(3, "INF");
+	cNI2.addChildNode(new CategoryNodeImpl(6, "S2"));
 	cNI1.addChildNode(cNI2);
-	cNI1.addChildNode(new CategoryNodeImpl(5, "WI"));
-	cNI1.addChildNode(new CategoryNodeImpl(6, "MN"));
+	cNI1.addChildNode(new CategoryNodeImpl(4, "WI"));
+	cNI1.addChildNode(new CategoryNodeImpl(5, "MN"));
 
 	assertEquals(resCNI.getId(), cNI1.getId());
 	assertEquals(resCNI.getName(), cNI1.getName());
