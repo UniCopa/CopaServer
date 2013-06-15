@@ -99,7 +99,7 @@ public class CopaSystem {
 	    {
 		// sort alphabetically
 		add(GetCategoriesRequest.class);
-                add(GetEventGroupRequest.class);
+		add(GetEventGroupRequest.class);
 		add(GetEventGroupsRequest.class);
 		add(GetEventsRequest.class);
 		add(GetEventsRequest.class);
