@@ -29,6 +29,24 @@ public class DBSingleEventUpdate {
     private int oldSingleEventID;
     private long updateDate;
     private String creatorName;
+
+    /**
+     * 
+     * @param updatedSingleEvent
+     * @param oldSingleEventID
+     * @param updateDate
+     * @param creatorName
+     * @param comment
+     */
+    public DBSingleEventUpdate(int updatedSingleEvent, int oldSingleEventID,
+	    long updateDate, String creatorName, String comment) {
+	this.updatedSingleEvent = updatedSingleEvent;
+	this.oldSingleEventID = oldSingleEventID;
+	this.updateDate = updateDate;
+	this.creatorName = creatorName;
+	this.comment = comment;
+    }
+
     private String comment;
 
     /**

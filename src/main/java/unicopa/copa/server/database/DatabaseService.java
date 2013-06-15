@@ -761,6 +761,24 @@ public class DatabaseService {
 		    + userID + " in the database");
     }
 
+    public void insertSingleEventUpdate(SingleEventUpdate singleEventUpdate)
+	    throws ObjectNotFoundException {
+	eventExists(singleEventUpdate.getOldSingleEventID());
+	insertSingleEvent(singleEventUpdate.getUpdatedSingleEvent());
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    SingleEventUpdateMapper mapper = session
+		    .getMapper(SingleEventUpdateMapper.class);
+	    mapper.insertSingleEventUpdate(new DBSingleEventUpdate(
+		    singleEventUpdate.getUpdatedSingleEvent()
+			    .getSingleEventID(), singleEventUpdate
+			    .getOldSingleEventID(), singleEventUpdate
+			    .getUpdateDate().getTime(), singleEventUpdate
+			    .getCreatorName(), singleEventUpdate.getComment()));
+	    session.commit();
+
+	}
+    }
+
     /**
      * 
      * @param database
