@@ -87,5 +87,27 @@
         Where personID=#{userID}
     </select>
     
+    <select id='userNameExsists' parameterType='String' resultType='int'>
+        Select Count(*)
+        From persons
+        Where userName=#{userName}
+    </select>
+    
+    <select id='userIDExsists' parameterType='int' resultType='int'>
+        Select Count(*)
+        From persons
+        Where personID=#{userID}
+    </select>
+    
+    <select id='emailExsists' parameterType='String' resultType='int'>
+        Select Count(*)
+        From persons
+        Where email=#{email}
+    </select>
+    
+    <insert id='insertPerson' parameterType='map'>
+       insert into persons(userName,firstName,familyName,email,titel,language,eMailNotification) values
+			(#{userName},#{firstName},#{familyName},#{email},#{titel},#{language},#{eMailNotification}) 
+    </insert>
 
 </mapper>

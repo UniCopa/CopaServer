@@ -35,4 +35,17 @@ public interface PersonMapper {
 	    @Param("eventID") int eventID);
 
     public String getUserName(@Param("userID") int userID);
+
+    public void insertPerson(@Param("userName") String userName,
+	    @Param("firstName") String firstName,
+	    @Param("familyName") String familyName,
+	    @Param("email") String email, @Param("titel") String titel,
+	    @Param("language") String language,
+	    @Param("eMailNotification") boolean eMailNotification);
+
+    public Integer userNameExsists(@Param("userName") String userName);
+
+    public Integer userIDExsists(@Param("userID") int userID);
+
+    public Integer emailExsists(@Param("email") String email);
 }

@@ -40,10 +40,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserEventSettings;
+import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
-
 import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
@@ -51,14 +50,21 @@ import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.database.data.db.DBCategoryNode;
 import unicopa.copa.server.database.data.db.DBSingleEventUpdate;
-import unicopa.copa.server.database.data.persistence.*;
+import unicopa.copa.server.database.data.persistence.CategoryMapper;
+import unicopa.copa.server.database.data.persistence.EventGroupMapper;
+import unicopa.copa.server.database.data.persistence.EventMapper;
+import unicopa.copa.server.database.data.persistence.PersonMapper;
+import unicopa.copa.server.database.data.persistence.PrivilegeMapper;
+import unicopa.copa.server.database.data.persistence.SingleEventMapper;
+import unicopa.copa.server.database.data.persistence.SingleEventUpdateMapper;
+import unicopa.copa.server.database.data.persistence.UserSettingMapper;
 import unicopa.copa.server.database.util.DatabaseUtil;
 
 /**
  * The database service provides an interface to the database. It allows to
  * obtain objects from and write objects to the database.
  * 
- * @author Felix Wiemuth
+ * @author Felix Wiemuth, David Knacker
  */
 public class DatabaseService {
     private static final String RESOURCE_SQL_INITDB = "/sql/initializeDB.sql";
@@ -201,7 +207,7 @@ public class DatabaseService {
      */
     public List<SingleEventUpdate> getSubscribedSingleEventUpdates(int userID,
 	    Date since) throws ObjectNotFoundException {
-	getUserName(userID);
+	checkUser(userID);
 	Set<Integer> subscribedEvents = getUserSettings(userID)
 		.getSubscriptions();
 	List<SingleEventUpdate> singleEventUpdateList = new ArrayList<>();
@@ -308,7 +314,7 @@ public class DatabaseService {
      * @throws ObjectNotFoundException
      */
     public String getEmailAddress(int userID) throws ObjectNotFoundException {
-	getUserName(userID);
+	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    String email = mapper.getEmailAddress(userID);
@@ -325,7 +331,7 @@ public class DatabaseService {
      */
     public UserSettings getUserSettings(int userID)
 	    throws ObjectNotFoundException {
-	getUserName(userID);
+	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    UserSettingMapper mapper = session
 		    .getMapper(UserSettingMapper.class);
@@ -380,7 +386,7 @@ public class DatabaseService {
 	    throws ObjectNotFoundException {
 	eventExists(eventID);
 	if (appointedByUserID != -1)
-	    getUserName(appointedByUserID);
+	    checkUser(appointedByUserID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    List<String> privList = mapper.getPrivileged(eventID,
@@ -464,7 +470,7 @@ public class DatabaseService {
     public UserRole getUsersRoleForEvent(int userID, int eventID)
 	    throws ObjectNotFoundException {
 	eventExists(eventID);
-	getUserName(userID);
+	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    Map<String, Integer> result = mapper.isAdmin(userID);
@@ -501,7 +507,7 @@ public class DatabaseService {
 	    throws ObjectNotFoundException {
 	eventExists(eventID);
 	if (appointedByUserID != -1)
-	    getUserName(appointedByUserID);
+	    checkUser(appointedByUserID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    List<String> privList = mapper.getPrivileged(eventID,
@@ -582,7 +588,7 @@ public class DatabaseService {
      */
     public void updateUserSetting(UserSettings userSetting, int userID)
 	    throws ObjectNotFoundException {
-	getUserName(userID);
+	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    UserSettingMapper mapper = session
 		    .getMapper(UserSettingMapper.class);
@@ -608,12 +614,10 @@ public class DatabaseService {
      * @throws ObjectNotFoundException
      */
     public String getUserName(int userID) throws ObjectNotFoundException {
+	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    String userName = mapper.getUserName(userID);
-	    if (userName == null)
-		throw new ObjectNotFoundException("There is not User with ID="
-			+ userID + " in the database");
 	    return userName;
 	}
     }
@@ -631,7 +635,7 @@ public class DatabaseService {
     public void removePrivilege(int userID, int eventID)
 	    throws ObjectNotFoundException {
 	eventExists(eventID);
-	getUserName(userID);
+	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    mapper.removePrivilege(userID, eventID);
@@ -656,6 +660,105 @@ public class DatabaseService {
 		    .getTime());
 	    session.commit();
 	}
+    }
+
+    /**
+     * Inserts a new Person into the database
+     * 
+     * @param userName
+     *            the user name, must not be null, should be unique
+     * @param firstName
+     *            the first name, must not be null
+     * @param familyName
+     *            the family name, must not be null
+     * @param email
+     *            the E-Mail, must not be null, should be unique
+     * @param titel
+     *            the title
+     * @param language
+     *            the language, default is english
+     * @param eMailNotification
+     *            should the person be notified per E-Mail
+     * @throws ObjectAlreadyExsistsException
+     */
+    public void insertPerson(String userName, String firstName,
+	    String familyName, String email, String titel, String language,
+	    boolean eMailNotification) throws ObjectAlreadyExsistsException {
+	if (userNameExsists(userName))
+	    throw new ObjectAlreadyExsistsException(
+		    "There is already a User in the database with UserName="
+			    + userName);
+	if (emailExsists(email))
+	    throw new ObjectAlreadyExsistsException(
+		    "There is already a User in the database with E-Mail="
+			    + email);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    mapper.insertPerson(userName, firstName, familyName, email, titel,
+		    language, eMailNotification);
+	    session.commit();
+	}
+    }
+
+    /**
+     * Returns true if there is a person entry in the database with the given
+     * userName
+     * 
+     * @param userName
+     * @return
+     */
+    public boolean userNameExsists(String userName) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    if (mapper.userNameExsists(userName) == 0)
+		return false;
+	    return true;
+	}
+    }
+
+    /**
+     * Returns true if there is a person entry int the database with the given
+     * E-Mail
+     * 
+     * @param email
+     * @return
+     */
+    public boolean emailExsists(String email) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    if (mapper.emailExsists(email) == 0)
+		return false;
+	    return true;
+	}
+    }
+
+    /**
+     * Returns true if there is a person entry in the database with the given
+     * userID
+     * 
+     * @param userID
+     * @return
+     */
+    public boolean userIDExsists(int userID) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    if (mapper.userIDExsists(userID) == 0)
+		return false;
+	    return true;
+	}
+    }
+
+    /**
+     * Checks if the User exsists in the database, if not a
+     * ObjectNotFoundException is thrown
+     * 
+     * @param userID
+     * @throws ObjectNotFoundException
+     */
+    public void checkUser(int userID) throws ObjectNotFoundException {
+	if (!userIDExsists(userID))
+	    throw new ObjectNotFoundException("There is no User with ID="
+		    + userID + " in the database");
     }
 
     /**

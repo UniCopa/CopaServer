@@ -42,6 +42,7 @@ import org.junit.Test;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
+import unicopa.copa.base.com.exception.APIException;
 import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
@@ -163,16 +164,13 @@ public class DatabaseServiceTest {
 
     }
 
-    public void testEventExists() {
-	try {
-	    assertEquals(true, dbs.eventExists(1));
-	    assertEquals(new ObjectNotFoundException(
-		    "There is no Event with ID=100 in the database"),
-		    dbs.eventExists(100));
-	} catch (ObjectNotFoundException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
+    @Test(expected = ObjectNotFoundException.class)
+    public void testEventExists() throws Exception {
+	assertEquals(true, dbs.eventExists(1));
+	assertEquals(new ObjectNotFoundException(
+		"There is no Event with ID=100 in the database"),
+		dbs.eventExists(100));
+
     }
 
     @Test
@@ -532,5 +530,25 @@ public class DatabaseServiceTest {
 	assertEquals(singleEvent.getLocation(), res.getLocation());
 	assertEquals(singleEvent.getSingleEventID(), res.getSingleEventID());
 	assertEquals(singleEvent.getSupervisor(), res.getSupervisor());
+    }
+
+    @Test
+    public void testInsertPerson1() {
+	try {
+	    dbs.insertPerson("A", "B", "C", "D", "E", "english", false);
+	} catch (ObjectAlreadyExsistsException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test(expected = ObjectAlreadyExsistsException.class)
+    public void testInsertPerson2() throws Exception {
+	dbs.insertPerson("A", "B", "C", "F", "E", "english", false);
+    }
+
+    @Test(expected = ObjectAlreadyExsistsException.class)
+    public void testInsertPerson3() throws Exception {
+	dbs.insertPerson("F", "B", "C", "D", "E", "english", false);
     }
 }
