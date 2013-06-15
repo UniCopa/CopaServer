@@ -138,12 +138,12 @@ insert into gCMKeys(gCMKey,personID) values
 	('hnbvfg',7);
 	
 insert into singleEventUpdates(oldSingleEventID,newSingleEventID,sEventUpdateDate,comment,creator) values
-	(1,3,234234,'Nope',2),
-	(3,4,2134,'Grund:sfsfsdf',1),
-	(2,6,13513,'gsdgdf',5),
-	(6,7,61344,'',3),
-	(5,8,523462,'',7),
-	(10,11,53234,'sdfr',2);
+	(1,3,234234,'Nope','Der Cheff'),
+	(3,4,2134,'Grund:sfsfsdf','Up Dater'),
+	(2,6,13513,'','ABC'),
+	(6,7,61344,'','Test'),
+	(5,8,523462,'','Max Mustermann'),
+	(10,11,53234,'sdfr','Ichwars Net');
 	
 insert into subscriptionLists(personID,eventID,color) values
 	(2,1,'FFFFFF'),

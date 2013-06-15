@@ -64,11 +64,10 @@ CREATE TABLE singleEventUpdates(
 	newSingleEventID int NOT NULL, 
 	sEventUpdateDate BIGINT  NOT NULL,
 	comment varchar(1000), 
-	creator int NOT NULL,
+	creator varchar(70),
 	PRIMARY KEY (oldSingleEventID,newSingleEventID),
 	FOREIGN KEY (oldSingleEventID) REFERENCES singleEvents(singleEventID),
-	FOREIGN KEY (newSingleEventID) REFERENCES singleEvents(singleEventID),
-	FOREIGN KEY (creator) REFERENCES persons(personID)
+	FOREIGN KEY (newSingleEventID) REFERENCES singleEvents(singleEventID)
 );
 
 CREATE TABLE admins(
