@@ -49,6 +49,7 @@ import unicopa.copa.base.com.request.GetEventsRequest;
 import unicopa.copa.base.com.request.GetSingleEventUpdatesRequest;
 import unicopa.copa.base.com.request.GetSubscribedSingleEventUpdatesRequest;
 import unicopa.copa.base.com.request.GetUserSettingsRequest;
+import unicopa.copa.base.com.request.RemoveRoleFromUserRequest;
 import unicopa.copa.base.com.request.SetUserSettingsRequest;
 import unicopa.copa.base.com.request.TestRequest;
 import unicopa.copa.base.com.serialization.ServerSerializer;
@@ -140,6 +141,7 @@ public class CopaSystem {
 		add(GetSingleEventUpdatesRequest.class);
 		add(GetSubscribedSingleEventUpdatesRequest.class);
 		add(GetUserSettingsRequest.class);
+		add(RemoveRoleFromUserRequest.class);
 		add(SetUserSettingsRequest.class);
 		add(TestRequest.class);
 	    }
