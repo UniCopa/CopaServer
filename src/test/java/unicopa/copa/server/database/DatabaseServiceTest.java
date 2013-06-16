@@ -99,11 +99,10 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void testIsRecent() {
-
+    public void testGetUserRole() {
 	try {
-	    assertEquals(false, dbs.isRecent(3));
-	    assertEquals(true, dbs.isRecent(4));
+	    assertEquals(UserRole.USER, dbs.getUserRole(1));
+	    assertEquals(UserRole.ADMINISTRATOR, dbs.getUserRole(2));
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -187,15 +186,6 @@ public class DatabaseServiceTest {
 		resSEUList.get(1).getUpdatedSingleEvent().getSingleEventID());
 	assertEquals(sEUList.get(1).getUpdatedSingleEvent().getSupervisor(),
 		resSEUList.get(1).getUpdatedSingleEvent().getSupervisor());
-
-    }
-
-    @Test(expected = ObjectNotFoundException.class)
-    public void testEventExists() throws Exception {
-	assertEquals(true, dbs.eventExists(1));
-	assertEquals(new ObjectNotFoundException(
-		"There is no Event with ID=100 in the database"),
-		dbs.eventExists(100));
 
     }
 
@@ -539,29 +529,6 @@ public class DatabaseServiceTest {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-    }
-
-    @Test
-    public void testInsertSingleEvent() {
-	SingleEvent singleEvent = new SingleEvent(0, 2, "HU 103", new Date(
-		1234567), "Supervisor XY", 85);
-	SingleEvent res = null;
-	try {
-	    dbs.insertSingleEvent(singleEvent, true);
-	    res = dbs.getSingleEvent(singleEvent.getSingleEventID());
-	} catch (ObjectNotFoundException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (IncorrectObjectException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	assertEquals(singleEvent.getDate().getTime(), res.getDate().getTime());
-	assertEquals(singleEvent.getDurationMinutes(), res.getDurationMinutes());
-	assertEquals(singleEvent.getEventID(), res.getEventID());
-	assertEquals(singleEvent.getLocation(), res.getLocation());
-	assertEquals(singleEvent.getSingleEventID(), res.getSingleEventID());
-	assertEquals(singleEvent.getSupervisor(), res.getSupervisor());
     }
 
     @Test
