@@ -526,6 +526,32 @@ public class DatabaseService {
     }
 
     /**
+     * Set the general role of a user.
+     * 
+     * @param userID
+     *            the ID of the user
+     * @param role
+     *            the role to set
+     */
+    public void setUserRole(int userID, UserRole role) {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Set the role of a user for a specific event.
+     * 
+     * @param userID
+     *            the ID of the user
+     * @param evenID
+     *            the ID of the event where to set the role for the user
+     * @param role
+     *            the role to set
+     */
+    public void setUserRoleForEvent(int userID, int evenID, UserRole role) {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
      * Get the names of deputies for an event.
      * 
      * @param eventID
