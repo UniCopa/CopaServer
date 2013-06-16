@@ -16,13 +16,14 @@
  */
 package unicopa.copa.server.com.requestHandler;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import unicopa.copa.base.UserRole;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
 import unicopa.copa.base.com.request.AbstractRequest;
 import unicopa.copa.base.com.request.AbstractResponse;
-import unicopa.copa.base.com.request.AddSingleEventRequest;
-import unicopa.copa.base.com.request.AddSingleEventResponse;
 import unicopa.copa.base.com.request.CancelSingleEventRequest;
 import unicopa.copa.base.com.request.CancelSingleEventResponse;
 import unicopa.copa.server.CopaSystemContext;
@@ -35,7 +36,8 @@ import unicopa.copa.server.database.ObjectNotFoundException;
  * @author Felix Wiemuth
  */
 public class CancelSingleEventRequestHandler extends RequestHandler {
-    private AddSingleEventUpdateExecutor executor = new AddSingleEventUpdateExecutor(getContext());
+    private AddSingleEventUpdateExecutor executor = new AddSingleEventUpdateExecutor(
+	    getContext());
 
     public CancelSingleEventRequestHandler(CopaSystemContext context) {
 	super(context);
@@ -46,11 +48,19 @@ public class CancelSingleEventRequestHandler extends RequestHandler {
 	    throws PermissionException, RequestNotPracticableException,
 	    InternalErrorException {
 	CancelSingleEventRequest req = (CancelSingleEventRequest) request;
-        try {
-            executor.cancelSingleEvent(req.getSingleEventID(), req.getComment(), userID);
-        } catch (ObjectNotFoundException | IncorrectObjectException ex) {
-            throw new RequestNotPracticableException(ex.getMessage());
-        }
-        return new CancelSingleEventResponse();
+	try {
+	    checkEventPermission(userID, getContext().getDbservice()
+		    .getSingleEvent(req.getSingleEventID()).getEventID(),
+		    UserRole.RIGHTHOLDER);
+	} catch (ObjectNotFoundException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
+	}
+	try {
+	    executor.cancelSingleEvent(req.getSingleEventID(),
+		    req.getComment(), userID);
+	} catch (ObjectNotFoundException | IncorrectObjectException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
+	}
+	return new CancelSingleEventResponse();
     }
 }

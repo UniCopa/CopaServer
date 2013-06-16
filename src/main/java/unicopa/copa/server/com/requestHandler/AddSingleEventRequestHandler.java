@@ -16,6 +16,7 @@
  */
 package unicopa.copa.server.com.requestHandler;
 
+import unicopa.copa.base.UserRole;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
@@ -33,7 +34,8 @@ import unicopa.copa.server.database.ObjectNotFoundException;
  * @author Felix Wiemuth
  */
 public class AddSingleEventRequestHandler extends RequestHandler {
-    private AddSingleEventUpdateExecutor executor = new AddSingleEventUpdateExecutor(getContext());
+    private AddSingleEventUpdateExecutor executor = new AddSingleEventUpdateExecutor(
+	    getContext());
 
     public AddSingleEventRequestHandler(CopaSystemContext context) {
 	super(context);
@@ -44,11 +46,15 @@ public class AddSingleEventRequestHandler extends RequestHandler {
 	    throws PermissionException, RequestNotPracticableException,
 	    InternalErrorException {
 	AddSingleEventRequest req = (AddSingleEventRequest) request;
-        try {
-            executor.addSingleEvent(req.getNewSingleEvent(), req.getComment(), userID);
-        } catch (ObjectNotFoundException | IncorrectObjectException ex) {
-            throw new RequestNotPracticableException(ex.getMessage());
-        }
-        return new AddSingleEventResponse(req.getNewSingleEvent().getSingleEventID());
+	checkEventPermission(userID, req.getNewSingleEvent().getEventID(),
+		UserRole.RIGHTHOLDER);
+	try {
+	    executor.addSingleEvent(req.getNewSingleEvent(), req.getComment(),
+		    userID);
+	} catch (ObjectNotFoundException | IncorrectObjectException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
+	}
+	return new AddSingleEventResponse(req.getNewSingleEvent()
+		.getSingleEventID());
     }
 }
