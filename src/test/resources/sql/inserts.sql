@@ -87,12 +87,12 @@ insert into singleEvents(eventID,location,sEventDate,duration,supervisor,mostRec
 	   (4,'test',1234123,10,'Prof. Test',true),
 	   (6,'5',5323452,5,'Prof. Test',false),
 	   (7,'bla',2323452,11,'Prof. Test',false),
-	   (4,'test',5145213,100,'Dr. Test',true),
+	   (4,'test',5145213,100,'Dr. Test',false),
 	   (8,'bla',12342135,80,'Dr. Test',true),
 	   (10,'bla',531234,12,'Dr. Test',true),
 	   (15,'test',21024000,14,'Prof. Test',false),
 	   (12,'5',131234,523,'Dr. Test',true),
-	   (5,'test',61354,12,'Prof. Test',true),
+	   (4,'test',61354,12,'Prof. Test',true),
 	   (9,'5',34634,253,'Dr. Test',true),
 	   (11,'test',8765,2345,'Dr. Test',true);
 	   
@@ -146,7 +146,16 @@ insert into singleEventUpdates(oldSingleEventID,newSingleEventID,sEventUpdateDat
 	(2,6,13513,'','ABC'),
 	(6,7,61344,'','Test'),
 	(5,8,523462,'','Max Mustermann'),
-	(10,11,53234,'sdfr','Ichwars Net');
+	(10,11,53234,'sdfr','Ichwars Net'),
+	(0,2,1,'new','Mr.DB'),
+	(0,5,1,'new','Mr.DB'),
+	(0,9,1,'new','Mr.DB'),
+	(0,10,1,'new','Mr.DB'),
+	(0,1,1,'new','Mr.DB'),
+	(0,12,1,'new','Mr.DB'),
+	(0,13,1,'new','Mr.DB'),
+	(0,14,1,'new','Mr.DB');
+
 	
 insert into subscriptionLists(personID,eventID,color) values
 	(2,1,'FFFFFF'),

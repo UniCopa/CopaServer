@@ -400,7 +400,13 @@ public class DatabaseService {
      */
     public List<SingleEvent> getCurrentSingleEvents(int eventID, Date since)
 	    throws ObjectNotFoundException, IncorrectObjectException {
-	throw new UnsupportedOperationException();
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    SingleEventMapper mapper = session
+		    .getMapper(SingleEventMapper.class);
+	    List<SingleEvent> singleEventList = mapper.getCurrentSingleEvent(
+		    eventID, since.getTime());
+	    return singleEventList;
+	}
     }
 
     /**

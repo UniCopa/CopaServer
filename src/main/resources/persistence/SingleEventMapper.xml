@@ -40,6 +40,12 @@
 		Where s.singleEventID=#{singleEventID}		
     </select>
     
+    <select id='getCurrentSingleEvent' parameterType='map' resultMap="resultSingleEvent">
+        select s.singleEventID, s.eventID, s.location,s.SEventDate,s.supervisor,s.duration 
+		From  singleEvents s, singleEventUpdates u
+		Where mostRecent=true and u.newSingleEventID = s.singleEventID and u.sEventUpdateDate>#{since} and s.eventID = #{eventID}
+    </select>
+    
     <select id='getSingleEventStatus' parameterType='int' resultType='boolean'>
         Select mostRecent
         From singleEvents
