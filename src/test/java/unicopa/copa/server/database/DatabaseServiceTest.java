@@ -579,6 +579,35 @@ public class DatabaseServiceTest {
     }
 
     @Test
+    public void testInsertSingleEventUpdateNEW() {
+	try {
+	    dbs.insertSingleEventUpdate(new SingleEventUpdate(new SingleEvent(
+		    0, 3, "HU 111", new Date(300000), "Mr.GanzNew", 50), 0,
+		    new Date(295000), "Mr. New", "Added new SingleEvent"));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
+    public void testInsertSingleEventUpdateCANCEL() {
+	try {
+	    dbs.insertSingleEventUpdate(new SingleEventUpdate(null, 9,
+		    new Date(195000), "Mr. Cancell", "SingleEvent Cancelled"));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
     public void testInsertEvent() {
 	List<Integer> list = new ArrayList<>();
 	list.add(4);
@@ -613,6 +642,15 @@ public class DatabaseServiceTest {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
+    }
 
+    @Test
+    public void testInsertPrivilege() {
+	try {
+	    dbs.insertPrivilege(2, 2, 2, 1, new Date(1000));
+	} catch (ObjectNotFoundException | IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 }

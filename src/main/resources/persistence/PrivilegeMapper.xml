@@ -33,5 +33,10 @@
         delete from privilege
         where personID=#{userID} and eventID=#{eventID}
     </delete>
+    
+    <insert id='insertPrivilege' parameterType='map'>
+        insert into privilege(personID,eventID,kindOfPrivilege,gavePrivilege,privDate) values
+			(#{personID},#{eventID},#{kindOfPrivilege},#{gavePrivilege},#{privDate})
+    </insert>
 
 </mapper>
