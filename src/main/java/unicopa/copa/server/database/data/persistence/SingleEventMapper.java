@@ -39,4 +39,6 @@ public interface SingleEventMapper {
 
     public boolean getSingleEventStatus(
 	    @Param("singleEventID") int singleEventID);
+
+    public int singleEventExists(@Param("singleEventID") int singleEventID);
 }

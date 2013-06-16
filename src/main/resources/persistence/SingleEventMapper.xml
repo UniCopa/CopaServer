@@ -52,6 +52,12 @@
         Where singleEventID=#{singleEventID}
     </select>
     
+    <select id='singleEventExists' parameterType='int' resultType='int'>
+        select count(*)
+        from singleEvents
+        where singleEventID=#{singleEventID}
+    </select>
+    
     <insert id='insertSingleEvent' parameterType='map' useGeneratedKeys="true" keyProperty="singleEvent.singleEventID">
         insert into singleEvents(eventID,location,sEventDate,duration,supervisor,mostRecent) values
 	   		(#{singleEvent.eventID},#{singleEvent.location},#{sEventDate},#{singleEvent.durationMinutes},#{singleEvent.supervisor},#{isRecent})

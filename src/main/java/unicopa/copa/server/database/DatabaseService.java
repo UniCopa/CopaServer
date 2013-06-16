@@ -236,7 +236,7 @@ public class DatabaseService {
     public List<SingleEventUpdate> getSingleEventUpdates(int eventID, Date since)
 	    throws ObjectNotFoundException, IncorrectObjectException {
 	checkNull(since, "given Date");
-	eventExists(eventID);
+	checkEvent(eventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventUpdateMapper mapper = session
 		    .getMapper(SingleEventUpdateMapper.class);
@@ -267,8 +267,7 @@ public class DatabaseService {
 	    EventMapper mapper = session.getMapper(EventMapper.class);
 	    int a = mapper.eventExists(eventID);
 	    if (a == 0)
-		throw new ObjectNotFoundException("There is no Event with ID="
-			+ eventID + " in the database");
+		return false;
 	    return true;
 	}
     }
@@ -284,7 +283,7 @@ public class DatabaseService {
      */
     public List<Integer> getSubscribedUserIDs(int eventID)
 	    throws ObjectNotFoundException {
-	eventExists(eventID);
+	checkEvent(eventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    List<Integer> iDList = mapper.getSubscribedUserIDs(eventID);
@@ -410,6 +409,8 @@ public class DatabaseService {
      */
     public List<SingleEvent> getCurrentSingleEvents(int eventID, Date since)
 	    throws ObjectNotFoundException, IncorrectObjectException {
+	checkNull(since, "given Date");
+	checkEvent(eventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);
@@ -433,7 +434,7 @@ public class DatabaseService {
      */
     public List<String> getRightholders(int eventID, int appointedByUserID)
 	    throws ObjectNotFoundException {
-	eventExists(eventID);
+	checkEvent(eventID);
 	if (appointedByUserID != -1)
 	    checkUser(appointedByUserID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -550,7 +551,7 @@ public class DatabaseService {
      */
     public UserRole getUsersRoleForEvent(int userID, int eventID)
 	    throws ObjectNotFoundException {
-	eventExists(eventID);
+	checkEvent(eventID);
 	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
@@ -654,7 +655,7 @@ public class DatabaseService {
      */
     public List<String> getDeputies(int eventID, int appointedByUserID)
 	    throws ObjectNotFoundException {
-	eventExists(eventID);
+	checkEvent(eventID);
 	if (appointedByUserID != -1)
 	    checkUser(appointedByUserID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -686,7 +687,7 @@ public class DatabaseService {
      * @throws ObjectNotFoundException
      */
     public List<String> getOwners(int eventID) throws ObjectNotFoundException {
-	eventExists(eventID);
+	checkEvent(eventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    List<String> privList = mapper.getPrivileged(eventID, -1, 3);
@@ -785,7 +786,7 @@ public class DatabaseService {
      */
     public void removePrivilege(int userID, int eventID)
 	    throws ObjectNotFoundException {
-	eventExists(eventID);
+	checkEvent(eventID);
 	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
@@ -814,7 +815,7 @@ public class DatabaseService {
 		"String(location) in given SingleEvent");
 	checkNull(singleEvent.getSupervisor(),
 		"String(supervisor) in given SingleEvent");
-	eventExists(singleEvent.getEventID());
+	checkEvent(singleEvent.getEventID());
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);
@@ -970,7 +971,7 @@ public class DatabaseService {
 	checkNull(singleEventUpdate.getUpdateDate(),
 		"Date in given SingleEventUpdate");
 	if (singleEventUpdate.getOldSingleEventID() != 0) {
-	    eventExists(singleEventUpdate.getOldSingleEventID());
+	    checkSingleEvent(singleEventUpdate.getOldSingleEventID());
 	    if (!isRecent(singleEventUpdate.getOldSingleEventID()))
 		throw new IncorrectObjectException(
 			"An Update can only be performed on an Current SingleEvent. SingleEvent with ID="
@@ -1107,9 +1108,7 @@ public class DatabaseService {
 	if (!userIDExsists(gavePrivilegeID))
 	    throw new ObjectNotFoundException("There is no User with ID="
 		    + gavePrivilegeID);
-	if (!eventExists(eventID))
-	    throw new ObjectNotFoundException("There is no Event with ID="
-		    + eventID);
+	checkEvent(eventID);
 	checkNull(privDate, "given Date");
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
@@ -1138,7 +1137,7 @@ public class DatabaseService {
 
     private void updateSingleEventStatus(int singleEventID, boolean isRecent)
 	    throws ObjectNotFoundException {
-	// TODO checkSingleEventExists
+	checkSingleEvent(singleEventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);
@@ -1148,14 +1147,38 @@ public class DatabaseService {
     }
 
     private boolean isRecent(int singleEventID) throws ObjectNotFoundException {
-	// TODO check singleEventExsists
+	checkSingleEvent(singleEventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);
 	    boolean status = mapper.getSingleEventStatus(singleEventID);
 	    return status;
-
 	}
+    }
+
+    private boolean singleEventExists(int singleEventID) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    SingleEventMapper mapper = session
+		    .getMapper(SingleEventMapper.class);
+	    int status = mapper.singleEventExists(singleEventID);
+	    if (status == 0)
+		return false;
+	    return true;
+	}
+    }
+
+    private void checkSingleEvent(int singleEventID)
+	    throws ObjectNotFoundException {
+	if (!singleEventExists(singleEventID))
+	    throw new ObjectNotFoundException(
+		    "There is no SingleEvent with ID=" + singleEventID);
+    }
+
+    private void checkEvent(int eventID) throws ObjectNotFoundException {
+	if (!eventExists(eventID))
+	    throw new ObjectNotFoundException("There is no Event with ID="
+		    + eventID);
+
     }
 
     /**
