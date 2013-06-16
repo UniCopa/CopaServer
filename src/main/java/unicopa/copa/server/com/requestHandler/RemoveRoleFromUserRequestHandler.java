@@ -42,8 +42,13 @@ public class RemoveRoleFromUserRequestHandler extends RequestHandler {
 	    throws PermissionException, RequestNotPracticableException,
 	    InternalErrorException {
 	RemoveRoleFromUserRequest req = (RemoveRoleFromUserRequest) request;
-	int userToRemove = getContext().getDbservice().getUserIDByEmail(
-		req.getUserEmail());
+	int userToRemove;
+	try {
+	    userToRemove = getContext().getDbservice().getUserIDByEmail(
+		    req.getUserEmail());
+	} catch (ObjectNotFoundException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
+	}
 	UserRole userToRemoveRole;
 	try {
 	    userToRemoveRole = getContext().getDbservice()
@@ -64,5 +69,4 @@ public class RemoveRoleFromUserRequestHandler extends RequestHandler {
 		userToRemoveRole);
 	return new RemoveRoleFromUserResponse();
     }
-
 }

@@ -43,8 +43,13 @@ public class AddRoleToUserRequestHandler extends RequestHandler {
 	    InternalErrorException {
 	AddRoleToUserRequest req = (AddRoleToUserRequest) request;
 
-	int userToAdd = getContext().getDbservice().getUserIDByEmail(
-		req.getUserEmail());
+	int userToAdd;
+	try {
+	    userToAdd = getContext().getDbservice().getUserIDByEmail(
+		    req.getUserEmail());
+	} catch (ObjectNotFoundException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
+	}
 	UserRole currentRoleUserToAdd;
 	try {
 	    currentRoleUserToAdd = getContext().getDbservice()
