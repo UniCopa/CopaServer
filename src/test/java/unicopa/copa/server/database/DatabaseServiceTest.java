@@ -99,6 +99,18 @@ public class DatabaseServiceTest {
     }
 
     @Test
+    public void testIsRecent() {
+
+	try {
+	    assertEquals(false, dbs.isRecent(3));
+	    assertEquals(true, dbs.isRecent(4));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
     public void testGetSubscribedSingleEventUpdates() {
 	SingleEventUpdate sEU1 = new SingleEventUpdate(new SingleEvent(3, 3,
 		"bla", new Date(8765445), "Dr. Test", 120), 1,
@@ -523,7 +535,7 @@ public class DatabaseServiceTest {
 		1234567), "Supervisor XY", 85);
 	SingleEvent res = null;
 	try {
-	    dbs.insertSingleEvent(singleEvent);
+	    dbs.insertSingleEvent(singleEvent, true);
 	    res = dbs.getSingleEvent(singleEvent.getSingleEventID());
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
