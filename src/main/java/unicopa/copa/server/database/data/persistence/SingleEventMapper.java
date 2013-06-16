@@ -25,5 +25,12 @@ public interface SingleEventMapper {
     public SingleEvent getSingleEvent(@Param("singleEventID") int singleEventID);
 
     public void insertSingleEvent(@Param("singleEvent") SingleEvent se,
-	    @Param("sEventDate") long sEventDate);
+	    @Param("sEventDate") long sEventDate,
+	    @Param("isRecent") boolean isRecent);
+
+    public void updateSingleEventStatus(@Param("isRecent") boolean isRecent,
+	    @Param("singleEventID") int singleEventID);
+
+    public boolean getSingleEventStatus(
+	    @Param("singleEventID") int singleEventID);
 }

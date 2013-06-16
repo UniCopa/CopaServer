@@ -40,9 +40,21 @@
 		Where s.singleEventID=#{singleEventID}		
     </select>
     
+    <select id='getSingleEventStatus' parameterType='int' resultType='boolean'>
+        Select mostRecent
+        From singleEvents
+        Where singleEventID=#{singleEventID}
+    </select>
+    
     <insert id='insertSingleEvent' parameterType='map' useGeneratedKeys="true" keyProperty="singleEvent.singleEventID">
-        insert into singleEvents(eventID,location,sEventDate,duration,supervisor) values
-	   		(#{singleEvent.eventID},#{singleEvent.location},#{sEventDate},#{singleEvent.durationMinutes},#{singleEvent.supervisor})
+        insert into singleEvents(eventID,location,sEventDate,duration,supervisor,mostRecent) values
+	   		(#{singleEvent.eventID},#{singleEvent.location},#{sEventDate},#{singleEvent.durationMinutes},#{singleEvent.supervisor},#{isRecent})
     </insert>
+    
+    <update id='updateSingleEventStatus' parameterType='map'>
+        update singleEvents
+        Set mostRecent=#{isRecent}
+        Where singleEventID=#{singleEventID}
+    </update>
 
 </mapper>

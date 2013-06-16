@@ -404,6 +404,7 @@ public class DatabaseService {
     }
 
     /**
+     * 
      * Get the names of rightholders for an event.
      * 
      * @param eventID
@@ -727,7 +728,7 @@ public class DatabaseService {
      *             is thrown when the give singleEvent object,the date,the
      *             location or the supervisor is null
      */
-    public void insertSingleEvent(SingleEvent singleEvent)
+    public void insertSingleEvent(SingleEvent singleEvent, boolean isRecent)
 	    throws ObjectNotFoundException, IncorrectObjectException {
 	checkNull(singleEvent, "given SingleEvent");
 	checkNull(singleEvent.getDate(), "Date in given SingleEvent");
@@ -740,7 +741,7 @@ public class DatabaseService {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);
 	    mapper.insertSingleEvent(singleEvent, singleEvent.getDate()
-		    .getTime());
+		    .getTime(), isRecent);
 	    session.commit();
 	}
     }
@@ -893,7 +894,9 @@ public class DatabaseService {
 	if (singleEventUpdate.getOldSingleEventID() != 0)
 	    eventExists(singleEventUpdate.getOldSingleEventID());
 	if (singleEventUpdate.getUpdatedSingleEvent() != null) {
-	    insertSingleEvent(singleEventUpdate.getUpdatedSingleEvent());
+	    insertSingleEvent(singleEventUpdate.getUpdatedSingleEvent(), true);
+	    updateSingleEventStatus(singleEventUpdate.getOldSingleEventID(),
+		    false);
 	    try (SqlSession session = sqlSessionFactory.openSession()) {
 		SingleEventUpdateMapper mapper = session
 			.getMapper(SingleEventUpdateMapper.class);
@@ -1046,6 +1049,28 @@ public class DatabaseService {
 	    if (a == 0)
 		return false;
 	    return true;
+	}
+    }
+
+    public void updateSingleEventStatus(int singleEventID, boolean isRecent)
+	    throws ObjectNotFoundException {
+	// TODO checkSingleEventExists
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    SingleEventMapper mapper = session
+		    .getMapper(SingleEventMapper.class);
+	    mapper.updateSingleEventStatus(isRecent, singleEventID);
+	    session.commit();
+	}
+    }
+
+    public boolean isRecent(int singleEventID) throws ObjectNotFoundException {
+	// TODO check singleEventExsists
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    SingleEventMapper mapper = session
+		    .getMapper(SingleEventMapper.class);
+	    boolean status = mapper.getSingleEventStatus(singleEventID);
+	    return status;
+
 	}
     }
 

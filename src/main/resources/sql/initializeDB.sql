@@ -54,7 +54,8 @@ CREATE TABLE singleEvents(
 	location varchar(70) NOT NULL, 
 	sEventDate BIGINT  NOT NULL,
 	duration int NOT NULL, 
-	supervisor varchar(70) NOT NULL, 
+	supervisor varchar(70) NOT NULL,
+	mostRecent boolean NOT NULL,
 	PRIMARY KEY (singleEventID),
 	FOREIGN KEY (eventID) REFERENCES events(eventID)
 );
