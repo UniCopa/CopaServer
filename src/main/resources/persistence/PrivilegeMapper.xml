@@ -34,9 +34,19 @@
         where personID=#{userID} and eventID=#{eventID}
     </delete>
     
+    <delete id='deleteAdmin' parameterType='int'>
+        delete from admins
+        where personID=#{userID}
+    </delete>
+    
     <insert id='insertPrivilege' parameterType='map'>
         insert into privilege(personID,eventID,kindOfPrivilege,gavePrivilege,privDate) values
 			(#{personID},#{eventID},#{kindOfPrivilege},#{gavePrivilege},#{privDate})
+    </insert>
+    
+    <insert id='insertAdmin' parameterType='map'>
+        insert into admins(personID,adminDate) values
+		(#{userID},#{date})
     </insert>
 
 </mapper>

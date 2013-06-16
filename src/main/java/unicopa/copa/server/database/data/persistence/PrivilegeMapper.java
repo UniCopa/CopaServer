@@ -34,4 +34,9 @@ public interface PrivilegeMapper {
 	    @Param("kindOfPrivilege") int kindOfPrivilege,
 	    @Param("gavePrivilege") int gavePrivilege,
 	    @Param("privDate") long privDate);
+
+    public void insertAdmin(@Param("userID") int userID,
+	    @Param("date") long date);
+
+    public void deleteAdmin(@Param("userID") int userID);
 }

@@ -554,16 +554,33 @@ public class DatabaseService {
     }
 
     /**
-     * Set the general role of a user.
+     * gives the given user the admin privilege
      * 
      * @param userID
-     *            the ID of the user
-     * @param role
-     *            the role to set
+     * @throws ObjectNotFoundException
      */
-    public void setUserRole(int userID, UserRole role) {
-	// TODO
-	throw new UnsupportedOperationException();
+    public void addAdministrator(int userID) throws ObjectNotFoundException {
+	checkUser(userID);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    mapper.insertAdmin(userID, new Date().getTime());
+	    session.commit();
+	}
+    }
+
+    /**
+     * removes the admin privilege of the given User
+     * 
+     * @param userID
+     * @throws ObjectNotFoundException
+     */
+    public void removeAdministrator(int userID) throws ObjectNotFoundException {
+	checkUser(userID);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    mapper.deleteAdmin(userID);
+	    session.commit();
+	}
     }
 
     /**
@@ -575,15 +592,33 @@ public class DatabaseService {
      *            the ID of the event where to set the role for the user
      * @param role
      *            the role to set
+     * @throws IncorrectObjectException
+     * @throws ObjectNotFoundException
      */
-    public void setUserRoleForEvent(int userID, int eventID, UserRole role) {
-	if (role == UserRole.ADMINISTRATOR || role == UserRole.USER) {
-	    // TODO throw appropriate exception
-	} else {
-	    // insertPrivilege(userID, eventID, kindOfPrivilege,
-	    // gavePrivilegeID, privDate)
+    public void setUserRoleForEvent(int userID, int eventID, UserRole role,
+	    int gavePrivilegeID) throws IncorrectObjectException,
+	    ObjectNotFoundException {
+	int kindOfPrivilege = 0;
+	switch (role) {
+	case DEPUTY:
+	    kindOfPrivilege = 2;
+	    break;
+	case OWNER:
+	    kindOfPrivilege = 3;
+	    break;
+	case RIGHTHOLDER:
+	    kindOfPrivilege = 1;
+	    break;
+	case USER:
+	    removePrivilege(userID, eventID);
+	    break;
+	default:
+	    throw new IncorrectObjectException(
+		    "setUserRoleForEvent not defined for UserRole = " + role);
 	}
-	throw new UnsupportedOperationException();
+	if (role != UserRole.USER)
+	    insertPrivilege(userID, eventID, kindOfPrivilege, gavePrivilegeID,
+		    new Date());
     }
 
     /**

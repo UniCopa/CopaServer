@@ -644,4 +644,24 @@ public class DatabaseServiceTest {
 	    e.printStackTrace();
 	}
     }
+
+    @Test
+    public void testAddAdmin() {
+	try {
+	    dbs.addAdministrator(8);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
+    public void testRemoveAdmin() {
+	try {
+	    dbs.removeAdministrator(8);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
 }
