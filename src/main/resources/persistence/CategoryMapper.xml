@@ -57,6 +57,15 @@
         from categories
         where categoryID=#{categoryID}
     </select>
-        
+    
+    <insert id='insertCategory' parameterType='map' useGeneratedKeys="true" keyProperty="category.id">
+        insert into categories(name) values
+	   		(#{category.name})
+    </insert>
+    
+    <insert id='insertCategoryConnection' parameterType='map'>
+        insert into category_Connections(categoryNodeParent,categoryNodeChild) values
+			(#{parentID},#{childID})
+    </insert>
 </mapper>
  

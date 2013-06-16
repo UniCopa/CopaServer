@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.server.database.data.db.DBCategoryNode;
 
 public interface CategoryMapper {
@@ -32,4 +33,9 @@ public interface CategoryMapper {
 	    @Param("categoryID") int categoryID);
 
     public Integer categoryExsists(@Param("categoryID") int categoryID);
+
+    public void insertCategory(@Param("category") CategoryNodeImpl category);
+
+    public void insertCategoryConnection(@Param("parentID") int parentID,
+	    @Param("childID") int childID);
 }

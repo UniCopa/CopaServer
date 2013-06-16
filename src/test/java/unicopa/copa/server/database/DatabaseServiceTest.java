@@ -115,6 +115,9 @@ public class DatabaseServiceTest {
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
 	assertEquals(sEUList.get(0).getComment(), resSEUList.get(0)
 		.getComment());
@@ -463,6 +466,9 @@ public class DatabaseServiceTest {
 	} catch (ObjectNotFoundException e1) {
 	    // TODO Auto-generated catch block
 	    e1.printStackTrace();
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
 	UserSettings res = null;
 	try {
@@ -541,6 +547,9 @@ public class DatabaseServiceTest {
 	} catch (ObjectAlreadyExsistsException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
     }
 
@@ -584,5 +593,26 @@ public class DatabaseServiceTest {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
+    }
+
+    @Test
+    public void testInsertCategoryTree() {
+	CategoryNodeImpl category = new CategoryNodeImpl(-1, "Test");
+	category.addChildNode(new CategoryNodeImpl(-1, "TestChild1"));
+	category.addChildNode(new CategoryNodeImpl(-1, "TestChild2"));
+
+	try {
+	    dbs.insertCategoryTree(category, 4);
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (ObjectAlreadyExsistsException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
     }
 }

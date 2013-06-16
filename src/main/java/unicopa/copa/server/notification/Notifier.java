@@ -23,7 +23,7 @@ import unicopa.copa.server.notification.NotificationService.NotificationEvent;
 
 /**
  * This class holds all notification services available to the system. If
- * notifications should be sent, it is enought to pass it to the notifier and it
+ * notifications should be sent, it is enough to pass it to the notifier and it
  * delegates the task to the different notification services.
  * 
  * @author Felix Wiemuth

@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import unicopa.copa.base.UserSettings;
 import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.base.event.SingleEventUpdate;
-import unicopa.copa.server.database.DatabaseService;
+import unicopa.copa.server.CopaSystemContext;
 import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.gcm.GoogleCloudMessagingService;
 
@@ -37,9 +37,9 @@ import unicopa.copa.server.gcm.GoogleCloudMessagingService;
 public class GoogleCloudNotificationService extends NotificationService {
     private GoogleCloudMessagingService gcmService;
 
-    public GoogleCloudNotificationService(DatabaseService dbservice) {
-	super(dbservice);
-	this.gcmService = GoogleCloudMessagingService.getInstance();
+    public GoogleCloudNotificationService(CopaSystemContext context) {
+	super(context);
+	this.gcmService = new GoogleCloudMessagingService(context);
     }
 
     /**
@@ -58,16 +58,17 @@ public class GoogleCloudNotificationService extends NotificationService {
 	    // because
 	    // the new single event might be null
 	    int seID = update.getOldSingleEventID();
-	    SingleEvent oldSingleEvent = super.dbservice().getSingleEvent(seID);
+	    SingleEvent oldSingleEvent = super.getContext().getDbservice()
+		    .getSingleEvent(seID);
 	    int eventID = oldSingleEvent.getEventID();
 	    // determine the users that should be informed about the update
-	    List<Integer> subUsers = super.dbservice().getSubscribedUserIDs(
-		    eventID);
+	    List<Integer> subUsers = super.getContext().getDbservice()
+		    .getSubscribedUserIDs(eventID);
 	    // determine GCM keys of the users
 	    Set<String> gcmKeys = new HashSet<>();
 	    for (Integer userID : subUsers) {
-		UserSettings settings = super.dbservice().getUserSettings(
-			userID);
+		UserSettings settings = super.getContext().getDbservice()
+			.getUserSettings(userID);
 		Set<String> usrKeys = settings.getGCMKeys();
 		gcmKeys.addAll(usrKeys);
 	    }
@@ -90,7 +91,8 @@ public class GoogleCloudNotificationService extends NotificationService {
     @Override
     public void notifyClient(NotificationEvent event, int userID) {
 	try {
-	    UserSettings settings = super.dbservice().getUserSettings(userID);
+	    UserSettings settings = super.getContext().getDbservice()
+		    .getUserSettings(userID);
 	    Set<String> usrKeys = settings.getGCMKeys();
 	    // send using service
 	    this.gcmService.notify(usrKeys, event.toString());

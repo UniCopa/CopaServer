@@ -22,7 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.*;
 import javax.mail.internet.*;
-import unicopa.copa.base.event.SingleEventUpdate;
 
 /**
  * With the E-Mail Service it is possible to send E-Mails for notifications of
@@ -144,11 +143,10 @@ public class EmailService {
      * @param contexts
      *            a list of EmailContexts (Containing E-Mail-Addresses and
      *            TextID's)
-     * @param update
-     *            a SingleEventUpdate
+     * @param info
+     *            the information that should be passed to the recipients
      * @throws MessagingException
-     * @see unicopa.copa.base.event.SingleEventUpdate
-     * @see unicopa.copa.base.event.SingleEvent
+     * @see unicopa.copa.server.email.UpdateInformation
      * @see unicopa.copa.server.email.EmailContext
      */
     public void notifySingleEventUpdate(List<EmailContext> contexts,
@@ -197,24 +195,14 @@ public class EmailService {
      * replacements for the Test-Patterns.
      * 
      * @param inputMap
-     *            The map where the values contain the TextPatterns that should
+     *            the map where the values contain the TextPatterns that should
      *            be replaced.
-     * @param update
-     *            The SingleEventUpdate to obtain data from. _UPDATE_DATE,
-     *            _CREATOR_NAME and _COMMENT will be directly obtained from
-     *            SingleEventUpdate. _LOCATION, _DATE and _SUPERVISOR will be
-     *            obtained from the new SingleEvent which is encapsulated in the
-     *            SingleEventUpdate.
-     * @param eventGroupName
-     *            The Name of the EventGroup for the new SingleEvent.
-     *            _EVENTGROUP_NAME will be replaced by this.
-     * @param eventName
-     *            The Name of the Event for the new SingleEvent. _EVENT_NAME
-     *            will be replaced by this.
+     * @param info
+     *            the information that should replace the TextPatterns
      * @return a processed copy of the parameter inputMap
      * 
-     * @see unicopa.copa.server.email.TextPatterns for the TextPatterns that
-     *      should be replaced
+     * @see unicopa.copa.server.email.TextPatterns
+     * @see unicopa.copa.server.email.UpdateInformation
      */
 
     private static Map<String, String> replaceTextPatterns(

@@ -17,7 +17,7 @@
 package unicopa.copa.server.notification;
 
 import unicopa.copa.base.event.SingleEventUpdate;
-import unicopa.copa.server.database.DatabaseService;
+import unicopa.copa.server.CopaSystemContext;
 
 /**
  * A service which notifies clients about an update on a SingleEvent.
@@ -38,7 +38,7 @@ public abstract class NotificationService {
 					// for events have changed
     }
 
-    private DatabaseService dbservice;
+    private CopaSystemContext context;
 
     /**
      * Create a new instance of a notification service.
@@ -47,17 +47,18 @@ public abstract class NotificationService {
      *            the database service the notification service should use to
      *            obtain additional information
      */
-    public NotificationService(DatabaseService dbservice) {
-	this.dbservice = dbservice;
+    public NotificationService(CopaSystemContext context) {
+	this.context = context;
     }
 
     /**
-     * Obtain the database service where to get information from.
+     * Obtain the system context.
      * 
+     * @see unicopa.copa.server.CopaSystemContext
      * @return
      */
-    protected DatabaseService dbservice() {
-	return dbservice;
+    protected CopaSystemContext getContext() {
+	return context;
     }
 
     /**
