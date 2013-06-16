@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSession;
@@ -209,7 +210,7 @@ public class DatabaseService {
     public List<SingleEventUpdate> getSubscribedSingleEventUpdates(int userID,
 	    Date since) throws ObjectNotFoundException,
 	    IncorrectObjectException {
-	checkNull(since);
+	checkNull(since, "given Date");
 	checkUser(userID);
 	Set<Integer> subscribedEvents = getUserSettings(userID)
 		.getSubscriptions();
@@ -234,7 +235,7 @@ public class DatabaseService {
      */
     public List<SingleEventUpdate> getSingleEventUpdates(int eventID, Date since)
 	    throws ObjectNotFoundException, IncorrectObjectException {
-	checkNull(since);
+	checkNull(since, "given Date");
 	eventExists(eventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventUpdateMapper mapper = session
@@ -609,7 +610,7 @@ public class DatabaseService {
      */
     public void updateUserSetting(UserSettings userSetting, int userID)
 	    throws ObjectNotFoundException, IncorrectObjectException {
-	checkNull(userSetting);
+	checkNull(userSetting, "given UserSettings");
 	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    UserSettingMapper mapper = session
@@ -679,10 +680,12 @@ public class DatabaseService {
      */
     public void insertSingleEvent(SingleEvent singleEvent)
 	    throws ObjectNotFoundException, IncorrectObjectException {
-	checkNull(singleEvent);
-	checkNull(singleEvent.getDate());
-	checkNull(singleEvent.getLocation());
-	checkNull(singleEvent.getSupervisor());
+	checkNull(singleEvent, "given SingleEvent");
+	checkNull(singleEvent.getDate(), "Date in given SingleEvent");
+	checkNull(singleEvent.getLocation(),
+		"String(location) in given SingleEvent");
+	checkNull(singleEvent.getSupervisor(),
+		"String(supervisor) in given SingleEvent");
 	eventExists(singleEvent.getEventID());
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
@@ -701,10 +704,12 @@ public class DatabaseService {
      * @throws IncorrectObjectException
      *             throws if the given object is null
      */
-    private void checkNull(Object o) throws IncorrectObjectException {
+    private void checkNull(Object o, String param)
+	    throws IncorrectObjectException {
 	if (o == null)
-	    throw new IncorrectObjectException(o.toString()
-		    + " should not be null");
+	    throw new IncorrectObjectException(
+		    "Cannot perform database operation: parameter " + param
+			    + " must not be null.");
     }
 
     /**
@@ -735,10 +740,10 @@ public class DatabaseService {
 	    String familyName, String email, String titel, String language,
 	    boolean eMailNotification) throws ObjectAlreadyExsistsException,
 	    IncorrectObjectException {
-	checkNull(userName);
-	checkNull(firstName);
-	checkNull(familyName);
-	checkNull(email);
+	checkNull(userName, "given String(userName)");
+	checkNull(firstName, "given String(firstName)");
+	checkNull(familyName, "given String(familyName)");
+	checkNull(email, "given String(email)");
 	if (userNameExsists(userName))
 	    throw new ObjectAlreadyExsistsException(
 		    "There is already a User in the database with UserName="
@@ -817,8 +822,10 @@ public class DatabaseService {
     }
 
     /**
-     * Inserts the given singleEventUpdate into the database. this includes the
-     * new SingleEvent that is given in singleEventUpdate
+     * Inserts the given singleEventUpdate into the database. This includes the
+     * new SingleEvent that is given in singleEventUpdate. If oldSingleEventID =
+     * 0 then updatedSingleEvent is inserted as a new SingleEvent (). If the
+     * updatedSingleEvent = null, then the SingleEvent counts as canceled
      * 
      * @param singleEventUpdate
      * @throws ObjectNotFoundException
@@ -831,21 +838,36 @@ public class DatabaseService {
      */
     public void insertSingleEventUpdate(SingleEventUpdate singleEventUpdate)
 	    throws ObjectNotFoundException, IncorrectObjectException {
-	checkNull(singleEventUpdate);
-	checkNull(singleEventUpdate.getUpdateDate());
-	eventExists(singleEventUpdate.getOldSingleEventID());
-	insertSingleEvent(singleEventUpdate.getUpdatedSingleEvent());
-	try (SqlSession session = sqlSessionFactory.openSession()) {
-	    SingleEventUpdateMapper mapper = session
-		    .getMapper(SingleEventUpdateMapper.class);
-	    mapper.insertSingleEventUpdate(new DBSingleEventUpdate(
-		    singleEventUpdate.getUpdatedSingleEvent()
-			    .getSingleEventID(), singleEventUpdate
-			    .getOldSingleEventID(), singleEventUpdate
-			    .getUpdateDate().getTime(), singleEventUpdate
-			    .getCreatorName(), singleEventUpdate.getComment()));
-	    session.commit();
-
+	checkNull(singleEventUpdate, "given singleEventUpdate");
+	checkNull(singleEventUpdate.getUpdateDate(),
+		"Date in given SingleEventUpdate");
+	if (singleEventUpdate.getOldSingleEventID() != 0)
+	    eventExists(singleEventUpdate.getOldSingleEventID());
+	if (singleEventUpdate.getUpdatedSingleEvent() != null) {
+	    insertSingleEvent(singleEventUpdate.getUpdatedSingleEvent());
+	    try (SqlSession session = sqlSessionFactory.openSession()) {
+		SingleEventUpdateMapper mapper = session
+			.getMapper(SingleEventUpdateMapper.class);
+		mapper.insertSingleEventUpdate(new DBSingleEventUpdate(
+			singleEventUpdate.getUpdatedSingleEvent()
+				.getSingleEventID(), singleEventUpdate
+				.getOldSingleEventID(), singleEventUpdate
+				.getUpdateDate().getTime(), singleEventUpdate
+				.getCreatorName(), singleEventUpdate
+				.getComment()));
+		session.commit();
+	    }
+	} else {
+	    try (SqlSession session = sqlSessionFactory.openSession()) {
+		SingleEventUpdateMapper mapper = session
+			.getMapper(SingleEventUpdateMapper.class);
+		mapper.insertSingleEventUpdate(new DBSingleEventUpdate(0,
+			singleEventUpdate.getOldSingleEventID(),
+			singleEventUpdate.getUpdateDate().getTime(),
+			singleEventUpdate.getCreatorName(), singleEventUpdate
+				.getComment()));
+		session.commit();
+	    }
 	}
     }
 
@@ -862,8 +884,8 @@ public class DatabaseService {
      */
     public void insertEvent(Event event) throws ObjectNotFoundException,
 	    IncorrectObjectException {
-	checkNull(event);
-	checkNull(event.getEventName());
+	checkNull(event, "given Event");
+	checkNull(event.getEventName(), "String(eventName) in the given Event");
 	for (int categoryID : event.getCategories()) {
 	    if (!categoryExsists(categoryID))
 		throw new ObjectNotFoundException(
@@ -901,7 +923,7 @@ public class DatabaseService {
     public void insertCategoryTree(CategoryNodeImpl category, int parent)
 	    throws IncorrectObjectException, ObjectAlreadyExsistsException,
 	    ObjectNotFoundException {
-	checkNull(category);
+	checkNull(category, "given CategoryNodeImpl");
 	if (categoryExsists(category.getId()))
 	    throw new ObjectAlreadyExsistsException(
 		    "There is already an entry in the category table in the database with categoryID="
@@ -928,7 +950,7 @@ public class DatabaseService {
      */
     private void insertCategory(CategoryNodeImpl category, int parent)
 	    throws IncorrectObjectException {
-	checkNull(category);
+	checkNull(category, "givenCategoryNodeImpl");
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
 	    mapper.insertCategory(category);
@@ -937,6 +959,27 @@ public class DatabaseService {
 		mapper.insertCategoryConnection(parent, category.getId());
 		session.commit();
 	    }
+	}
+    }
+
+    public void insertPrivilege(int userID, int eventID, int kindOfPrivilege,
+	    int gavePrivilegeID, Date privDate) throws ObjectNotFoundException,
+	    IncorrectObjectException {
+	if (!userIDExsists(userID))
+	    throw new ObjectNotFoundException("There is no User with ID="
+		    + userID);
+	if (!userIDExsists(gavePrivilegeID))
+	    throw new ObjectNotFoundException("There is no User with ID="
+		    + gavePrivilegeID);
+	if (!eventExists(eventID))
+	    throw new ObjectNotFoundException("There is no Event with ID="
+		    + eventID);
+	checkNull(privDate, "given Date");
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    mapper.insertPrivilege(userID, eventID, kindOfPrivilege,
+		    gavePrivilegeID, privDate.getTime());
+	    session.commit();
 	}
     }
 

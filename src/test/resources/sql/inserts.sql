@@ -1,4 +1,5 @@
 insert into eventGroups(eventGroupName, eventGroupInfo) values
+		('DUMMY','DUMMY'),
 	   ('TestEvent1','This is the first TestEvent'),
         ('TestEvent2','Blaa'),
         ('TestEvent3','g'),
@@ -45,6 +46,7 @@ insert into eventGroup_has_Categories(categoryID,eventGroupID) values
 		
 
 insert into events(eventGroupID, kindOfEvent) values
+		(0,'DUMMY'),
 	   (1,'Uebung'),
 	   (1,'Uebung'),
 	   (2,'Uebung'),
@@ -78,6 +80,7 @@ insert into event_has_Categories(categoryID, eventID) values
 	  (9,16);
 
 insert into singleEvents(eventID,location,sEventDate,duration,supervisor) values
+		(0,'DUMMY',0,0,'DUMMY'),
 	   (1,'1',1999101,20,'Dr. Test'),
 	   (1,'5',5345345,90,'Dr. Test'),
 	   (3,'bla',8765445,120,'Dr. Test'),

@@ -28,4 +28,10 @@ public interface PrivilegeMapper {
 
     public void removePrivilege(@Param("userID") int userID,
 	    @Param("eventID") int eventID);
+
+    public void insertPrivilege(@Param("personID") int personID,
+	    @Param("eventID") int eventID,
+	    @Param("kindOfPrivilege") int kindOfPrivilege,
+	    @Param("gavePrivilege") int gavePrivilege,
+	    @Param("privDate") long privDate);
 }
