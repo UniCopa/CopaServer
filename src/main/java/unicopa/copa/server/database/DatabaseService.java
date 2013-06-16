@@ -262,7 +262,7 @@ public class DatabaseService {
      * @return
      * @throws ObjectNotFoundException
      */
-    public boolean eventExists(int eventID) throws ObjectNotFoundException {
+    private boolean eventExists(int eventID) throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventMapper mapper = session.getMapper(EventMapper.class);
 	    int a = mapper.eventExists(eventID);
@@ -317,9 +317,19 @@ public class DatabaseService {
      * @param email
      *            the email address of the user
      * @return
+     * @throws ObjectNotFoundException
+     *             is thrown if the given email does not match to a entry in the
+     *             database
      */
-    public int getUserIDByEmail(String email) {
-	throw new UnsupportedOperationException();
+    public int getUserIDByEmail(String email) throws ObjectNotFoundException {
+	if (!emailExsists(email))
+	    throw new ObjectNotFoundException("There is no entry with email="
+		    + email + " in the database");
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    int userID = mapper.getUserIDByEmail(email);
+	    return userID;
+	}
     }
 
     /**
@@ -501,7 +511,7 @@ public class DatabaseService {
      * @return the role the user holds
      */
     public UserRole getUserRole(int userID) throws ObjectNotFoundException {
-	throw new UnsupportedOperationException();
+	return getUsersRoleForEvent(userID, 0);
     }
 
     /**
@@ -552,6 +562,7 @@ public class DatabaseService {
      *            the role to set
      */
     public void setUserRole(int userID, UserRole role) {
+	// TODO
 	throw new UnsupportedOperationException();
     }
 
@@ -565,7 +576,13 @@ public class DatabaseService {
      * @param role
      *            the role to set
      */
-    public void setUserRoleForEvent(int userID, int evenID, UserRole role) {
+    public void setUserRoleForEvent(int userID, int eventID, UserRole role) {
+	if (role == UserRole.ADMINISTRATOR || role == UserRole.USER) {
+	    // TODO throw appropriate exception
+	} else {
+	    // insertPrivilege(userID, eventID, kindOfPrivilege,
+	    // gavePrivilegeID, privDate)
+	}
 	throw new UnsupportedOperationException();
     }
 
@@ -734,7 +751,7 @@ public class DatabaseService {
      *             is thrown when the give singleEvent object,the date,the
      *             location or the supervisor is null
      */
-    public void insertSingleEvent(SingleEvent singleEvent, boolean isRecent)
+    private void insertSingleEvent(SingleEvent singleEvent, boolean isRecent)
 	    throws ObjectNotFoundException, IncorrectObjectException {
 	checkNull(singleEvent, "given SingleEvent");
 	checkNull(singleEvent.getDate(), "Date in given SingleEvent");
@@ -823,7 +840,7 @@ public class DatabaseService {
      * @param userName
      * @return
      */
-    public boolean userNameExsists(String userName) {
+    private boolean userNameExsists(String userName) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    if (mapper.userNameExsists(userName) == 0)
@@ -839,7 +856,7 @@ public class DatabaseService {
      * @param email
      * @return
      */
-    public boolean emailExsists(String email) {
+    private boolean emailExsists(String email) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    if (mapper.emailExsists(email) == 0)
@@ -855,7 +872,7 @@ public class DatabaseService {
      * @param userID
      * @return
      */
-    public boolean userIDExsists(int userID) {
+    private boolean userIDExsists(int userID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    if (mapper.userIDExsists(userID) == 0)
@@ -871,7 +888,7 @@ public class DatabaseService {
      * @param userID
      * @throws ObjectNotFoundException
      */
-    public void checkUser(int userID) throws ObjectNotFoundException {
+    private void checkUser(int userID) throws ObjectNotFoundException {
 	if (!userIDExsists(userID))
 	    throw new ObjectNotFoundException("There is no User with ID="
 		    + userID + " in the database");
@@ -897,8 +914,14 @@ public class DatabaseService {
 	checkNull(singleEventUpdate, "given singleEventUpdate");
 	checkNull(singleEventUpdate.getUpdateDate(),
 		"Date in given SingleEventUpdate");
-	if (singleEventUpdate.getOldSingleEventID() != 0)
+	if (singleEventUpdate.getOldSingleEventID() != 0) {
 	    eventExists(singleEventUpdate.getOldSingleEventID());
+	    if (!isRecent(singleEventUpdate.getOldSingleEventID()))
+		throw new IncorrectObjectException(
+			"An Update can only be performed on an Current SingleEvent. SingleEvent with ID="
+				+ singleEventUpdate.getOldSingleEventID()
+				+ " is not Current!");
+	}
 	if (singleEventUpdate.getUpdatedSingleEvent() != null) {
 	    insertSingleEvent(singleEventUpdate.getUpdatedSingleEvent(), true);
 	    updateSingleEventStatus(singleEventUpdate.getOldSingleEventID(),
@@ -1048,7 +1071,7 @@ public class DatabaseService {
      * @param categoryID
      * @return
      */
-    public boolean categoryExsists(int categoryID) {
+    private boolean categoryExsists(int categoryID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
 	    int a = mapper.categoryExsists(categoryID);
@@ -1058,7 +1081,7 @@ public class DatabaseService {
 	}
     }
 
-    public void updateSingleEventStatus(int singleEventID, boolean isRecent)
+    private void updateSingleEventStatus(int singleEventID, boolean isRecent)
 	    throws ObjectNotFoundException {
 	// TODO checkSingleEventExists
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -1069,7 +1092,7 @@ public class DatabaseService {
 	}
     }
 
-    public boolean isRecent(int singleEventID) throws ObjectNotFoundException {
+    private boolean isRecent(int singleEventID) throws ObjectNotFoundException {
 	// TODO check singleEventExsists
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session

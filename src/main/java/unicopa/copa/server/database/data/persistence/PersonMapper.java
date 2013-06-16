@@ -27,6 +27,8 @@ public interface PersonMapper {
 
     public List<Integer> getSubscribedUserIDs(@Param("eventID") int eventID);
 
+    public Integer getUserIDByEmail(@Param("email") String email);
+
     public Integer getUserID(@Param("userName") String userName);
 
     public Map<String, Integer> isAdmin(@Param("userID") int userID);

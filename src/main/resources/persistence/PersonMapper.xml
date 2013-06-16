@@ -105,6 +105,12 @@
         Where email=#{email}
     </select>
     
+    <select id='getUserIDByEmail' parameterType='String' resultType='int'>
+        Select userName
+        From persons
+        Where email=#{email}
+    </select>
+    
     <insert id='insertPerson' parameterType='map'>
        insert into persons(userName,firstName,familyName,email,titel,language,eMailNotification) values
 			(#{userName},#{firstName},#{familyName},#{email},#{titel},#{language},#{eMailNotification}) 
