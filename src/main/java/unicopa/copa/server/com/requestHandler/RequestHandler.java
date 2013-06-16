@@ -68,16 +68,25 @@ public abstract class RequestHandler {
      *            the ID of the event
      * @param role
      *            the role for which to check
-     * @return true if the user holds the specified or any higher role
      * @throws RequestNotPracticableException
+     * @throws PermissionException
+     *             if the user doesn´t hold the specified role
      */
-    public boolean checkEventPermission(int userID, int eventID, UserRole role)
-	    throws RequestNotPracticableException {
+    public void checkEventPermission(int userID, int eventID,
+	    UserRole requiredRole) throws RequestNotPracticableException,
+	    PermissionException {
 	UserRole hasRole;
 	try {
 	    hasRole = context.getDbservice().getUsersRoleForEvent(userID,
 		    eventID);
-	    return hasRole.level() >= role.level();
+	    if (hasRole.level() < requiredRole.level()) {
+		StringBuilder text = new StringBuilder(
+			"Not enough permissions to perform this operation at event with ID ")
+			.append(eventID).append("(required: ")
+			.append(requiredRole.toString()).append(" present: ")
+			.append(hasRole.toString()).append(")");
+		throw new PermissionException(text.toString());
+	    }
 	} catch (ObjectNotFoundException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
