@@ -22,8 +22,8 @@ import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
 import unicopa.copa.base.com.request.AbstractRequest;
 import unicopa.copa.base.com.request.AbstractResponse;
-import unicopa.copa.base.com.request.AddRoleToUserRequest;
-import unicopa.copa.base.com.request.AddRoleToUserResponse;
+import unicopa.copa.base.com.request.RemoveRoleFromUserRequest;
+import unicopa.copa.base.com.request.RemoveRoleFromUserResponse;
 import unicopa.copa.server.CopaSystemContext;
 import unicopa.copa.server.database.ObjectNotFoundException;
 
@@ -31,9 +31,9 @@ import unicopa.copa.server.database.ObjectNotFoundException;
  * 
  * @author Felix Wiemuth
  */
-public class AddRoleToUserRequestHandler extends RequestHandler {
+public class RemoveRoleFromUserRequestHandler extends RequestHandler {
 
-    public AddRoleToUserRequestHandler(CopaSystemContext context) {
+    public RemoveRoleFromUserRequestHandler(CopaSystemContext context) {
 	super(context);
     }
 
@@ -41,55 +41,32 @@ public class AddRoleToUserRequestHandler extends RequestHandler {
     public AbstractResponse handleRequest(AbstractRequest request, int userID)
 	    throws PermissionException, RequestNotPracticableException,
 	    InternalErrorException {
-	AddRoleToUserRequest req = (AddRoleToUserRequest) request;
-
-	int userToAdd;
+	RemoveRoleFromUserRequest req = (RemoveRoleFromUserRequest) request;
+	int userToRemove;
 	try {
-	    userToAdd = getContext().getDbservice().getUserIDByEmail(
+	    userToRemove = getContext().getDbservice().getUserIDByEmail(
 		    req.getUserEmail());
 	} catch (ObjectNotFoundException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
-	UserRole currentRoleUserToAdd;
+	UserRole userToRemoveRole;
 	try {
-	    currentRoleUserToAdd = getContext().getDbservice()
-		    .getUsersRoleForEvent(userToAdd, userID);
+	    userToRemoveRole = getContext().getDbservice()
+		    .getUsersRoleForEvent(userToRemove, req.getEventID());
 	} catch (ObjectNotFoundException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
-
-	// Check permissions
-	UserRole required;
-	switch (req.getRole()) {
-	case RIGHTHOLDER:
-	    required = UserRole.DEPUTY;
-	    break;
-	case DEPUTY:
-	    required = UserRole.OWNER;
-	    break;
-	case OWNER:
-	    required = UserRole.ADMINISTRATOR;
-	    break;
-	default:
-	    throw new RequestNotPracticableException(
-		    "The role to add must either be " + UserRole.RIGHTHOLDER
-			    + ", " + UserRole.DEPUTY + " or " + UserRole.OWNER
-			    + ".");
+	try {
+	    if (!getContext().getDbservice().isAppointedBy(userToRemove,
+		    userID, req.getEventID(), userToRemoveRole)) {
+		throw new RequestNotPracticableException(
+			"The user specified is not appointed with the given role.");
+	    }
+	} catch (ObjectNotFoundException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
 	}
-	checkEventPermission(userID, req.getEventID(), required);
-
-	// Check whether the user already got an equal or higher role
-	if (req.getRole().level() < currentRoleUserToAdd.level()) {
-	    throw new RequestNotPracticableException(
-		    "The user specified already has a higher role then the role to add.");
-	} else if (req.getRole().level() == currentRoleUserToAdd.level()) {
-	    throw new RequestNotPracticableException(
-		    "The user specified already has the given role.");
-	}
-
-	getContext().getDbservice().setUserRoleForEvent(userToAdd,
-		req.getEventID(), req.getRole());
-
-	return new AddRoleToUserResponse();
+	getContext().getDbservice().setUserRoleForEvent(userID, userID,
+		userToRemoveRole);
+	return new RemoveRoleFromUserResponse();
     }
 }

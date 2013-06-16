@@ -458,6 +458,26 @@ public class DatabaseService {
     }
 
     /**
+     * Check whether a user is appointed by another user with a special role at
+     * a specific event.
+     * 
+     * @param userID
+     *            the ID of the user who to check to be appointed
+     * @param appointedByUserID
+     *            the ID of the user who appointed
+     * @param eventID
+     *            the ID of the event
+     * @param role
+     *            the role the appointed user should have
+     * @return
+     */
+    public boolean isAppointedBy(int userID, int appointedByUserID,
+	    int eventID, UserRole role) throws ObjectNotFoundException {
+	// TODO implement
+	throw new UnsupportedOperationException();
+    }
+
+    /**
      * Get the child nodes of the node categoryID
      * 
      * @param categoryID
