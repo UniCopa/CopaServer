@@ -91,4 +91,20 @@ public abstract class RequestHandler {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
     }
+
+    public void checkPermission(int userID, UserRole requiredRole)
+	    throws PermissionException, RequestNotPracticableException {
+	try {
+	    UserRole hasRole = context.getDbservice().getUserRole(userID);
+	    if (hasRole.level() < requiredRole.level()) {
+		StringBuilder text = new StringBuilder(
+			"Not enough permissions to perform this operation (required: ")
+			.append(requiredRole.toString()).append(" present: ")
+			.append(hasRole.toString()).append(")");
+		throw new PermissionException(text.toString());
+	    }
+	} catch (ObjectNotFoundException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
+	}
+    }
 }

@@ -475,6 +475,18 @@ public class DatabaseService {
     }
 
     /**
+     * Get the role a user holds in general. This will be either UserRole.USER
+     * or UserRole.ADMINISTRATOR.
+     * 
+     * @param userID
+     *            the ID of the user
+     * @return the role the user holds
+     */
+    public UserRole getUserRole(int userID) throws ObjectNotFoundException {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
      * Get the role a user holds for a specific event. The roles will be checked
      * and returned in the following order: UserRole.ADMINISTRATOR if the user
      * holds this role in general, UserRole.RIGHTHOLER, UserRole.DEPUTY,
