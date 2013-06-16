@@ -24,6 +24,7 @@ import unicopa.copa.base.com.request.AbstractResponse;
 import unicopa.copa.base.com.request.SetUserSettingsRequest;
 import unicopa.copa.base.com.request.SetUserSettingsResponse;
 import unicopa.copa.server.CopaSystemContext;
+import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectNotFoundException;
 
 /**
@@ -45,7 +46,7 @@ public class SetUserSettingsRequestHandler extends RequestHandler {
 	    super.getContext().getDbservice()
 		    .updateUserSetting(req.getUserSettings(), userID);
 	    return new SetUserSettingsResponse();
-	} catch (ObjectNotFoundException ex) {
+	} catch (ObjectNotFoundException | IncorrectObjectException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
 

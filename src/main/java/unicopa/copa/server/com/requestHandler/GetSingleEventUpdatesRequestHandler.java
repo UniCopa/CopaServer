@@ -17,6 +17,8 @@
 package unicopa.copa.server.com.requestHandler;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
@@ -27,6 +29,7 @@ import unicopa.copa.base.com.request.GetSingleEventUpdatesResponse;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.base.util.Util;
 import unicopa.copa.server.CopaSystemContext;
+import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectNotFoundException;
 
 /**
@@ -51,7 +54,7 @@ public class GetSingleEventUpdatesRequestHandler extends RequestHandler {
 	    List<List<SingleEventUpdate>> sortedChains = Util
 		    .sortUpdatesAsChains(singleEventUpdates);
 	    return new GetSingleEventUpdatesResponse(sortedChains);
-	} catch (ObjectNotFoundException ex) {
+	} catch (ObjectNotFoundException | IncorrectObjectException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
     }

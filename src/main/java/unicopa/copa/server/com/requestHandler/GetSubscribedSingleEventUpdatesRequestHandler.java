@@ -27,6 +27,7 @@ import unicopa.copa.base.com.request.GetSubscribedSingleEventUpdatesResponse;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.base.util.Util;
 import unicopa.copa.server.CopaSystemContext;
+import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectNotFoundException;
 
 /**
@@ -53,7 +54,7 @@ public class GetSubscribedSingleEventUpdatesRequestHandler extends
 	    List<List<SingleEventUpdate>> sortedChains = Util
 		    .sortUpdatesAsChains(subscribedSingleEventUpdates);
 	    return new GetSubscribedSingleEventUpdatesResponse(sortedChains);
-	} catch (ObjectNotFoundException ex) {
+	} catch (ObjectNotFoundException | IncorrectObjectException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
     }
