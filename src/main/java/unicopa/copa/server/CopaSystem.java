@@ -33,6 +33,7 @@ import unicopa.copa.base.com.request.GetSingleEventRequest;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
+import unicopa.copa.base.com.request.AddRoleToUserRequest;
 import unicopa.copa.base.com.request.AddSingleEventRequest;
 import unicopa.copa.base.com.request.AddSingleEventUpdateRequest;
 import unicopa.copa.base.com.request.CancelSingleEventRequest;
@@ -122,6 +123,7 @@ public class CopaSystem {
 	List<Class<? extends AbstractRequest>> requests = new ArrayList<Class<? extends AbstractRequest>>() {
 	    {
 		// sort alphabetically
+		add(AddRoleToUserRequest.class);
 		add(AddSingleEventRequest.class);
 		add(AddSingleEventUpdateRequest.class);
 		add(CancelSingleEventRequest.class);
