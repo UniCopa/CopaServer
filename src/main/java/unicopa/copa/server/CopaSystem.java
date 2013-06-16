@@ -79,7 +79,7 @@ public class CopaSystem {
 		    null, ex);
 	    throw new RuntimeException();
 	}
-        //TODO add notification services
+	// TODO add notification services
 	loadProperties();
 	loadRequestHandlers();
     }
@@ -118,9 +118,9 @@ public class CopaSystem {
 	List<Class<? extends AbstractRequest>> requests = new ArrayList<Class<? extends AbstractRequest>>() {
 	    {
 		// sort alphabetically
-                add(AddSingleEventRequest.class);
-                add(AddSingleEventUpdateRequest.class);
-                add(CancelSingleEventRequest.class);
+		add(AddSingleEventRequest.class);
+		add(AddSingleEventUpdateRequest.class);
+		add(CancelSingleEventRequest.class);
 		add(GetCategoriesRequest.class);
 		add(GetEventGroupRequest.class);
 		add(GetEventGroupsRequest.class);

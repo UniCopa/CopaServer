@@ -24,34 +24,48 @@ import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectNotFoundException;
 
 /**
- * Handles the introduction of SingleEventUpdates to the system.
- * It should be used by RequestHandlers.
+ * Handles the introduction of SingleEventUpdates to the system. It should be
+ * used by RequestHandlers.
+ * 
  * @author Felix Wiemuth
  */
 public class AddSingleEventUpdateExecutor extends AbstractExecutor {
 
     public AddSingleEventUpdateExecutor(CopaSystemContext context) {
-        super(context);
+	super(context);
     }
-    
-    public void addSingleEvent(SingleEvent singleEvent, String comment, int userID) throws ObjectNotFoundException, IncorrectObjectException {
-            SingleEventUpdate update = new SingleEventUpdate(singleEvent, 0, new Date(), getContext().getDbservice().getUserName(userID), comment);
-            insertUpdateAndNotify(update);
+
+    public void addSingleEvent(SingleEvent singleEvent, String comment,
+	    int userID) throws ObjectNotFoundException,
+	    IncorrectObjectException {
+	SingleEventUpdate update = new SingleEventUpdate(singleEvent, 0,
+		new Date(), getContext().getDbservice().getUserName(userID),
+		comment);
+	insertUpdateAndNotify(update);
     }
-    
-    public void updateSingleEvent(int oldSingleEventID, SingleEvent newSingleEvent, String comment, int userID) throws ObjectNotFoundException, IncorrectObjectException {
-        SingleEventUpdate update = new SingleEventUpdate(newSingleEvent, oldSingleEventID, new Date(), getContext().getDbservice().getUserName(userID), comment);
-        insertUpdateAndNotify(update);
+
+    public void updateSingleEvent(int oldSingleEventID,
+	    SingleEvent newSingleEvent, String comment, int userID)
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	SingleEventUpdate update = new SingleEventUpdate(newSingleEvent,
+		oldSingleEventID, new Date(), getContext().getDbservice()
+			.getUserName(userID), comment);
+	insertUpdateAndNotify(update);
     }
-    
-    public void cancelSingleEvent(int oldSingleEventID, String comment, int userID) throws ObjectNotFoundException, IncorrectObjectException {
-        SingleEventUpdate update = new SingleEventUpdate(null, oldSingleEventID, new Date(), getContext().getDbservice().getUserName(userID), comment);
-        insertUpdateAndNotify(update);
+
+    public void cancelSingleEvent(int oldSingleEventID, String comment,
+	    int userID) throws ObjectNotFoundException,
+	    IncorrectObjectException {
+	SingleEventUpdate update = new SingleEventUpdate(null,
+		oldSingleEventID, new Date(), getContext().getDbservice()
+			.getUserName(userID), comment);
+	insertUpdateAndNotify(update);
     }
-    
-    private void insertUpdateAndNotify(SingleEventUpdate update) throws ObjectNotFoundException, IncorrectObjectException {
-        getContext().getDbservice().insertSingleEventUpdate(update);
-        getContext().getNotifier().notifyClients(update);
+
+    private void insertUpdateAndNotify(SingleEventUpdate update)
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	getContext().getDbservice().insertSingleEventUpdate(update);
+	getContext().getNotifier().notifyClients(update);
     }
-    
+
 }

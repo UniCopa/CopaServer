@@ -20,16 +20,17 @@ import unicopa.copa.server.CopaSystemContext;
 
 /**
  * An executor bundles some common tasks RequestHandlers have to do.
+ * 
  * @author Felix Wiemuth
  */
 public class AbstractExecutor {
     private final CopaSystemContext context;
 
     public AbstractExecutor(CopaSystemContext context) {
-        this.context = context;
+	this.context = context;
     }
 
     public CopaSystemContext getContext() {
-        return context;
-    }    
+	return context;
+    }
 }
