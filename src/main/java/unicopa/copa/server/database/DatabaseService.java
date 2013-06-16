@@ -659,12 +659,15 @@ public class DatabaseService {
      *             is thrown when there is no Event entry in the database with
      *             eventID that is given in the singleEvent object
      * @throws IncorrectObjectException
-     *             is thrown when the give singleEvent object is null
+     *             is thrown when the give singleEvent object,the date,the
+     *             location or the supervisor is null
      */
     public void insertSingleEvent(SingleEvent singleEvent)
 	    throws ObjectNotFoundException, IncorrectObjectException {
 	checkNull(singleEvent);
 	checkNull(singleEvent.getDate());
+	checkNull(singleEvent.getLocation());
+	checkNull(singleEvent.getSupervisor());
 	eventExists(singleEvent.getEventID());
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
@@ -707,10 +710,20 @@ public class DatabaseService {
      * @param eMailNotification
      *            should the person be notified per E-Mail
      * @throws ObjectAlreadyExsistsException
+     *             is thrown if there is already an entry with the same email or
+     *             userName in the database
+     * @throws IncorrectObjectException
+     *             is thrown if the userName, the firstName, the familyName or
+     *             the email is null
      */
     public void insertPerson(String userName, String firstName,
 	    String familyName, String email, String titel, String language,
-	    boolean eMailNotification) throws ObjectAlreadyExsistsException {
+	    boolean eMailNotification) throws ObjectAlreadyExsistsException,
+	    IncorrectObjectException {
+	checkNull(userName);
+	checkNull(firstName);
+	checkNull(familyName);
+	checkNull(email);
 	if (userNameExsists(userName))
 	    throw new ObjectAlreadyExsistsException(
 		    "There is already a User in the database with UserName="
@@ -829,11 +842,13 @@ public class DatabaseService {
      *             is thrown if one of the categoryIDs in the given event object
      *             does not exists in the database
      * @throws IncorrectObjectException
-     *             is thrown it the given event object is null
+     *             is thrown it the given event object or the name in the event
+     *             object is null
      */
     public void insertEvent(Event event) throws ObjectNotFoundException,
 	    IncorrectObjectException {
 	checkNull(event);
+	checkNull(event.getEventName());
 	for (int categoryID : event.getCategories()) {
 	    if (!categoryExsists(categoryID))
 		throw new ObjectNotFoundException(
@@ -858,19 +873,28 @@ public class DatabaseService {
      *            the root categoryNodeImpl of the categoryTree that should be
      *            inserted
      * @param parent
+     *            should be -1 is the inserted CategoryNodeImpl is the root node
      * @throws IncorrectObjectException
      *             is thrown if a given categoryNodeImpl is null
      * @throws ObjectAlreadyExsistsException
      *             is thrown if one of the categories already exists in the
      *             database
+     * @throws ObjectNotFoundException
+     *             is thrown if there is not Category in the database with
+     *             ID=parent
      */
     public void insertCategoryTree(CategoryNodeImpl category, int parent)
-	    throws IncorrectObjectException, ObjectAlreadyExsistsException {
+	    throws IncorrectObjectException, ObjectAlreadyExsistsException,
+	    ObjectNotFoundException {
 	checkNull(category);
 	if (categoryExsists(category.getId()))
 	    throw new ObjectAlreadyExsistsException(
 		    "There is already an entry in the category table in the database with categoryID="
 			    + category.getId());
+	if (!categoryExsists(parent) && parent != -1)
+	    throw new ObjectNotFoundException(
+		    "There is no Category entry in the database with ID="
+			    + parent);
 	insertCategory(category, parent);
 	for (CategoryNodeImpl cate : category.getChildren()) {
 	    insertCategoryTree(cate, category.getId());

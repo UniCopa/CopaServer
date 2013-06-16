@@ -547,6 +547,9 @@ public class DatabaseServiceTest {
 	} catch (ObjectAlreadyExsistsException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
     }
 
@@ -604,6 +607,9 @@ public class DatabaseServiceTest {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	} catch (ObjectAlreadyExsistsException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
