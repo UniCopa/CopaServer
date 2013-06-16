@@ -312,7 +312,18 @@ public class DatabaseService {
     }
 
     /**
-     * Get the E-Mail-Address of the given user.
+     * Get the ID of a user by his email address.
+     * 
+     * @param email
+     *            the email address of the user
+     * @return
+     */
+    public int getUserIDByEmail(String email) {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Get the email address of the given user.
      * 
      * @param userID
      *            the user-ID
