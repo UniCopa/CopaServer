@@ -204,9 +204,12 @@ public class DatabaseService {
      *            the ID of the user
      * @return
      * @throws ObjectNotFoundException
+     * @throws IncorrectObjectException
      */
     public List<SingleEventUpdate> getSubscribedSingleEventUpdates(int userID,
-	    Date since) throws ObjectNotFoundException {
+	    Date since) throws ObjectNotFoundException,
+	    IncorrectObjectException {
+	checkNull(since);
 	checkUser(userID);
 	Set<Integer> subscribedEvents = getUserSettings(userID)
 		.getSubscriptions();
@@ -227,9 +230,11 @@ public class DatabaseService {
      *            the data from when to return updates
      * @return
      * @throws ObjectNotFoundException
+     * @throws IncorrectObjectException
      */
     public List<SingleEventUpdate> getSingleEventUpdates(int eventID, Date since)
-	    throws ObjectNotFoundException {
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	checkNull(since);
 	eventExists(eventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventUpdateMapper mapper = session
@@ -585,9 +590,11 @@ public class DatabaseService {
      * @param userID
      *            the userID
      * @throws ObjectNotFoundException
+     * @throws IncorrectObjectException
      */
     public void updateUserSetting(UserSettings userSetting, int userID)
-	    throws ObjectNotFoundException {
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	checkNull(userSetting);
 	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    UserSettingMapper mapper = session
@@ -657,6 +664,7 @@ public class DatabaseService {
     public void insertSingleEvent(SingleEvent singleEvent)
 	    throws ObjectNotFoundException, IncorrectObjectException {
 	checkNull(singleEvent);
+	checkNull(singleEvent.getDate());
 	eventExists(singleEvent.getEventID());
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
@@ -781,7 +789,8 @@ public class DatabaseService {
     }
 
     /**
-     * Inserts the given singleEventUpdate into the database
+     * Inserts the given singleEventUpdate into the database. this includes the
+     * new SingleEvent that is given in singleEventUpdate
      * 
      * @param singleEventUpdate
      * @throws ObjectNotFoundException
@@ -789,11 +798,13 @@ public class DatabaseService {
      *             oldSingleEventID that is given in the singleEventUpdate
      *             object
      * @throws IncorrectObjectException
-     *             is thrown if the given singleEventUpdate object is null
+     *             is thrown if the given singleEventUpdate or the updateDate
+     *             object is null
      */
     public void insertSingleEventUpdate(SingleEventUpdate singleEventUpdate)
 	    throws ObjectNotFoundException, IncorrectObjectException {
 	checkNull(singleEventUpdate);
+	checkNull(singleEventUpdate.getUpdateDate());
 	eventExists(singleEventUpdate.getOldSingleEventID());
 	insertSingleEvent(singleEventUpdate.getUpdatedSingleEvent());
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -832,12 +843,61 @@ public class DatabaseService {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventMapper mapper = session.getMapper(EventMapper.class);
 	    mapper.insertEvent(event);
-	    System.out.println(event.getEventID());
 	    session.commit();
-	    System.out.println(event.getEventID());
 	    mapper.insertEventCategorie(event.getEventID(),
 		    event.getCategories());
 	    session.commit();
+	}
+    }
+
+    /**
+     * Inserts the given CategoryNodeImpl into the database, also all child
+     * CategoryNodeImpls will be inserted
+     * 
+     * @param category
+     *            the root categoryNodeImpl of the categoryTree that should be
+     *            inserted
+     * @param parent
+     * @throws IncorrectObjectException
+     *             is thrown if a given categoryNodeImpl is null
+     * @throws ObjectAlreadyExsistsException
+     *             is thrown if one of the categories already exists in the
+     *             database
+     */
+    public void insertCategoryTree(CategoryNodeImpl category, int parent)
+	    throws IncorrectObjectException, ObjectAlreadyExsistsException {
+	checkNull(category);
+	if (categoryExsists(category.getId()))
+	    throw new ObjectAlreadyExsistsException(
+		    "There is already an entry in the category table in the database with categoryID="
+			    + category.getId());
+	insertCategory(category, parent);
+	for (CategoryNodeImpl cate : category.getChildren()) {
+	    insertCategoryTree(cate, category.getId());
+	}
+
+    }
+
+    /**
+     * Inserts a Category into the database. if its not the root Category, a
+     * CategoryConnection is also inserted into the database
+     * 
+     * @param category
+     * @param parent
+     * @throws IncorrectObjectException
+     *             is thrown if the gven category is null
+     */
+    private void insertCategory(CategoryNodeImpl category, int parent)
+	    throws IncorrectObjectException {
+	checkNull(category);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
+	    mapper.insertCategory(category);
+	    session.commit();
+	    if (category.getId() != 0) {
+		mapper.insertCategoryConnection(parent, category.getId());
+		session.commit();
+	    }
 	}
     }
 
@@ -855,7 +915,6 @@ public class DatabaseService {
 	    if (a == 0)
 		return false;
 	    return true;
-
 	}
     }
 
