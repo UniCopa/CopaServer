@@ -377,6 +377,21 @@ public class DatabaseService {
     }
 
     /**
+     * Get all (still valid) SingleEvents for an Event where the scheduled date
+     * is past the given date.
+     * 
+     * @param eventID
+     *            the ID of the event where to get the current SingleEvents from
+     * @param since
+     *            the date since when SingleEvents should be returned
+     * @return
+     */
+    public List<SingleEvent> getCurrentSingleEvents(int eventID, Date since)
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	throw new UnsupportedOperationException();
+    }
+
+    /**
      * Get the names of rightholders for an event.
      * 
      * @param eventID
