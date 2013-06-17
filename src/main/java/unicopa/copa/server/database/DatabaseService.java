@@ -459,6 +459,22 @@ public class DatabaseService {
     }
 
     /**
+     * Get all events where a user holds higher roles. The map returned maps
+     * from RIGHTHOLDER, DEPUTY and OWNER to the IDs of the events where the
+     * user hold this role.
+     * 
+     * @param userID
+     *            the ID of the user
+     * @return
+     * @throws ObjectNotFoundException
+     */
+    public Map<UserRole, List<Integer>> getUsersPriviligedEvents(int userID)
+	    throws ObjectNotFoundException {
+	// TODO implement
+	throw new UnsupportedOperationException();
+    }
+
+    /**
      * Check whether a user is appointed by another user with a special role at
      * a specific event.
      * 

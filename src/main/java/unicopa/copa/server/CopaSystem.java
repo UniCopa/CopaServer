@@ -47,6 +47,7 @@ import unicopa.copa.base.com.request.GetEventGroupRequest;
 import unicopa.copa.base.com.request.GetEventGroupsRequest;
 import unicopa.copa.base.com.request.GetEventRequest;
 import unicopa.copa.base.com.request.GetEventsRequest;
+import unicopa.copa.base.com.request.GetMyEventsRequest;
 import unicopa.copa.base.com.request.GetSingleEventUpdatesRequest;
 import unicopa.copa.base.com.request.GetSubscribedSingleEventUpdatesRequest;
 import unicopa.copa.base.com.request.GetUserSettingsRequest;
@@ -139,6 +140,7 @@ public class CopaSystem {
 		add(GetEventGroupsRequest.class);
 		add(GetEventRequest.class);
 		add(GetEventsRequest.class);
+		add(GetMyEventsRequest.class);
 		add(GetSingleEventRequest.class);
 		add(GetSingleEventUpdatesRequest.class);
 		add(GetSubscribedSingleEventUpdatesRequest.class);
