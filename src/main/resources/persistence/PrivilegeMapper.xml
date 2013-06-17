@@ -20,6 +20,13 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace='unicopa.copa.server.database.data.persistence.PrivilegeMapper'>
     
+    <resultMap id="resultDBUserData" type="unicopa.copa.server.database.data.db.DBUserData">
+        <id property="kindOfPrivilege" column="kindOfPrivilege" />
+    	<result property="firstName" column="firstName" />
+    	<result property="familyName" column="familyName" />
+    	<result property="email" column="email" />  	
+	</resultMap>
+    
     <select id='getPrivileged' parameterType='int' resultType='String'>
         select p.firstName || ' ' || p.familyName as Name
 		from persons p, privilege r
@@ -39,6 +46,12 @@
         Select eventid, kindofprivilege
 		from privilege
 		where personID=#{userID}
+    </select>
+    
+    <select id='getUsersAppointedUsers' parameterType='int' resultMap='resultDBUserData'>
+        Select r.kindOfPrivilege,p.firstName,p.familyName,p.email
+        From persons p, privilege r
+        Where gavePrivilege=#{gavePrivilege} and p.personID=r.personID and kindOfPrivilege >1
     </select>
     
     <delete id='removePrivilege' parameterType='map'>

@@ -40,6 +40,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 
 import unicopa.copa.base.ServerStatusNote;
+import unicopa.copa.base.UserData;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
@@ -712,6 +713,16 @@ public class DatabaseServiceTest {
 	    assertEquals("TestNote...huhu", notes.get(0).getNote());
 	    assertEquals("Another Test...YAY", notes.get(1).getNote());
 	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
+    public void testGetUsersAppointedUsers() {
+	try {
+	    dbs.getUsersAppointedUsers(2);
+	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}

@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
-import unicopa.copa.base.UserRole;
+import unicopa.copa.server.database.data.db.DBUserData;
 
 public interface PrivilegeMapper {
 
@@ -50,4 +50,7 @@ public interface PrivilegeMapper {
 
     public List<Map<String, Integer>> getUsersPriviligedEvents(
 	    @Param("userID") int userID);
+
+    public List<DBUserData> getUsersAppointedUsers(
+	    @Param("gavePrivilege") int gavePrivilege);
 }

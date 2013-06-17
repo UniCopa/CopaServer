@@ -53,6 +53,7 @@ import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.database.data.db.DBCategoryNode;
 import unicopa.copa.server.database.data.db.DBSingleEventUpdate;
+import unicopa.copa.server.database.data.db.DBUserData;
 import unicopa.copa.server.database.data.persistence.CategoryMapper;
 import unicopa.copa.server.database.data.persistence.EventGroupMapper;
 import unicopa.copa.server.database.data.persistence.EventMapper;
@@ -515,8 +516,32 @@ public class DatabaseService {
      */
     public Map<UserRole, List<UserData>> getUsersAppointedUsers(int userID)
 	    throws ObjectNotFoundException {
-	// TODO implement
-	throw new UnsupportedOperationException();
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    List<DBUserData> dbUserDataList = mapper
+		    .getUsersAppointedUsers(userID);
+	    List<UserData> ownerList = new ArrayList<>();
+	    List<UserData> deputyList = new ArrayList<>();
+	    for (DBUserData user : dbUserDataList) {
+		switch (user.getKindOfPrivilege()) {
+		case (2):
+		    deputyList.add(new UserData(user.getFirstname() + " "
+			    + user.getFamilyname(), user.getEmail()));
+		    break;
+		case (3):
+		    ownerList.add(new UserData(user.getFirstname() + " "
+			    + user.getFamilyname(), user.getEmail()));
+		    break;
+		default:
+		    // TODO throw Exception?
+		    break;
+		}
+	    }
+	    Map<UserRole, List<UserData>> usersAppointedUsers = new HashMap<>();
+	    usersAppointedUsers.put(UserRole.DEPUTY, deputyList);
+	    usersAppointedUsers.put(UserRole.OWNER, ownerList);
+	    return usersAppointedUsers;
+	}
     }
 
     /**
@@ -1213,6 +1238,11 @@ public class DatabaseService {
 		    gavePrivilegeID, privDate.getTime());
 	    session.commit();
 	}
+    }
+
+    public void insertEventGroup(EventGroup eventGroup)
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	// TODO
     }
 
     /**
