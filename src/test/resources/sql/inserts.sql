@@ -141,20 +141,20 @@ insert into gCMKeys(gCMKey,personID) values
 	('hnbvfg',7);
 	
 insert into singleEventUpdates(oldSingleEventID,newSingleEventID,sEventUpdateDate,comment,creator) values
-	(1,3,234234,'Nope','Der Cheff'),
-	(3,4,2134,'Grund:sfsfsdf','Up Dater'),
-	(2,6,13513,'','ABC'),
-	(6,7,61344,'','Test'),
-	(5,8,523462,'','Max Mustermann'),
-	(10,11,53234,'sdfr','Ichwars Net'),
-	(0,2,1,'new','Mr.DB'),
-	(0,5,1,'new','Mr.DB'),
-	(0,9,1,'new','Mr.DB'),
-	(0,10,1,'new','Mr.DB'),
-	(0,1,1,'new','Mr.DB'),
-	(0,12,1,'new','Mr.DB'),
-	(0,13,1,'new','Mr.DB'),
-	(0,14,1,'new','Mr.DB');
+	(1,3,1381471714176,'Nope','Der Cheff'),
+	(3,4,1381471714176,'Grund:sfsfsdf','Up Dater'),
+	(2,6,1381471714176,'','ABC'),
+	(6,7,1381471714176,'','Test'),
+	(5,8,1381471714176,'','Max Mustermann'),
+	(10,11,1381471714176,'sdfr','Ichwars Net'),
+	(0,2,1381471714176,'new','Mr.DB'),
+	(0,5,1381471714176,'new','Mr.DB'),
+	(0,9,1381471714176,'new','Mr.DB'),
+	(0,10,1381471714176,'new','Mr.DB'),
+	(0,1,1381471714176,'new','Mr.DB'),
+	(0,12,1381471714176,'new','Mr.DB'),
+	(0,13,1381471714176,'new','Mr.DB'),
+	(0,14,1381471714176,'new','Mr.DB');
 
 	
 insert into subscriptionLists(personID,eventID,color) values

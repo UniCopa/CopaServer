@@ -112,7 +112,8 @@ public class DatabaseServiceTest {
     @Test
     public void testGetCurrentSingleEvents() {
 	try {
-	    dbs.getCurrentSingleEvents(4, new Date(100));
+	    List<SingleEvent> res = dbs.getCurrentSingleEvents(4, new Date());
+	    assertEquals(2, res.size());
 	    // TODO proper test
 	} catch (ObjectNotFoundException | IncorrectObjectException e) {
 	    // TODO Auto-generated catch block
@@ -124,10 +125,10 @@ public class DatabaseServiceTest {
     public void testGetSubscribedSingleEventUpdates() {
 	SingleEventUpdate sEU1 = new SingleEventUpdate(new SingleEvent(3, 3,
 		"bla", new Date(1381471714176L), "Dr. Test", 120), 1, new Date(
-		234234), "Der Cheff", "Nope");
+		1381471714176L), "Der Cheff", "Nope");
 	SingleEventUpdate sEU2 = new SingleEventUpdate(new SingleEvent(6, 7,
 		"bla", new Date(1399971714176L), "Prof. Test", 11), 2,
-		new Date(13513), "ABC", "");
+		new Date(1381471714176L), "ABC", "");
 	List<SingleEventUpdate> sEUList = new ArrayList<>();
 	sEUList.add(sEU1);
 	sEUList.add(sEU2);
