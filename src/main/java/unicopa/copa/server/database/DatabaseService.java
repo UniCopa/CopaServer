@@ -56,6 +56,7 @@ import unicopa.copa.server.database.data.persistence.EventGroupMapper;
 import unicopa.copa.server.database.data.persistence.EventMapper;
 import unicopa.copa.server.database.data.persistence.PersonMapper;
 import unicopa.copa.server.database.data.persistence.PrivilegeMapper;
+import unicopa.copa.server.database.data.persistence.ServerStatusMapper;
 import unicopa.copa.server.database.data.persistence.SingleEventMapper;
 import unicopa.copa.server.database.data.persistence.SingleEventUpdateMapper;
 import unicopa.copa.server.database.data.persistence.UserSettingMapper;
@@ -1135,6 +1136,41 @@ public class DatabaseService {
 	    mapper.insertPrivilege(userID, eventID, kindOfPrivilege,
 		    gavePrivilegeID, privDate.getTime());
 	    session.commit();
+	}
+    }
+
+    /**
+     * Add a new status note entry into the database
+     * 
+     * @param note
+     * @throws IncorrectObjectException
+     */
+    public void addServerStatusNote(String note)
+	    throws IncorrectObjectException {
+	checkNull(note, "given String");
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    ServerStatusMapper mapper = session
+		    .getMapper(ServerStatusMapper.class);
+	    mapper.addServerStatusNote(note, new Date().getTime());
+	    session.commit();
+	}
+    }
+
+    /**
+     * Get all server status notes since the given Date
+     * 
+     * @param since
+     * @return
+     * @throws IncorrectObjectException
+     */
+    public List<String> getServerStatusNote(Date since)
+	    throws IncorrectObjectException {
+	checkNull(since, "given Date");
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    ServerStatusMapper mapper = session
+		    .getMapper(ServerStatusMapper.class);
+	    List<String> noteList = mapper.getServerStatusNote(since.getTime());
+	    return noteList;
 	}
     }
 

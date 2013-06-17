@@ -671,4 +671,28 @@ public class DatabaseServiceTest {
 	    e.printStackTrace();
 	}
     }
+
+    @Test
+    public void testAddServerStatusNote() {
+	try {
+	    dbs.addServerStatusNote("TestNote...huhu");
+	    dbs.addServerStatusNote("Another Test...YAY");
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
+    public void testGetServerStatusNote() {
+	try {
+	    List<String> notes = dbs.getServerStatusNote(new Date(new Date()
+		    .getTime() - 100000));
+	    assertEquals("TestNote...huhu", notes.get(0));
+	    assertEquals("Another Test...YAY", notes.get(1));
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
 }
