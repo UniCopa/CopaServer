@@ -17,6 +17,7 @@
 package unicopa.copa.server.database.data.persistence;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -25,6 +26,7 @@ public interface ServerStatusMapper {
     public void addServerStatusNote(@Param("note") String note,
 	    @Param("currentTime") long currentTime);
 
-    public List<String> getServerStatusNote(@Param("since") long since);
+    public List<Map<String, Integer>> getServerStatusNote(
+	    @Param("since") long since);
 
 }

@@ -115,5 +115,5 @@
        insert into persons(userName,firstName,familyName,email,titel,language,eMailNotification) values
 			(#{userName},#{firstName},#{familyName},#{email},#{titel},#{language},#{eMailNotification}) 
     </insert>
-
+    
 </mapper>

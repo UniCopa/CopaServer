@@ -77,6 +77,7 @@ insert into event_has_Categories(categoryID, eventID) values
 	  (8,12),
 	  (9,14),
 	  (9,13),
+	  (6,4),
 	  (9,16);
 
 insert into singleEvents(eventID,location,sEventDate,duration,supervisor,mostRecent) values

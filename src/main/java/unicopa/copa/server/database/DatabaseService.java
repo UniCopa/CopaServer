@@ -42,6 +42,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import unicopa.copa.base.UserData;
 
+import unicopa.copa.base.ServerStatusNote;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
@@ -1238,14 +1239,21 @@ public class DatabaseService {
      * @return
      * @throws IncorrectObjectException
      */
-    public List<String> getServerStatusNote(Date since)
+    public List<ServerStatusNote> getServerStatusNote(Date since)
 	    throws IncorrectObjectException {
 	checkNull(since, "given Date");
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    ServerStatusMapper mapper = session
 		    .getMapper(ServerStatusMapper.class);
-	    List<String> noteList = mapper.getServerStatusNote(since.getTime());
-	    return noteList;
+	    List<Map<String, Integer>> noteList = mapper
+		    .getServerStatusNote(since.getTime());
+	    List<ServerStatusNote> serverStatusNote = new ArrayList<>();
+	    for (Map<String, Integer> note : noteList) {
+		serverStatusNote.add(new ServerStatusNote(new Date(Long
+			.parseLong(String.valueOf(note.get("NOTEDATE")), 10)),
+			"" + note.get("STATUSMSG")));
+	    }
+	    return serverStatusNote;
 	}
     }
 
