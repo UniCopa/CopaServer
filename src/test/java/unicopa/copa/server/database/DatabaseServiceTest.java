@@ -695,4 +695,16 @@ public class DatabaseServiceTest {
 	    e.printStackTrace();
 	}
     }
+
+    @Test
+    public void testIsAppointedByUser() {
+	try {
+	    assertEquals(true, dbs.isAppointedBy(1, 2, 1, UserRole.RIGHTHOLDER));
+	    assertEquals(false,
+		    dbs.isAppointedBy(1, 7, 1, UserRole.RIGHTHOLDER));
+	} catch (ObjectNotFoundException | IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
 }

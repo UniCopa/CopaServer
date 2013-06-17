@@ -29,6 +29,12 @@
 		</if>	
     </select>
     
+    <select id='isAppointedBy' parameterType='map' resultType='int'>
+        Select Count(*)
+        From privilege
+        Where personID=#{userID} and eventID=#{eventID} and gavePrivilege=#{gavePrivilege} and kindOfPrivilege=#{kindOfPrivilege}
+    </select>
+    
     <delete id='removePrivilege' parameterType='map'>
         delete from privilege
         where personID=#{userID} and eventID=#{eventID}

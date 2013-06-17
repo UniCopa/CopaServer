@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import unicopa.copa.base.UserRole;
+
 public interface PrivilegeMapper {
 
     public List<String> getPrivileged(@Param("eventID") int eventID,
@@ -39,4 +41,9 @@ public interface PrivilegeMapper {
 	    @Param("date") long date);
 
     public void deleteAdmin(@Param("userID") int userID);
+
+    public Integer isAppointedBy(@Param("userID") int userID,
+	    @Param("gavePrivilege") int gavePrivilege,
+	    @Param("eventID") int eventID,
+	    @Param("kindOfPrivilege") int kindOfPrivilege);
 }

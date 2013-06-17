@@ -488,11 +488,34 @@ public class DatabaseService {
      * @param role
      *            the role the appointed user should have
      * @return
+     * @throws IncorrectObjectException
      */
     public boolean isAppointedBy(int userID, int appointedByUserID,
-	    int eventID, UserRole role) throws ObjectNotFoundException {
-	// TODO implement
-	throw new UnsupportedOperationException();
+	    int eventID, UserRole role) throws ObjectNotFoundException,
+	    IncorrectObjectException {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    int kindOfPrivilege = 0;
+	    switch (role) {
+	    case DEPUTY:
+		kindOfPrivilege = 2;
+		break;
+	    case OWNER:
+		kindOfPrivilege = 3;
+		break;
+	    case RIGHTHOLDER:
+		kindOfPrivilege = 1;
+		break;
+	    default:
+		throw new IncorrectObjectException(
+			"isAppointedBy not defined for UserRole = " + role);
+	    }
+	    Integer rows = mapper.isAppointedBy(userID, appointedByUserID,
+		    eventID, kindOfPrivilege);
+	    if (rows == 0)
+		return false;
+	    return true;
+	}
     }
 
     /**
