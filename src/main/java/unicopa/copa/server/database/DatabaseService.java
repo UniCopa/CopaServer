@@ -603,6 +603,7 @@ public class DatabaseService {
 	}
     }
 
+    // TODO correct doc
     /**
      * Set the role of a user for a specific event.
      * 

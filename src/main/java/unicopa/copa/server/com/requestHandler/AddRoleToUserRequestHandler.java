@@ -25,6 +25,7 @@ import unicopa.copa.base.com.request.AbstractResponse;
 import unicopa.copa.base.com.request.AddRoleToUserRequest;
 import unicopa.copa.base.com.request.AddRoleToUserResponse;
 import unicopa.copa.server.CopaSystemContext;
+import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectNotFoundException;
 
 /**
@@ -87,8 +88,13 @@ public class AddRoleToUserRequestHandler extends RequestHandler {
 		    "The user specified already has the given role.");
 	}
 
-	getContext().getDbservice().setUserRoleForEvent(userToAdd,
-		req.getEventID(), req.getRole());
+	// Set the role
+	try {
+	    getContext().getDbservice().setUserRoleForEvent(userToAdd,
+		    req.getEventID(), req.getRole(), userID);
+	} catch (IncorrectObjectException | ObjectNotFoundException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
+	}
 
 	return new AddRoleToUserResponse();
     }

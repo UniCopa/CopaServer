@@ -16,6 +16,8 @@
  */
 package unicopa.copa.server.com.requestHandler;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
@@ -25,6 +27,7 @@ import unicopa.copa.base.com.request.AbstractResponse;
 import unicopa.copa.base.com.request.RemoveRoleFromUserRequest;
 import unicopa.copa.base.com.request.RemoveRoleFromUserResponse;
 import unicopa.copa.server.CopaSystemContext;
+import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectNotFoundException;
 
 /**
@@ -42,6 +45,7 @@ public class RemoveRoleFromUserRequestHandler extends RequestHandler {
 	    throws PermissionException, RequestNotPracticableException,
 	    InternalErrorException {
 	RemoveRoleFromUserRequest req = (RemoveRoleFromUserRequest) request;
+
 	int userToRemove;
 	try {
 	    userToRemove = getContext().getDbservice().getUserIDByEmail(
@@ -56,6 +60,9 @@ public class RemoveRoleFromUserRequestHandler extends RequestHandler {
 	} catch (ObjectNotFoundException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
+
+	// Check whether the action to perform is a withdrawal (which it must
+	// be)
 	try {
 	    if (!getContext().getDbservice().isAppointedBy(userToRemove,
 		    userID, req.getEventID(), userToRemoveRole)) {
@@ -65,8 +72,15 @@ public class RemoveRoleFromUserRequestHandler extends RequestHandler {
 	} catch (ObjectNotFoundException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
-	getContext().getDbservice().setUserRoleForEvent(userID, userID,
-		userToRemoveRole);
+
+	// Set the role
+	try {
+	    getContext().getDbservice().setUserRoleForEvent(userToRemove,
+		    req.getEventID(), UserRole.USER, userID);
+	} catch (IncorrectObjectException | ObjectNotFoundException ex) {
+	    throw new RequestNotPracticableException(ex.getMessage());
+	}
+
 	return new RemoveRoleFromUserResponse();
     }
 }
