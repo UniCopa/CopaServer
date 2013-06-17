@@ -17,6 +17,7 @@
 package unicopa.copa.server.database.data.persistence;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -46,4 +47,7 @@ public interface PrivilegeMapper {
 	    @Param("gavePrivilege") int gavePrivilege,
 	    @Param("eventID") int eventID,
 	    @Param("kindOfPrivilege") int kindOfPrivilege);
+
+    public List<Map<String, Integer>> getUsersPriviligedEvents(
+	    @Param("userID") int userID);
 }

@@ -471,8 +471,36 @@ public class DatabaseService {
      */
     public Map<UserRole, List<Integer>> getUsersPriviligedEvents(int userID)
 	    throws ObjectNotFoundException {
-	// TODO implement
-	throw new UnsupportedOperationException();
+	checkUser(userID);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    List<Map<String, Integer>> userPrivList = mapper
+		    .getUsersPriviligedEvents(userID);
+	    List<Integer> ownerEvents = new ArrayList<>();
+	    List<Integer> deputyEvents = new ArrayList<>();
+	    List<Integer> rightholderEvents = new ArrayList<>();
+	    for (Map<String, Integer> result : userPrivList) {
+		switch (result.get("KINDOFPRIVILEGE")) {
+		case (1):
+		    rightholderEvents.add(result.get("EVENTID"));
+		    break;
+		case (2):
+		    deputyEvents.add(result.get("EVENTID"));
+		    break;
+		case (3):
+		    ownerEvents.add(result.get("EVENTID"));
+		    break;
+		default:
+		    // TODO throw exception?
+		    break;
+		}
+	    }
+	    Map<UserRole, List<Integer>> userPrivMap = new HashMap<>();
+	    userPrivMap.put(UserRole.OWNER, ownerEvents);
+	    userPrivMap.put(UserRole.DEPUTY, deputyEvents);
+	    userPrivMap.put(UserRole.RIGHTHOLDER, rightholderEvents);
+	    return userPrivMap;
+	}
     }
 
     /**

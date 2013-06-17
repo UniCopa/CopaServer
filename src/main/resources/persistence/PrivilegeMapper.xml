@@ -35,6 +35,12 @@
         Where personID=#{userID} and eventID=#{eventID} and gavePrivilege=#{gavePrivilege} and kindOfPrivilege=#{kindOfPrivilege}
     </select>
     
+    <select id='getUsersPriviligedEvents' parameterType='int' resultType='map'>
+        Select eventid, kindofprivilege
+		from privilege
+		where personID=#{userID}
+    </select>
+    
     <delete id='removePrivilege' parameterType='map'>
         delete from privilege
         where personID=#{userID} and eventID=#{eventID}

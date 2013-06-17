@@ -110,6 +110,16 @@ public class DatabaseServiceTest {
     }
 
     @Test
+    public void testInsertStupidFunktionnameHere() {
+	try {
+	    dbs.getUsersPriviligedEvents(4);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
     public void testGetCurrentSingleEvents() {
 	try {
 	    List<SingleEvent> res = dbs.getCurrentSingleEvents(4, new Date());
