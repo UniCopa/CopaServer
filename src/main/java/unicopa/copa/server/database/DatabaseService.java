@@ -792,11 +792,20 @@ public class DatabaseService {
 		    userSetting.isEmailNotificationEnabled(), userID);
 	    mapper.deleteAllSubscriptions(userID);
 	    for (int eventID : userSetting.getSubscriptions()) {
+		checkColor(userSetting.getEventSettings(eventID).getColorCode());
 		mapper.insertSubscription(eventID, userSetting
 			.getEventSettings(eventID).getColorCode(), userID);
 	    }
 	    session.commit();
 	}
+    }
+
+    public void checkColor(String colorCode) throws IncorrectObjectException {
+	String pattern = "[a-fA-F0123456789]*";
+	if (colorCode == null || colorCode.length() != 6
+		|| !colorCode.matches(pattern))
+	    throw new IncorrectObjectException(colorCode
+		    + " is not a valid colorCode!");
     }
 
     /**

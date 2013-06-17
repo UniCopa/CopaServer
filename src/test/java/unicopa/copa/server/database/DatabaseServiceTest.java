@@ -122,6 +122,16 @@ public class DatabaseServiceTest {
     }
 
     @Test
+    public void testGetSingleEventUpdates() {
+	try {
+	    dbs.getSingleEventUpdates(1, new Date());
+	} catch (ObjectNotFoundException | IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
     public void testGetSubscribedSingleEventUpdates() {
 	SingleEventUpdate sEU1 = new SingleEventUpdate(new SingleEvent(3, 3,
 		"bla", new Date(1381471714176L), "Dr. Test", 120), 1, new Date(
