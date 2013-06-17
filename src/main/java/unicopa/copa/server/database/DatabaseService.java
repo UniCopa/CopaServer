@@ -1068,9 +1068,9 @@ public class DatabaseService {
 	    checkSingleEvent(singleEventUpdate.getOldSingleEventID());
 	    if (!isRecent(singleEventUpdate.getOldSingleEventID()))
 		throw new IncorrectObjectException(
-			"An Update can only be performed on an Current SingleEvent. SingleEvent with ID="
+			"An update can only be performed on an active SingleEvent. SingleEvent with ID="
 				+ singleEventUpdate.getOldSingleEventID()
-				+ " is not Current!");
+				+ " is deprecated.");
 	}
 	if (singleEventUpdate.getUpdatedSingleEvent() != null) {
 	    insertSingleEvent(singleEventUpdate.getUpdatedSingleEvent(), true);
