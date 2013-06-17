@@ -40,6 +40,7 @@ import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import unicopa.copa.base.UserData;
 
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
@@ -501,6 +502,20 @@ public class DatabaseService {
 	    userPrivMap.put(UserRole.RIGHTHOLDER, rightholderEvents);
 	    return userPrivMap;
 	}
+    }
+
+    /**
+     * Get all users a user gave higher roles to. The map returned maps from
+     * DEPUTY and OWNER to the user data of the users who got this role.
+     * 
+     * @param userID
+     *            the ID of the user who gave the roles
+     * @return
+     */
+    public Map<UserRole, List<UserData>> getUsersAppointedUsers(int userID)
+	    throws ObjectNotFoundException {
+	// TODO implement
+	throw new UnsupportedOperationException();
     }
 
     /**
