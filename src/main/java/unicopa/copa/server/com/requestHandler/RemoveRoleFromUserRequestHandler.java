@@ -53,6 +53,12 @@ public class RemoveRoleFromUserRequestHandler extends RequestHandler {
 	} catch (ObjectNotFoundException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
+
+	if (userToRemove == userID) {
+	    throw new RequestNotPracticableException(
+		    "A user cannot remove a role from himself with this request.");
+	}
+
 	UserRole userToRemoveRole;
 	try {
 	    userToRemoveRole = getContext().getDbservice()

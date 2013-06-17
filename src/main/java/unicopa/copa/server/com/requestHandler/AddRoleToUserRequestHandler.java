@@ -51,6 +51,12 @@ public class AddRoleToUserRequestHandler extends RequestHandler {
 	} catch (ObjectNotFoundException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
+
+	if (userToAdd == userID) {
+	    throw new RequestNotPracticableException(
+		    "A user cannot add roles for himself.");
+	}
+
 	UserRole currentRoleUserToAdd;
 	try {
 	    currentRoleUserToAdd = getContext().getDbservice()
