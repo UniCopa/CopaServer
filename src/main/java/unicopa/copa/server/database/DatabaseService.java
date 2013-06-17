@@ -620,7 +620,6 @@ public class DatabaseService {
 	}
     }
 
-    // TODO correct doc
     /**
      * Set the role of a user for a specific event.
      * 
@@ -630,6 +629,8 @@ public class DatabaseService {
      *            the ID of the event where to set the role for the user
      * @param role
      *            the role to set
+     * @param gavePrivilegeID
+     *            the ID of the user that permitted the privilege
      * @throws IncorrectObjectException
      * @throws ObjectNotFoundException
      */
@@ -923,7 +924,7 @@ public class DatabaseService {
     }
 
     /**
-     * Returns true if there is a person entry int the database with the given
+     * Returns true if there is a person entry in the database with the given
      * E-Mail
      * 
      * @param email
@@ -1021,6 +1022,8 @@ public class DatabaseService {
 			singleEventUpdate.getCreatorName(), singleEventUpdate
 				.getComment()));
 		session.commit();
+		updateSingleEventStatus(
+			singleEventUpdate.getOldSingleEventID(), false);
 	    }
 	}
     }

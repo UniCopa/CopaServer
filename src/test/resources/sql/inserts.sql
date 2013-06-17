@@ -81,20 +81,20 @@ insert into event_has_Categories(categoryID, eventID) values
 
 insert into singleEvents(eventID,location,sEventDate,duration,supervisor,mostRecent) values
 		(0,'DUMMY',0,0,'DUMMY',false),
-	   (1,'1',1999101,20,'Dr. Test',false),
-	   (1,'5',5345345,90,'Dr. Test',false),
-	   (3,'bla',8765445,120,'Dr. Test',false),
-	   (4,'test',1234123,10,'Prof. Test',true),
-	   (6,'5',5323452,5,'Prof. Test',false),
-	   (7,'bla',2323452,11,'Prof. Test',false),
-	   (4,'test',5145213,100,'Dr. Test',false),
-	   (8,'bla',12342135,80,'Dr. Test',true),
-	   (10,'bla',531234,12,'Dr. Test',true),
-	   (15,'test',21024000,14,'Prof. Test',false),
-	   (12,'5',131234,523,'Dr. Test',true),
-	   (4,'test',61354,12,'Prof. Test',true),
-	   (9,'5',34634,253,'Dr. Test',true),
-	   (11,'test',8765,2345,'Dr. Test',true);
+	   (1,'1',1391471714176,20,'Dr. Test',false),
+	   (1,'5',1491471714176,90,'Dr. Test',false),
+	   (3,'bla',1381471714176,120,'Dr. Test',false),
+	   (4,'test',1401471714176,10,'Prof. Test',true),
+	   (6,'5',1391471714176,5,'Prof. Test',false),
+	   (7,'bla',1399971714176,11,'Prof. Test',false),
+	   (4,'test',1391471714176,100,'Dr. Test',false),
+	   (8,'bla',1391471714176,80,'Dr. Test',true),
+	   (10,'bla',1391471714176,12,'Dr. Test',true),
+	   (15,'test',1391471714176,14,'Prof. Test',false),
+	   (12,'5',1397471714176,523,'Dr. Test',true),
+	   (4,'test',1391471714176,12,'Prof. Test',true),
+	   (9,'5',1398821714176,253,'Dr. Test',true),
+	   (11,'test',1399991714176,2345,'Dr. Test',true);
 	   
 	   
 

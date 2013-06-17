@@ -11,3 +11,4 @@ DROP TABLE categories;
 DROP TABLE singleEvents;
 DROP TABLE events;
 DROP TABLE eventGroups;
+DROP TABLE server_status_notes;

@@ -112,8 +112,7 @@ public class DatabaseServiceTest {
     @Test
     public void testGetCurrentSingleEvents() {
 	try {
-	    List<SingleEvent> res = dbs
-		    .getCurrentSingleEvents(4, new Date(100));
+	    dbs.getCurrentSingleEvents(4, new Date(100));
 	    // TODO proper test
 	} catch (ObjectNotFoundException | IncorrectObjectException e) {
 	    // TODO Auto-generated catch block
@@ -124,10 +123,10 @@ public class DatabaseServiceTest {
     @Test
     public void testGetSubscribedSingleEventUpdates() {
 	SingleEventUpdate sEU1 = new SingleEventUpdate(new SingleEvent(3, 3,
-		"bla", new Date(8765445), "Dr. Test", 120), 1,
-		new Date(234234), "Der Cheff", "Nope");
+		"bla", new Date(1381471714176L), "Dr. Test", 120), 1, new Date(
+		234234), "Der Cheff", "Nope");
 	SingleEventUpdate sEU2 = new SingleEventUpdate(new SingleEvent(6, 7,
-		"bla", new Date(2323452), "Prof. Test", 11), 2,
+		"bla", new Date(1399971714176L), "Prof. Test", 11), 2,
 		new Date(13513), "ABC", "");
 	List<SingleEventUpdate> sEUList = new ArrayList<>();
 	sEUList.add(sEU1);
@@ -228,8 +227,8 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetSingleEvent() {
-	SingleEvent sE = new SingleEvent(10, 15, "test", new Date(21024000),
-		"Prof. Test", 14);
+	SingleEvent sE = new SingleEvent(10, 15, "test", new Date(
+		1391471714176L), "Prof. Test", 14);
 	SingleEvent ressE = null;
 	try {
 	    ressE = dbs.getSingleEvent(10);
@@ -596,6 +595,13 @@ public class DatabaseServiceTest {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
+    }
+
+    @Test(expected = IncorrectObjectException.class)
+    public void testInsertSingleEventUpdateCANCEL2()
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	dbs.insertSingleEventUpdate(new SingleEventUpdate(null, 9, new Date(
+		195000), "Mr. Cancell", "SingleEvent Cancelled"));
     }
 
     @Test

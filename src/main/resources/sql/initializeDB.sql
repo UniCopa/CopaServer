@@ -115,3 +115,10 @@ CREATE TABLE event_has_Categories(
 	FOREIGN KEY (categoryID) REFERENCES categories(categoryID),
 	FOREIGN KEY (eventID) REFERENCES events(eventID)
 );
+
+CREATE TABLE server_status_notes(
+	noteID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+	statusmsg varchar(1000) NOT NULL,
+	noteDate BIGINT NOT NULL,
+	PRIMARY KEY (noteID)
+);
