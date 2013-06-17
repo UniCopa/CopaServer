@@ -37,6 +37,7 @@ import unicopa.copa.base.com.request.AddRoleToUserRequest;
 import unicopa.copa.base.com.request.AddSingleEventRequest;
 import unicopa.copa.base.com.request.AddSingleEventUpdateRequest;
 import unicopa.copa.base.com.request.CancelSingleEventRequest;
+import unicopa.copa.base.com.request.DropRoleRequest;
 import unicopa.copa.base.com.request.GetAllDeputiesRequest;
 import unicopa.copa.base.com.request.GetAllOwnersRequest;
 import unicopa.copa.base.com.request.GetAllRightholdersRequest;
@@ -128,6 +129,7 @@ public class CopaSystem {
 		add(AddSingleEventRequest.class);
 		add(AddSingleEventUpdateRequest.class);
 		add(CancelSingleEventRequest.class);
+		add(DropRoleRequest.class);
 		add(GetAllDeputiesRequest.class);
 		add(GetAllOwnersRequest.class);
 		add(GetAllRightholdersRequest.class);
