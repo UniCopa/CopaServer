@@ -47,9 +47,17 @@ public class AddSingleEventUpdateExecutor extends AbstractExecutor {
     public void updateSingleEvent(int oldSingleEventID,
 	    SingleEvent newSingleEvent, String comment, int userID)
 	    throws ObjectNotFoundException, IncorrectObjectException {
-	SingleEventUpdate update = new SingleEventUpdate(newSingleEvent,
-		oldSingleEventID, new Date(), getContext().getDbservice()
-			.getUserName(userID), comment);
+	SingleEvent oldSingleEvent = getContext().getDbservice()
+		.getSingleEvent(oldSingleEventID);
+	// Set the eventID from the old SingleEvent
+	SingleEvent newSingleEventCorrected = new SingleEvent(
+		newSingleEvent.getSingleEventID(), oldSingleEvent.getEventID(),
+		newSingleEvent.getLocation(), newSingleEvent.getDate(),
+		newSingleEvent.getSupervisor(),
+		newSingleEvent.getDurationMinutes());
+	SingleEventUpdate update = new SingleEventUpdate(
+		newSingleEventCorrected, oldSingleEventID, new Date(),
+		getContext().getDbservice().getUserName(userID), comment);
 	insertUpdateAndNotify(update);
     }
 
