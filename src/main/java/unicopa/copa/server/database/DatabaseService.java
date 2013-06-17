@@ -147,7 +147,7 @@ public class DatabaseService {
      */
     public List<Event> getEvents(int eventGroupID, int categoryNodeID)
 	    throws ObjectNotFoundException {
-	getEventGroup(eventGroupID);
+	checkEventGroup(eventGroupID);
 	List<Integer> nodeList = getAllChildNodes(categoryNodeID);
 	if (categoryNodeID != 0) {
 	    nodeList.add(categoryNodeID);
@@ -169,13 +169,10 @@ public class DatabaseService {
      */
     public EventGroup getEventGroup(int eventGroupID)
 	    throws ObjectNotFoundException {
+	checkEventGroup(eventGroupID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
 	    EventGroup eGroup = mapper.getEventGroup(eventGroupID);
-	    if (eGroup == null)
-		throw new ObjectNotFoundException(
-			"There is no EventGroup with ID=" + eventGroupID
-				+ " in the database");
 	    return eGroup;
 	}
     }
@@ -1146,10 +1143,7 @@ public class DatabaseService {
 	checkNull(event, "given Event");
 	checkNull(event.getEventName(), "String(eventName) in the given Event");
 	for (int categoryID : event.getCategories()) {
-	    if (!categoryExsists(categoryID))
-		throw new ObjectNotFoundException(
-			"There is not category with ID=" + categoryID
-				+ " in the database");
+	    checkCategory(categoryID);
 	}
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventMapper mapper = session.getMapper(EventMapper.class);
@@ -1183,11 +1177,11 @@ public class DatabaseService {
 	    throws IncorrectObjectException, ObjectAlreadyExsistsException,
 	    ObjectNotFoundException {
 	checkNull(category, "given CategoryNodeImpl");
-	if (categoryExsists(category.getId()))
+	if (categoryExists(category.getId()))
 	    throw new ObjectAlreadyExsistsException(
 		    "There is already an entry in the category table in the database with categoryID="
 			    + category.getId());
-	if (!categoryExsists(parent) && parent != -1)
+	if (!categoryExists(parent) && parent != -1)
 	    throw new ObjectNotFoundException(
 		    "There is no Category entry in the database with ID="
 			    + parent);
@@ -1221,6 +1215,17 @@ public class DatabaseService {
 	}
     }
 
+    /**
+     * inserts a privilege entry with the given parameters
+     * 
+     * @param userID
+     * @param eventID
+     * @param kindOfPrivilege
+     * @param gavePrivilegeID
+     * @param privDate
+     * @throws ObjectNotFoundException
+     * @throws IncorrectObjectException
+     */
     public void insertPrivilege(int userID, int eventID, int kindOfPrivilege,
 	    int gavePrivilegeID, Date privDate) throws ObjectNotFoundException,
 	    IncorrectObjectException {
@@ -1240,9 +1245,32 @@ public class DatabaseService {
 	}
     }
 
+    /**
+     * inserts the given EventGroup into the database
+     * 
+     * @param eventGroup
+     * @throws ObjectNotFoundException
+     * @throws IncorrectObjectException
+     */
     public void insertEventGroup(EventGroup eventGroup)
 	    throws ObjectNotFoundException, IncorrectObjectException {
-	// TODO
+	checkNull(eventGroup.getCategories(),
+		"categoryList in given eventGroup");
+	checkNull(eventGroup.getEventGroupInfo(),
+		"string(eventGroupInfo) in given eventGroup");
+	checkNull(eventGroup.getEventGroupName(),
+		"string(eventGroupName) in given eventGroup");
+	for (int categoryID : eventGroup.getCategories()) {
+	    checkCategory(categoryID);
+	}
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
+	    mapper.insertEventGroup(eventGroup);
+	    session.commit();
+	    mapper.insertEventGroupCategory(eventGroup.getEventGroupID(),
+		    eventGroup.getCategories());
+	    session.commit();
+	}
     }
 
     /**
@@ -1294,7 +1322,7 @@ public class DatabaseService {
      * @param categoryID
      * @return
      */
-    private boolean categoryExsists(int categoryID) {
+    private boolean categoryExists(int categoryID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
 	    int a = mapper.categoryExsists(categoryID);
@@ -1304,6 +1332,13 @@ public class DatabaseService {
 	}
     }
 
+    /**
+     * Updates the status of the given SingleEvent to given isRecent
+     * 
+     * @param singleEventID
+     * @param isRecent
+     * @throws ObjectNotFoundException
+     */
     private void updateSingleEventStatus(int singleEventID, boolean isRecent)
 	    throws ObjectNotFoundException {
 	checkSingleEvent(singleEventID);
@@ -1315,6 +1350,13 @@ public class DatabaseService {
 	}
     }
 
+    /**
+     * Checks weather the given singleEvent is recent or not
+     * 
+     * @param singleEventID
+     * @return
+     * @throws ObjectNotFoundException
+     */
     private boolean isRecent(int singleEventID) throws ObjectNotFoundException {
 	checkSingleEvent(singleEventID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -1325,6 +1367,12 @@ public class DatabaseService {
 	}
     }
 
+    /**
+     * checks weather a singleEvent exists or not
+     * 
+     * @param singleEventID
+     * @return
+     */
     private boolean singleEventExists(int singleEventID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
@@ -1336,6 +1384,13 @@ public class DatabaseService {
 	}
     }
 
+    /**
+     * if the given singleEvent is not in the database an
+     * ObjectNotFoundException is thrown
+     * 
+     * @param singleEventID
+     * @throws ObjectNotFoundException
+     */
     private void checkSingleEvent(int singleEventID)
 	    throws ObjectNotFoundException {
 	if (!singleEventExists(singleEventID))
@@ -1343,11 +1398,61 @@ public class DatabaseService {
 		    "There is no SingleEvent with ID=" + singleEventID);
     }
 
+    /**
+     * if the given Event is not in the database an ObjectNotFoundException is
+     * thrown
+     * 
+     * @param eventID
+     * @throws ObjectNotFoundException
+     */
     private void checkEvent(int eventID) throws ObjectNotFoundException {
 	if (!eventExists(eventID))
 	    throw new ObjectNotFoundException("There is no Event with ID="
 		    + eventID);
 
+    }
+
+    /**
+     * Checks weather a eventGroup exists or not
+     * 
+     * @param eventGroupID
+     * @return
+     */
+    private boolean eventGroupExists(int eventGroupID) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
+	    int status = mapper.eventGroupExists(eventGroupID);
+	    if (status == 0)
+		return false;
+	    return true;
+	}
+    }
+
+    /**
+     * if the given EventGroup is not in the database an ObjectNotFoundException
+     * is thrown
+     * 
+     * @param eventGroupID
+     * @throws ObjectNotFoundException
+     */
+    private void checkEventGroup(int eventGroupID)
+	    throws ObjectNotFoundException {
+	if (!eventGroupExists(eventGroupID))
+	    throw new ObjectNotFoundException("There is no EventGroup with ID="
+		    + eventGroupID + " in the database");
+    }
+
+    /**
+     * if the given Category is not in the database an ObjectNotFoundException
+     * is thrown
+     * 
+     * @param categoryID
+     * @throws ObjectNotFoundException
+     */
+    private void checkCategory(int categoryID) throws ObjectNotFoundException {
+	if (!categoryExists(categoryID))
+	    throw new ObjectNotFoundException("There is no Category with ID="
+		    + categoryID + " in the database");
     }
 
     /**

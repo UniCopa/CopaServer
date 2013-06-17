@@ -30,4 +30,11 @@ public interface EventGroupMapper {
 
     public EventGroup getEventGroup(@Param("eventGroupID") int eventGroupID);
 
+    public void insertEventGroup(@Param("eventGroup") EventGroup eventGroup);
+
+    public void insertEventGroupCategory(
+	    @Param("eventGroupID") int eventGroupID,
+	    @Param("categoryList") List<Integer> categoryList);
+
+    public Integer eventGroupExists(@Param("eventGroupID") int eventGroupID);
 }

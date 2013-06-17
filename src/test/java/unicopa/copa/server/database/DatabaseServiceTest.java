@@ -40,7 +40,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 
 import unicopa.copa.base.ServerStatusNote;
-import unicopa.copa.base.UserData;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
@@ -734,6 +733,20 @@ public class DatabaseServiceTest {
 	    assertEquals(true, dbs.isAppointedBy(1, 2, 1, UserRole.RIGHTHOLDER));
 	    assertEquals(false,
 		    dbs.isAppointedBy(1, 7, 1, UserRole.RIGHTHOLDER));
+	} catch (ObjectNotFoundException | IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
+    public void testInsertEventGroup() {
+	List<Integer> cat = new ArrayList<Integer>();
+	cat.add(4);
+	cat.add(5);
+	try {
+	    dbs.insertEventGroup(new EventGroup(0, "insertTestEG",
+		    "This is a TestEG", cat));
 	} catch (ObjectNotFoundException | IncorrectObjectException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();

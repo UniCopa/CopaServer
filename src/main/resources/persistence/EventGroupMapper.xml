@@ -48,4 +48,23 @@
 		where e.eventGroupID =#{eventGroupID} and e.eventGroupID=c.eventGroupID
 		Order By (c.categoryID)
     </select>
+    
+    <select id='eventGroupExists' parameterType='int' resultType='int'>
+        Select Count(*)
+        From eventGroups
+        Where eventGroupID=#{eventGroupID}
+    </select>
+    
+    <insert id='insertEventGroup' parameterType='map' useGeneratedKeys="true" keyProperty="eventGroup.eventGroupID">
+        insert into eventGroups(eventGroupName, eventGroupInfo) values
+			(#{eventGroup.eventGroupName},#{eventGroup.eventGroupInfo})
+    </insert>
+    
+    <insert id='insertEventGroupCategory' parameterType='map'>
+        insert into eventGroup_has_Categories(categoryID,eventGroupID) values
+					<foreach item="item" index="index" collection="categoryList"
+            open="" separator="," close="">
+            (#{item},#{eventGroupID})
+        </foreach>
+    </insert>
 </mapper>
