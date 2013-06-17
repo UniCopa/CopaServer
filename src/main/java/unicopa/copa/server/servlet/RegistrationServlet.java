@@ -50,7 +50,7 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
 	system = CopaSystem.getInstance();
-	registration = new Registration(system.getContext().getDbservice());
+	registration = new Registration(system.getContext());
     }
 
     /**
@@ -76,7 +76,7 @@ public class RegistrationServlet extends HttpServlet {
 	    resp = "Registration error: The HTTP POST request does not contain"
 		    + " the required parameter \"password\".";
 	} else {
-	    resp = registration.register(username, password);
+	    resp = registration.register(username);
 	}
 	response.getWriter().print(resp);
     }
