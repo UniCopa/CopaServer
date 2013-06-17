@@ -17,11 +17,20 @@
 package unicopa.copa.server.servlet;
 
 import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import unicopa.copa.base.com.exception.APIException;
+import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.serialization.ServerSerializer;
 import unicopa.copa.server.CopaSystem;
 
@@ -31,9 +40,11 @@ import unicopa.copa.server.CopaSystem;
  * 
  * @author Felix Wiemuth
  */
-public class CopaServlet extends HttpServlet {
+public class CopaServlet extends HttpServlet implements Filter {
 
     private CopaSystem system;
+    private static final Logger LOG = Logger.getLogger(CopaServlet.class
+	    .getName());
     private static final String PARAM_REQUEST = "req"; // the parameter name of
 						       // the HTTP POST method
 						       // which includes the
@@ -43,6 +54,13 @@ public class CopaServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
 	system = CopaSystem.getInstance();
+	try {
+	    LOG.addHandler(new FileHandler("%h/copa-servlet.%g.log", 100000,
+		    100));
+	} catch (IOException | SecurityException ex) {
+	    Logger.getLogger(CopaServlet.class.getName()).log(Level.SEVERE,
+		    null, ex);
+	}
     }
 
     /**
@@ -84,5 +102,24 @@ public class CopaServlet extends HttpServlet {
     @Override
     public String getServletInfo() {
 	return "Short description";
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response,
+	    FilterChain chain) throws IOException, ServletException {
+	try {
+	    chain.doFilter(request, response);
+	} catch (IOException | ServletException e) {
+	    LOG.log(Level.SEVERE, "Internal Error.", e);
+	    HttpServletResponse httpResponse = (HttpServletResponse) response;
+	    httpResponse.getWriter().print(
+		    ServerSerializer.serialize(new InternalErrorException(
+			    "The server failed to handle the request: "
+				    + e.getMessage())));
+	}
     }
 }
