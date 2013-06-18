@@ -47,7 +47,9 @@ import unicopa.copa.base.com.request.GetEventGroupRequest;
 import unicopa.copa.base.com.request.GetEventGroupsRequest;
 import unicopa.copa.base.com.request.GetEventRequest;
 import unicopa.copa.base.com.request.GetEventsRequest;
+import unicopa.copa.base.com.request.GetMyAppointedUsersRequest;
 import unicopa.copa.base.com.request.GetMyEventsRequest;
+import unicopa.copa.base.com.request.GetServerStatusNotesRequest;
 import unicopa.copa.base.com.request.GetSingleEventUpdatesRequest;
 import unicopa.copa.base.com.request.GetSubscribedSingleEventUpdatesRequest;
 import unicopa.copa.base.com.request.GetUserSettingsRequest;
@@ -73,6 +75,7 @@ public class CopaSystem {
     private static CopaSystem instance = new CopaSystem();
     private Properties systemProperties = new Properties(); // TODO use
     private CopaSystemContext context;
+    private Registration registration;
     private Map<Class<? extends AbstractRequest>, RequestHandler> requestHandlers = new HashMap<>();
 
     private CopaSystem() {
@@ -87,6 +90,7 @@ public class CopaSystem {
 		    null, ex);
 	    throw new RuntimeException();
 	}
+	// TODO init registration
 	// TODO add notification services
 	loadProperties();
 	loadRequestHandlers();
@@ -140,7 +144,9 @@ public class CopaSystem {
 		add(GetEventGroupsRequest.class);
 		add(GetEventRequest.class);
 		add(GetEventsRequest.class);
+		add(GetMyAppointedUsersRequest.class);
 		add(GetMyEventsRequest.class);
+		add(GetServerStatusNotesRequest.class);
 		add(GetSingleEventRequest.class);
 		add(GetSingleEventUpdatesRequest.class);
 		add(GetSubscribedSingleEventUpdatesRequest.class);
@@ -203,6 +209,8 @@ public class CopaSystem {
 	    try {
 		userID = context.getDbservice().getUserID(userName);
 	    } catch (ObjectNotFoundException ex) {
+		// user does not exist in database - register
+		// registration.
 		throw new InternalErrorException(
 			"Fatal: Cannot process client message because of missing user ID: "
 				+ ex.getMessage());
