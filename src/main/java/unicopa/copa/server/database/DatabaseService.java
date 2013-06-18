@@ -117,8 +117,10 @@ public class DatabaseService {
      *            must contain a category node of the event group
      * @param searchTerm
      *            the exact string the name of the event group must contain
-     * @return
+     * @return a List of EventGroups
      * @throws ObjectNotFoundException
+     *             is thrown if the given CategoryNode or one of the childNodes
+     *             in CategeoryNode is not existend in the databse
      */
     public List<EventGroup> getEventGroups(int categoryNodeID, String searchTerm)
 	    throws ObjectNotFoundException {
@@ -142,8 +144,10 @@ public class DatabaseService {
      * @param categoryNodeID
      *            the ID of the category node in the category tree whose subtree
      *            must contain a category node of the event
-     * @return
+     * @return a list of Events
      * @throws ObjectNotFoundException
+     *             is thrown if the given eventGroup, or category does not
+     *             exists in the database
      */
     public List<Event> getEvents(int eventGroupID, int categoryNodeID)
 	    throws ObjectNotFoundException {
@@ -164,8 +168,10 @@ public class DatabaseService {
      * 
      * @param eventGroupID
      *            the ID of the eventGroup.
-     * @return
+     * @return the EventGroup
      * @throws ObjectNotFoundException
+     *             is thrown if the given eventgroup does not exists in the
+     *             database
      */
     public EventGroup getEventGroup(int eventGroupID)
 	    throws ObjectNotFoundException {
@@ -182,8 +188,9 @@ public class DatabaseService {
      * 
      * @param eventID
      *            the ID of the event.
-     * @return
+     * @return the event
      * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist in the database
      */
     public Event getEvent(int eventID) throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -204,9 +211,11 @@ public class DatabaseService {
      *            the data from when to return updates
      * @param userID
      *            the ID of the user
-     * @return
+     * @return the list of the singleEventUpdates
      * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      * @throws IncorrectObjectException
+     *             is thrown if the given date is null
      */
     public List<SingleEventUpdate> getSubscribedSingleEventUpdates(int userID,
 	    Date since) throws ObjectNotFoundException,
@@ -230,9 +239,11 @@ public class DatabaseService {
      *            the ID of the event where to get updates from
      * @param since
      *            the data from when to return updates
-     * @return
+     * @return the list of SingleEventUpdates
      * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist in the database
      * @throws IncorrectObjectException
+     *             is thrown if the given date is null
      */
     public List<SingleEventUpdate> getSingleEventUpdates(int eventID, Date since)
 	    throws ObjectNotFoundException, IncorrectObjectException {
@@ -260,8 +271,9 @@ public class DatabaseService {
      * ObjectNotFound Exception is thrown, else true is returned
      * 
      * @param eventID
-     * @return
+     * @return true if the given event exists in the database, false if not
      * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist in the database
      */
     private boolean eventExists(int eventID) throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -279,8 +291,9 @@ public class DatabaseService {
      * @param eventID
      *            the event ID for the event the users should have subscribed
      *            to.
-     * @return
+     * @return a list of user-IDs of the subscribers
      * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist in the database
      */
     public List<Integer> getSubscribedUserIDs(int eventID)
 	    throws ObjectNotFoundException {
@@ -297,8 +310,9 @@ public class DatabaseService {
      * 
      * @param userName
      *            the user name of the user
-     * @return
+     * @return the userID
      * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     public int getUserID(String userName) throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -316,7 +330,7 @@ public class DatabaseService {
      * 
      * @param email
      *            the email address of the user
-     * @return
+     * @return the userID
      * @throws ObjectNotFoundException
      *             is thrown if the given email does not match to a entry in the
      *             database
@@ -339,6 +353,7 @@ public class DatabaseService {
      *            the user-ID
      * @return the E-Mail address as String
      * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     public String getEmailAddress(int userID) throws ObjectNotFoundException {
 	checkUser(userID);
@@ -355,6 +370,8 @@ public class DatabaseService {
      * @param userID
      *            the user-ID
      * @return the UserSettings for the user
+     * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     public UserSettings getUserSettings(int userID)
 	    throws ObjectNotFoundException {
@@ -378,12 +395,14 @@ public class DatabaseService {
     }
 
     /**
-     * Get a SingleEvent.
+     * Get the SingleEvent.
      * 
      * @param id
      *            the ID of the SingleEvent
+     * @returns the singleEvent
      * @throws ObjectNotFoundException
-     * @returns
+     *             is thrown if the given singleEvent does not exist in the
+     *             database
      */
     public SingleEvent getSingleEvent(int id) throws ObjectNotFoundException {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -406,7 +425,11 @@ public class DatabaseService {
      *            the ID of the event where to get the current SingleEvents from
      * @param since
      *            the date since when SingleEvents should be returned
-     * @return
+     * @return the list of singleEvents
+     * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist in the database
+     * @throws IncorrectObjectException
+     *             is thrown if the given date is null
      */
     public List<SingleEvent> getCurrentSingleEvents(int eventID, Date since)
 	    throws ObjectNotFoundException, IncorrectObjectException {
@@ -430,8 +453,10 @@ public class DatabaseService {
      * @param appointedByUserID
      *            the ID of the user that appointed the rightholders to be
      *            returned, '-1' means all users
-     * @return
+     * @return the list of the rightholders ids
      * @throws ObjectNotFoundException
+     *             is thrown if the given event or the given user does not exist
+     *             in the database
      */
     public List<String> getRightholders(int eventID, int appointedByUserID)
 	    throws ObjectNotFoundException {
@@ -451,8 +476,9 @@ public class DatabaseService {
      * 
      * @param eventID
      *            the ID of the event
-     * @return
+     * @return the list of the rightholders ids
      * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist in the database
      */
     public List<String> getRightholders(int eventID)
 	    throws ObjectNotFoundException {
@@ -466,8 +492,9 @@ public class DatabaseService {
      * 
      * @param userID
      *            the ID of the user
-     * @return
+     * @return the map with the userRole and the associated List of userIDs
      * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     public Map<UserRole, List<Integer>> getUsersPriviligedEvents(int userID)
 	    throws ObjectNotFoundException {
@@ -509,7 +536,9 @@ public class DatabaseService {
      * 
      * @param userID
      *            the ID of the user who gave the roles
-     * @return
+     * @return the map with the userRole and the associated List of userIDs
+     * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     public Map<UserRole, List<UserData>> getUsersAppointedUsers(int userID)
 	    throws ObjectNotFoundException {
@@ -553,12 +582,19 @@ public class DatabaseService {
      *            the ID of the event
      * @param role
      *            the role the appointed user should have
-     * @return
+     * @return true if the user granted the privilege to the user for the given
+     *         event, else false
      * @throws IncorrectObjectException
+     *             is thrown if the given userRole is invalid
+     * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     public boolean isAppointedBy(int userID, int appointedByUserID,
 	    int eventID, UserRole role) throws ObjectNotFoundException,
 	    IncorrectObjectException {
+	checkEvent(eventID);
+	checkUser(appointedByUserID);
+	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    int kindOfPrivilege = 0;
@@ -589,8 +625,10 @@ public class DatabaseService {
      * 
      * @param categoryID
      *            the ID of the node
-     * @return
+     * @return the categoryID list of the child nodes
      * @throws ObjectNotFoundException
+     *             is thrown if the given category does not exist in the
+     *             database
      */
     private List<Integer> getChildNodeIDs(int categoryID)
 	    throws ObjectNotFoundException {
@@ -611,8 +649,11 @@ public class DatabaseService {
      * 
      * @param categoryID
      *            the ID of the node
-     * @return
+     * @return a category id list of all children of the given category (childs,
+     *         gradchildren,...)
      * @throws ObjectNotFoundException
+     *             is thrown if the given category does not exist in the
+     *             database
      */
     private List<Integer> getAllChildNodes(int categoryID)
 	    throws ObjectNotFoundException {
@@ -636,6 +677,8 @@ public class DatabaseService {
      * @param userID
      *            the ID of the user
      * @return the role the user holds
+     * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     public UserRole getUserRole(int userID) throws ObjectNotFoundException {
 	return getUsersRoleForEvent(userID, 0);
@@ -654,6 +697,8 @@ public class DatabaseService {
      *            the ID of the event
      * @return the role the user holds for the specified event
      * @throws ObjectNotFoundException
+     *             is thrown if the given user or the event does not exist in
+     *             the database
      */
     public UserRole getUsersRoleForEvent(int userID, int eventID)
 	    throws ObjectNotFoundException {
@@ -685,6 +730,7 @@ public class DatabaseService {
      * 
      * @param userID
      * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     public void addAdministrator(int userID) throws ObjectNotFoundException {
 	checkUser(userID);
@@ -700,6 +746,7 @@ public class DatabaseService {
      * 
      * @param userID
      * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     public void removeAdministrator(int userID) throws ObjectNotFoundException {
 	checkUser(userID);
@@ -722,7 +769,10 @@ public class DatabaseService {
      * @param gavePrivilegeID
      *            the ID of the user that permitted the privilege
      * @throws IncorrectObjectException
+     *             is thrown if the given userRole is invalid
      * @throws ObjectNotFoundException
+     *             is thrown if one of the given users or the event does not
+     *             exist in the database
      */
     public void setUserRoleForEvent(int userID, int eventID, UserRole role,
 	    int gavePrivilegeID) throws IncorrectObjectException,
@@ -758,8 +808,10 @@ public class DatabaseService {
      * @param appointedByUserID
      *            the ID of the user that appointed the deputies to be returned,
      *            '-1' means all users
-     * @return
+     * @return the list of userIDs
      * @throws ObjectNotFoundException
+     *             is thrown if the given user or the event does not exist in
+     *             the database
      */
     public List<String> getDeputies(int eventID, int appointedByUserID)
 	    throws ObjectNotFoundException {
@@ -779,8 +831,9 @@ public class DatabaseService {
      * 
      * @param eventID
      *            the ID of the event
-     * @return
+     * @return the list of userIDs
      * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist in the database
      */
     public List<String> getDeputies(int eventID) throws ObjectNotFoundException {
 	return getDeputies(eventID, -1);
@@ -791,8 +844,9 @@ public class DatabaseService {
      * 
      * @param eventID
      *            the ID of the event
-     * @return
+     * @return the list of userIds
      * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist in the database
      */
     public List<String> getOwners(int eventID) throws ObjectNotFoundException {
 	checkEvent(eventID);
@@ -808,8 +862,10 @@ public class DatabaseService {
      * 
      * @param categoryID
      *            the ID of the category
-     * @return
+     * @return the categoryNodeImpl
      * @throws ObjectNotFoundException
+     *             is thrown if the given category does not exist in the
+     *             database
      */
     public CategoryNodeImpl getCategoryTree(int categoryID)
 	    throws ObjectNotFoundException {
@@ -843,8 +899,14 @@ public class DatabaseService {
      * @param userID
      *            the userID
      * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      * @throws IncorrectObjectException
+     *             is thrown if the given userSettings is null, the colorCode in
+     *             the given UserSettings is invalid or the gCMKey in the given
+     *             UserSettings is invalid
      * @throws ObjectAlreadyExsistsException
+     *             is thrown if there already is another user with the given
+     *             gCMKey in the database
      */
     public void updateUserSetting(UserSettings userSetting, int userID)
 	    throws ObjectNotFoundException, IncorrectObjectException,
@@ -877,6 +939,15 @@ public class DatabaseService {
 	}
     }
 
+    /**
+     * Checks if the given colerCode only Contains a-f,A-F,0-9 and has the
+     * length of 6, if it does not match this pattern an
+     * IncorrectObjectException is thrown
+     * 
+     * @param colorCode
+     * @throws IncorrectObjectException
+     *             is thrown if the given colorCode is invalid
+     */
     public void checkColor(String colorCode) throws IncorrectObjectException {
 	String pattern = "[a-fA-F0123456789]*";
 	if (colorCode == null || colorCode.length() != 6
@@ -890,8 +961,9 @@ public class DatabaseService {
      * 
      * @param userID
      *            the ID of the user
-     * @return
+     * @return the userName
      * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     public String getUserName(int userID) throws ObjectNotFoundException {
 	checkUser(userID);
@@ -911,6 +983,8 @@ public class DatabaseService {
      * @param eventID
      *            the ID of the event
      * @throws ObjectNotFoundException
+     *             is thrown if the given user, or the given event does not
+     *             exist in the database
      */
     public void removePrivilege(int userID, int eventID)
 	    throws ObjectNotFoundException {
@@ -1030,7 +1104,7 @@ public class DatabaseService {
      * userName
      * 
      * @param userName
-     * @return
+     * @return true if the given user exists in the database, else false
      */
     private boolean userNameExsists(String userName) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -1046,7 +1120,7 @@ public class DatabaseService {
      * E-Mail
      * 
      * @param email
-     * @return
+     * @return true if the given email exists in the database, else false
      */
     private boolean emailExsists(String email) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -1062,7 +1136,7 @@ public class DatabaseService {
      * userID
      * 
      * @param userID
-     * @return
+     * @return returns true if the given user exists in the database, else false
      */
     private boolean userIDExsists(int userID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -1079,6 +1153,7 @@ public class DatabaseService {
      * 
      * @param userID
      * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
     private void checkUser(int userID) throws ObjectNotFoundException {
 	if (!userIDExsists(userID))
@@ -1247,7 +1322,10 @@ public class DatabaseService {
      * @param gavePrivilegeID
      * @param privDate
      * @throws ObjectNotFoundException
+     *             is thrown if on of the given users or the given event does
+     *             not exist in the database
      * @throws IncorrectObjectException
+     *             is thrown if the given date is invalid
      */
     public void insertPrivilege(int userID, int eventID, int kindOfPrivilege,
 	    int gavePrivilegeID, Date privDate) throws ObjectNotFoundException,
@@ -1273,7 +1351,13 @@ public class DatabaseService {
      * 
      * @param eventGroup
      * @throws ObjectNotFoundException
+     *             is thrown if the given category does not exist in the
+     *             database
      * @throws IncorrectObjectException
+     *             is thrown if the category, the eventGroupInfo or the
+     *             eventGroupName in the given eventGroup is null, or if one of
+     *             the given strings is longer than the corresponding database
+     *             attribute
      */
     public void insertEventGroup(EventGroup eventGroup)
 	    throws ObjectNotFoundException, IncorrectObjectException {
@@ -1303,6 +1387,8 @@ public class DatabaseService {
      * 
      * @param note
      * @throws IncorrectObjectException
+     *             is thrown if the given string is longer than the
+     *             corresponding database attribute, or is null
      */
     public void addServerStatusNote(String note)
 	    throws IncorrectObjectException {
@@ -1320,8 +1406,9 @@ public class DatabaseService {
      * Get all server status notes since the given Date
      * 
      * @param since
-     * @return
+     * @return the list of serverStatusNotes
      * @throws IncorrectObjectException
+     *             if the given date is null
      */
     public List<ServerStatusNote> getServerStatusNote(Date since)
 	    throws IncorrectObjectException {
@@ -1346,7 +1433,7 @@ public class DatabaseService {
      * if not.
      * 
      * @param categoryID
-     * @return
+     * @return true if the given category exists in the database, else false
      */
     private boolean categoryExists(int categoryID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -1364,6 +1451,8 @@ public class DatabaseService {
      * @param singleEventID
      * @param isRecent
      * @throws ObjectNotFoundException
+     *             is thrown if the given singleEvent does not exist in the
+     *             database
      */
     private void updateSingleEventStatus(int singleEventID, boolean isRecent)
 	    throws ObjectNotFoundException {
@@ -1380,8 +1469,11 @@ public class DatabaseService {
      * Checks weather the given singleEvent is recent or not
      * 
      * @param singleEventID
-     * @return
+     * @return true if the given singleEvent is the latest database entry for
+     *         this singleEvent, else false
      * @throws ObjectNotFoundException
+     *             is thrown if the given singleEvent does not exist in the
+     *             database
      */
     private boolean isRecent(int singleEventID) throws ObjectNotFoundException {
 	checkSingleEvent(singleEventID);
@@ -1397,7 +1489,7 @@ public class DatabaseService {
      * checks weather a singleEvent exists or not
      * 
      * @param singleEventID
-     * @return
+     * @return true if the given singleEvent exists in the database, else false
      */
     private boolean singleEventExists(int singleEventID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -1416,6 +1508,8 @@ public class DatabaseService {
      * 
      * @param singleEventID
      * @throws ObjectNotFoundException
+     *             is thrown if the given singleEvent does not exist in the
+     *             database
      */
     private void checkSingleEvent(int singleEventID)
 	    throws ObjectNotFoundException {
@@ -1430,6 +1524,7 @@ public class DatabaseService {
      * 
      * @param eventID
      * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist in the database
      */
     private void checkEvent(int eventID) throws ObjectNotFoundException {
 	if (!eventExists(eventID))
@@ -1442,7 +1537,7 @@ public class DatabaseService {
      * Checks weather a eventGroup exists or not
      * 
      * @param eventGroupID
-     * @return
+     * @return true if the eventGroup exists in the database, else false
      */
     private boolean eventGroupExists(int eventGroupID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -1460,6 +1555,8 @@ public class DatabaseService {
      * 
      * @param eventGroupID
      * @throws ObjectNotFoundException
+     *             is thrown if the given eventGroup does not exist in the
+     *             database
      */
     private void checkEventGroup(int eventGroupID)
 	    throws ObjectNotFoundException {
@@ -1474,6 +1571,8 @@ public class DatabaseService {
      * 
      * @param categoryID
      * @throws ObjectNotFoundException
+     *             is thrown if the given category does not exist in the
+     *             database
      */
     private void checkCategory(int categoryID) throws ObjectNotFoundException {
 	if (!categoryExists(categoryID))
@@ -1487,6 +1586,8 @@ public class DatabaseService {
      * @param stringToCheck
      * @param stringMaxLength
      * @throws IncorrectObjectException
+     *             is thrown if the given String is longer than the given max
+     *             Length
      */
     private void checkString(String stringToCheck, int stringMaxLength)
 	    throws IncorrectObjectException {
@@ -1500,11 +1601,14 @@ public class DatabaseService {
      * Checks weather a eventGroup exists or not
      * 
      * @param gcmKey
-     * @return
+     * @return true if the gcMKey exists in the database, else false
      * @throws IncorrectObjectException
+     *             is thrown if the gCMKey is longer than it should be, or is
+     *             null
      */
     private boolean existsGCMKey(String gcmKey) throws IncorrectObjectException {
 	checkString(gcmKey, 300);
+	checkNull(gcmKey, "given GCMKey");
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    int status = mapper.gcmKeyExists(gcmKey);
