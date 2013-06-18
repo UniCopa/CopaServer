@@ -853,7 +853,9 @@ public class DatabaseService {
 	    UserSettingMapper mapper = session
 		    .getMapper(UserSettingMapper.class);
 	    mapper.deleteAllGCMKeys(userID);
-	    mapper.insertGCMKeys(userSetting.getGCMKeys(), userID);
+	    if (userSetting.getGCMKeys() != null
+		    && !userSetting.getGCMKeys().isEmpty())
+		mapper.insertGCMKeys(userSetting.getGCMKeys(), userID);
 	    mapper.updatePerson(userSetting.getLanguage(),
 		    userSetting.isEmailNotificationEnabled(), userID);
 	    mapper.deleteAllSubscriptions(userID);
@@ -933,6 +935,8 @@ public class DatabaseService {
 	checkNull(singleEvent.getSupervisor(),
 		"String(supervisor) in given SingleEvent");
 	checkEvent(singleEvent.getEventID());
+	checkString(singleEvent.getLocation(), 70);
+	checkString(singleEvent.getSupervisor(), 70);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);
@@ -1453,6 +1457,14 @@ public class DatabaseService {
 	if (!categoryExists(categoryID))
 	    throw new ObjectNotFoundException("There is no Category with ID="
 		    + categoryID + " in the database");
+    }
+
+    private void checkString(String stringToCheck, int stringMaxLength)
+	    throws IncorrectObjectException {
+	if (stringToCheck.length() > stringMaxLength)
+	    throw new IncorrectObjectException("String " + stringToCheck
+		    + "is too long. maximum length is" + stringMaxLength);
+
     }
 
     /**
