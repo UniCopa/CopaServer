@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import unicopa.copa.base.com.exception.APIException;
@@ -61,6 +62,7 @@ import unicopa.copa.server.com.requestHandler.RequestHandler;
 import unicopa.copa.server.database.DatabaseService;
 import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.notification.Notifier;
+import unicopa.copa.server.servlet.CopaServlet;
 
 /**
  * This class represents the core of the system. It receives client messages,
@@ -77,8 +79,17 @@ public class CopaSystem {
     private CopaSystemContext context;
     private Registration registration;
     private Map<Class<? extends AbstractRequest>, RequestHandler> requestHandlers = new HashMap<>();
+    private static final Logger LOG = Logger.getLogger(CopaSystem.class
+	    .getName());
 
     private CopaSystem() {
+	// log to file
+	try {
+	    LOG.addHandler(new FileHandler("%h/copa-system.%g.log", 100000, 100));
+	} catch (IOException | SecurityException ex) {
+	    Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
+		    null, ex);
+	}
 	try {
 	    // TODO get database from system properties
 	    context = new CopaSystemContext(new DatabaseService(new File(
@@ -202,15 +213,13 @@ public class CopaSystem {
      * @return the message to be sent back to the client
      */
     public String processClientMessage(String json, String userName) {
-	// TODO send back InternalErrorException or PermissionException if the
-	// user cannot be found
 	try {
 	    int userID;
 	    try {
 		userID = context.getDbservice().getUserID(userName);
 	    } catch (ObjectNotFoundException ex) {
 		// user does not exist in database - register
-		// registration.
+		// TODO register
 		throw new InternalErrorException(
 			"Fatal: Cannot process client message because of missing user ID: "
 				+ ex.getMessage());
