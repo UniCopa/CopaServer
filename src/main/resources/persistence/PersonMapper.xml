@@ -87,22 +87,28 @@
         Where personID=#{userID}
     </select>
     
-    <select id='userNameExsists' parameterType='String' resultType='int'>
+    <select id='userNameExists' parameterType='String' resultType='int'>
         Select Count(*)
         From persons
         Where userName=#{userName}
     </select>
     
-    <select id='userIDExsists' parameterType='int' resultType='int'>
+    <select id='userIDExists' parameterType='int' resultType='int'>
         Select Count(*)
         From persons
         Where personID=#{userID}
     </select>
     
-    <select id='emailExsists' parameterType='String' resultType='int'>
+    <select id='emailExists' parameterType='String' resultType='int'>
         Select Count(*)
         From persons
         Where email=#{email}
+    </select>
+    
+    <select id='gcmKeyExists' parameterType='String' resultType='int'>
+        Select Count(*)
+        From gCMKeys
+        Where gCMKey=#{gcmKey}
     </select>
     
     <select id='getUserIDByEmail' parameterType='String' resultType='int'>

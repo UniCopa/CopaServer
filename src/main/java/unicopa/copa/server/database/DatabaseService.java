@@ -844,9 +844,11 @@ public class DatabaseService {
      *            the userID
      * @throws ObjectNotFoundException
      * @throws IncorrectObjectException
+     * @throws ObjectAlreadyExsistsException
      */
     public void updateUserSetting(UserSettings userSetting, int userID)
-	    throws ObjectNotFoundException, IncorrectObjectException {
+	    throws ObjectNotFoundException, IncorrectObjectException,
+	    ObjectAlreadyExsistsException {
 	checkNull(userSetting, "given UserSettings");
 	checkUser(userID);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -854,8 +856,15 @@ public class DatabaseService {
 		    .getMapper(UserSettingMapper.class);
 	    mapper.deleteAllGCMKeys(userID);
 	    if (userSetting.getGCMKeys() != null
-		    && !userSetting.getGCMKeys().isEmpty())
+		    && !userSetting.getGCMKeys().isEmpty()) {
+		for (String gcmKey : userSetting.getGCMKeys()) {
+		    if (existsGCMKey(gcmKey))
+			throw new ObjectAlreadyExsistsException(
+				"There is already an GCMKey with value="
+					+ gcmKey + " in the database");
+		}
 		mapper.insertGCMKeys(userSetting.getGCMKeys(), userID);
+	    }
 	    mapper.updatePerson(userSetting.getLanguage(),
 		    userSetting.isEmailNotificationEnabled(), userID);
 	    mapper.deleteAllSubscriptions(userID);
@@ -991,9 +1000,15 @@ public class DatabaseService {
 	    boolean eMailNotification) throws ObjectAlreadyExsistsException,
 	    IncorrectObjectException {
 	checkNull(userName, "given String(userName)");
+	checkString(userName, 20);
 	checkNull(firstName, "given String(firstName)");
+	checkString(firstName, 35);
 	checkNull(familyName, "given String(familyName)");
+	checkString(familyName, 35);
 	checkNull(email, "given String(email)");
+	checkString(email, 100);
+	checkString(language, 50);
+	checkString(titel, 50);
 	if (userNameExsists(userName))
 	    throw new ObjectAlreadyExsistsException(
 		    "There is already a User in the database with UserName="
@@ -1020,7 +1035,7 @@ public class DatabaseService {
     private boolean userNameExsists(String userName) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
-	    if (mapper.userNameExsists(userName) == 0)
+	    if (mapper.userNameExists(userName) == 0)
 		return false;
 	    return true;
 	}
@@ -1036,7 +1051,7 @@ public class DatabaseService {
     private boolean emailExsists(String email) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
-	    if (mapper.emailExsists(email) == 0)
+	    if (mapper.emailExists(email) == 0)
 		return false;
 	    return true;
 	}
@@ -1052,7 +1067,7 @@ public class DatabaseService {
     private boolean userIDExsists(int userID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
-	    if (mapper.userIDExsists(userID) == 0)
+	    if (mapper.userIDExists(userID) == 0)
 		return false;
 	    return true;
 	}
@@ -1091,6 +1106,8 @@ public class DatabaseService {
 	checkNull(singleEventUpdate, "given singleEventUpdate");
 	checkNull(singleEventUpdate.getUpdateDate(),
 		"Date in given SingleEventUpdate");
+	checkString(singleEventUpdate.getComment(), 1000);
+	checkString(singleEventUpdate.getCreatorName(), 70);
 	if (singleEventUpdate.getOldSingleEventID() != 0) {
 	    checkSingleEvent(singleEventUpdate.getOldSingleEventID());
 	    if (!isRecent(singleEventUpdate.getOldSingleEventID()))
@@ -1144,6 +1161,7 @@ public class DatabaseService {
      */
     public void insertEvent(Event event) throws ObjectNotFoundException,
 	    IncorrectObjectException {
+	checkString(event.getEventName(), 70);
 	checkNull(event, "given Event");
 	checkNull(event.getEventName(), "String(eventName) in the given Event");
 	for (int categoryID : event.getCategories()) {
@@ -1180,6 +1198,7 @@ public class DatabaseService {
     public void insertCategoryTree(CategoryNodeImpl category, int parent)
 	    throws IncorrectObjectException, ObjectAlreadyExsistsException,
 	    ObjectNotFoundException {
+	checkString(category.getName(), 70);
 	checkNull(category, "given CategoryNodeImpl");
 	if (categoryExists(category.getId()))
 	    throw new ObjectAlreadyExsistsException(
@@ -1264,6 +1283,8 @@ public class DatabaseService {
 		"string(eventGroupInfo) in given eventGroup");
 	checkNull(eventGroup.getEventGroupName(),
 		"string(eventGroupName) in given eventGroup");
+	checkString(eventGroup.getEventGroupName(), 70);
+	checkString(eventGroup.getEventGroupInfo(), 500);
 	for (int categoryID : eventGroup.getCategories()) {
 	    checkCategory(categoryID);
 	}
@@ -1285,6 +1306,7 @@ public class DatabaseService {
      */
     public void addServerStatusNote(String note)
 	    throws IncorrectObjectException {
+	checkString(note, 1000);
 	checkNull(note, "given String");
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    ServerStatusMapper mapper = session
@@ -1459,12 +1481,37 @@ public class DatabaseService {
 		    + categoryID + " in the database");
     }
 
+    /**
+     * throws an exception if a given string is longer than it should be
+     * 
+     * @param stringToCheck
+     * @param stringMaxLength
+     * @throws IncorrectObjectException
+     */
     private void checkString(String stringToCheck, int stringMaxLength)
 	    throws IncorrectObjectException {
 	if (stringToCheck.length() > stringMaxLength)
 	    throw new IncorrectObjectException("String " + stringToCheck
 		    + "is too long. maximum length is" + stringMaxLength);
 
+    }
+
+    /**
+     * Checks weather a eventGroup exists or not
+     * 
+     * @param gcmKey
+     * @return
+     * @throws IncorrectObjectException
+     */
+    private boolean existsGCMKey(String gcmKey) throws IncorrectObjectException {
+	checkString(gcmKey, 300);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    int status = mapper.gcmKeyExists(gcmKey);
+	    if (status == 0)
+		return false;
+	    return true;
+	}
     }
 
     /**

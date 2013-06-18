@@ -45,9 +45,11 @@ public interface PersonMapper {
 	    @Param("language") String language,
 	    @Param("eMailNotification") boolean eMailNotification);
 
-    public Integer userNameExsists(@Param("userName") String userName);
+    public Integer userNameExists(@Param("userName") String userName);
 
-    public Integer userIDExsists(@Param("userID") int userID);
+    public Integer userIDExists(@Param("userID") int userID);
 
-    public Integer emailExsists(@Param("email") String email);
+    public Integer emailExists(@Param("email") String email);
+
+    public Integer gcmKeyExists(@Param("gcmKey") String gcmKey);
 }

@@ -100,26 +100,6 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void testGetUserSettings2() {
-
-	try {
-	    UserSettings res2 = dbs.getUserSettings(dbs.getUserID("derp"));
-	    System.out.println(res2.getGCMKeys());
-	    res2.removeGCMKey("refgsfb");
-	    res2.removeGCMKey("dsfbsdb");
-	    res2.removeGCMKey("snfdggd");
-	    dbs.updateUserSetting(res2, dbs.getUserID("derp"));
-	    System.out.println(res2.getGCMKeys());
-	} catch (ObjectNotFoundException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (IncorrectObjectException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-    }
-
-    @Test
     public void testGetUserRole() {
 	try {
 	    assertEquals(UserRole.USER, dbs.getUserRole(1));
@@ -522,6 +502,9 @@ public class DatabaseServiceTest {
 	    // TODO Auto-generated catch block
 	    e1.printStackTrace();
 	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (ObjectAlreadyExsistsException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
