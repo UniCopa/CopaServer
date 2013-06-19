@@ -76,18 +76,18 @@ import unicopa.copa.server.notification.Notifier;
  */
 public class CopaSystem {
 
+    private static final Logger LOG = Logger.getLogger(CopaSystem.class
+	    .getName());
     private static CopaSystem instance = new CopaSystem();
     private Properties systemProperties = new Properties(); // TODO use
     private CopaSystemContext context;
     private Registration registration;
     private Map<Class<? extends AbstractRequest>, RequestHandler> requestHandlers = new HashMap<>();
-    private static final Logger LOG = Logger.getLogger(CopaSystem.class
-	    .getName());
 
     private CopaSystem() {
 	// log to file
 	try {
-	    LOG.addHandler(new FileHandler("%h/copa-system.%g.log", 100000, 100));
+	    LOG.addHandler(new FileHandler("%h/copa-system.%g.log", 10000000, 1));
 	} catch (IOException | SecurityException ex) {
 	    Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
 		    null, ex);
