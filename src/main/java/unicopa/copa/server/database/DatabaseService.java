@@ -467,6 +467,8 @@ public class DatabaseService {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    List<String> privList = mapper.getPrivileged(eventID,
 		    appointedByUserID, 1);
+	    if (privList == null)
+		return new ArrayList<>();
 	    return privList;
 	}
     }

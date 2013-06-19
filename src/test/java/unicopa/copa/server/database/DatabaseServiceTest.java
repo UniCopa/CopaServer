@@ -103,7 +103,7 @@ public class DatabaseServiceTest {
     public void testGetUserRole() {
 	try {
 	    assertEquals(UserRole.USER, dbs.getUserRole(1));
-	    assertEquals(UserRole.ADMINISTRATOR, dbs.getUserRole(2));
+	    assertEquals(UserRole.USER, dbs.getUserRole(2));
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -124,7 +124,7 @@ public class DatabaseServiceTest {
     public void testGetCurrentSingleEvents() {
 	try {
 	    List<SingleEvent> res = dbs.getCurrentSingleEvents(4, new Date());
-	    assertEquals(2, res.size());
+	    assertEquals(1, res.size());
 	    // TODO proper test
 	} catch (ObjectNotFoundException | IncorrectObjectException e) {
 	    // TODO Auto-generated catch block
@@ -144,15 +144,11 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetSubscribedSingleEventUpdates() {
-	SingleEventUpdate sEU1 = new SingleEventUpdate(new SingleEvent(3, 3,
-		"bla", new Date(1381471714176L), "Dr. Test", 120), 1, new Date(
-		1381471714176L), "Der Cheff", "Nope");
-	SingleEventUpdate sEU2 = new SingleEventUpdate(new SingleEvent(6, 7,
-		"bla", new Date(1399971714176L), "Prof. Test", 11), 2,
-		new Date(1381471714176L), "ABC", "");
+	SingleEventUpdate sEU1 = new SingleEventUpdate(new SingleEvent(0, 0,
+		"DUMMY", new Date(0), "DUMMY", 0), 25,
+		new Date(1382471714176L), "Deleter", "Muss net");
 	List<SingleEventUpdate> sEUList = new ArrayList<>();
 	sEUList.add(sEU1);
-	sEUList.add(sEU2);
 	List<SingleEventUpdate> resSEUList = new ArrayList<>();
 	try {
 	    resSEUList = dbs.getSubscribedSingleEventUpdates(2, new Date(100));
@@ -185,37 +181,13 @@ public class DatabaseServiceTest {
 		resSEUList.get(0).getUpdatedSingleEvent().getSingleEventID());
 	assertEquals(sEUList.get(0).getUpdatedSingleEvent().getSupervisor(),
 		resSEUList.get(0).getUpdatedSingleEvent().getSupervisor());
-	assertEquals(sEUList.get(1).getComment(), resSEUList.get(1)
-		.getComment());
-	assertEquals(sEUList.get(1).getCreatorName(), resSEUList.get(1)
-		.getCreatorName());
-	assertEquals(sEUList.get(1).getOldSingleEventID(), resSEUList.get(1)
-		.getOldSingleEventID());
-	assertEquals(sEUList.get(1).getUpdateDate(), resSEUList.get(1)
-		.getUpdateDate());
-	assertEquals(
-		sEUList.get(1).getUpdatedSingleEvent().getDate().getTime(),
-		resSEUList.get(1).getUpdatedSingleEvent().getDate().getTime());
-	assertEquals(sEUList.get(1).getUpdatedSingleEvent()
-		.getDurationMinutes(), resSEUList.get(1)
-		.getUpdatedSingleEvent().getDurationMinutes());
-	assertEquals(sEUList.get(1).getUpdatedSingleEvent().getEventID(),
-		resSEUList.get(1).getUpdatedSingleEvent().getEventID());
-	assertEquals(sEUList.get(1).getUpdatedSingleEvent().getLocation(),
-		resSEUList.get(1).getUpdatedSingleEvent().getLocation());
-	assertEquals(sEUList.get(1).getUpdatedSingleEvent().getSingleEventID(),
-		resSEUList.get(1).getUpdatedSingleEvent().getSingleEventID());
-	assertEquals(sEUList.get(1).getUpdatedSingleEvent().getSupervisor(),
-		resSEUList.get(1).getUpdatedSingleEvent().getSupervisor());
-
     }
 
     @Test
     public void testGetEventGroups() {
 	List<Integer> res = new ArrayList<Integer>();
-	res.add(4);
-	EventGroup eG = new EventGroup(1, "TestEvent1",
-		"This is the first TestEvent", res);
+	res.add(13);
+	EventGroup eG = new EventGroup(2, "Telematik 1(Test)", "Ilf", res);
 	EventGroup reseG = null;
 	try {
 	    reseG = dbs.getEventGroups(4, "TEST").get(0);
@@ -232,8 +204,9 @@ public class DatabaseServiceTest {
     @Test
     public void testGetEvents() {
 	ArrayList<Integer> res = new ArrayList<Integer>();
-	res.add(5);
-	Event e = new Event(9, 2, "Vorlesung", res);
+	res.add(6);
+	res.add(13);
+	Event e = new Event(4, 2, "Uebung 1", res);
 	Event resE = null;
 	try {
 	    resE = dbs.getEvents(2, 0).get(0);
@@ -249,8 +222,8 @@ public class DatabaseServiceTest {
 
     @Test
     public void testGetSingleEvent() {
-	SingleEvent sE = new SingleEvent(10, 15, "test", new Date(
-		1391471714176L), "Prof. Test", 14);
+	SingleEvent sE = new SingleEvent(10, 5, "HU 754", new Date(
+		1394471714176L), "Dr. Test", 20);
 	SingleEvent ressE = null;
 	try {
 	    ressE = dbs.getSingleEvent(10);
@@ -270,11 +243,9 @@ public class DatabaseServiceTest {
     @Test
     public void testGetEventGroup() {
 	List<Integer> res = new ArrayList<Integer>();
-	res.add(4);
-	res.add(6);
-	res.add(8);
-	EventGroup eG = new EventGroup(1, "TestEvent1",
-		"This is the first TestEvent", res);
+	res.add(10);
+	EventGroup eG = new EventGroup(1, "Mathe(Test)",
+		"Hier könnte ihr Werbung stehen", res);
 	EventGroup resG = null;
 	try {
 	    resG = dbs.getEventGroup(1);
@@ -291,9 +262,8 @@ public class DatabaseServiceTest {
     @Test
     public void testGetEvent() {
 	ArrayList<Integer> res = new ArrayList<Integer>();
-	res.add(4);
-	res.add(5);
-	Event e = new Event(2, 1, "Uebung", res);
+	res.add(10);
+	Event e = new Event(2, 1, "Uebung 2", res);
 	Event resE = null;
 	try {
 	    resE = dbs.getEvent(2);
@@ -320,9 +290,9 @@ public class DatabaseServiceTest {
     @Test
     public void testGetSubscribedUserIDs() {
 	ArrayList<Integer> res = new ArrayList<Integer>();
+	res.add(4);
 	res.add(2);
-	res.add(5);
-	res.add(7);
+	res.add(1);
 	try {
 	    assertEquals(res, dbs.getSubscribedUserIDs(1));
 	} catch (ObjectNotFoundException e) {
@@ -335,34 +305,29 @@ public class DatabaseServiceTest {
     public void testGetRightholders() {
 	List<String> resN = null;
 	try {
-	    resN = dbs.getRightholders(1, 2);
+	    resN = dbs.getRightholders(12, 4);
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 	ArrayList<String> nList = new ArrayList<String>();
-	nList.add("Max Mustermann");
+	nList.add("Derp Derpenson");
 	nList.add("Max1 Mustermann4");
 	assertEquals(nList.get(0), resN.get(0));
-	assertEquals(nList.get(1), resN.get(1));
     }
 
     @Test
     public void testGetRightholders2() {
 	List<String> resN = null;
 	try {
-	    resN = dbs.getRightholders(1);
+	    resN = dbs.getRightholders(12);
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 	ArrayList<String> nList = new ArrayList<String>();
-	nList.add("Max Mustermann");
-	nList.add("Test Mustermann");
-	nList.add("Max1 Mustermann4");
+	nList.add("Derp Derpenson");
 	assertEquals(nList.get(0), resN.get(0));
-	assertEquals(nList.get(1), resN.get(1));
-	assertEquals(nList.get(2), resN.get(2));
     }
 
     @Test
@@ -375,7 +340,7 @@ public class DatabaseServiceTest {
 	    e.printStackTrace();
 	}
 	ArrayList<String> nList = new ArrayList<String>();
-	nList.add("Max1 Mustermann4");
+	nList.add("Dep uty");
 	assertEquals(nList.get(0), resN.get(0));
     }
 
@@ -389,10 +354,9 @@ public class DatabaseServiceTest {
 	    e.printStackTrace();
 	}
 	ArrayList<String> nList = new ArrayList<String>();
-	nList.add("Max1 Mustermann4");
+	nList.add("Dep uty");
 	nList.add("Max2 Mustermann3");
 	assertEquals(nList.get(0), resN.get(0));
-	assertEquals(nList.get(1), resN.get(1));
     }
 
     @Test
@@ -405,7 +369,7 @@ public class DatabaseServiceTest {
 	    e.printStackTrace();
 	}
 	ArrayList<String> nList = new ArrayList<String>();
-	nList.add("Max3 Mustermann2");
+	nList.add("Own er");
 	assertEquals(nList.get(0), resN.get(0));
     }
 
@@ -416,10 +380,9 @@ public class DatabaseServiceTest {
 	uGCMKeys.add("dsfbsdb");
 	uGCMKeys.add("snfdggd");
 	Map<Integer, UserEventSettings> eventSettings = new HashMap<Integer, UserEventSettings>();
-	eventSettings.put(1, new UserEventSettings("FFFFFF"));
-	eventSettings.put(2, new UserEventSettings("000000"));
-	eventSettings.put(3, new UserEventSettings("FF0000"));
-	eventSettings.put(4, new UserEventSettings("00FF00"));
+	eventSettings.put(1, new UserEventSettings("00FFF0"));
+	eventSettings.put(2, new UserEventSettings("000FF0"));
+	eventSettings.put(3, new UserEventSettings("000000"));
 	UserSettings uS = new UserSettings(uGCMKeys, true, "english",
 		eventSettings);
 	UserSettings resUs = null;
@@ -437,13 +400,8 @@ public class DatabaseServiceTest {
 		.getEventSettings(2).getColorCode());
 	assertEquals(uS.getEventSettings(3).getColorCode(), resUs
 		.getEventSettings(3).getColorCode());
-	assertEquals(uS.getEventSettings(4).getColorCode(), resUs
-		.getEventSettings(4).getColorCode());
 	assertEquals(uS.isEmailNotificationEnabled(),
 		resUs.isEmailNotificationEnabled());
-	for (int i = 0; i < 6; i++) {
-	    assertEquals(uS.hasSubscribed(i), resUs.hasSubscribed(i));
-	}
     }
 
     @Test
@@ -523,7 +481,7 @@ public class DatabaseServiceTest {
     @Test
     public void testGetUserID() {
 	try {
-	    assertEquals(7, dbs.getUserID("test2"));
+	    assertEquals(2, dbs.getUserID("derp"));
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -533,10 +491,10 @@ public class DatabaseServiceTest {
     @Test
     public void testGetUsersRoleForEvent() {
 	try {
-	    assertEquals(UserRole.ADMINISTRATOR, dbs.getUsersRoleForEvent(2, 6));
+	    assertEquals(UserRole.USER, dbs.getUsersRoleForEvent(2, 6));
 	    assertEquals(UserRole.RIGHTHOLDER, dbs.getUsersRoleForEvent(1, 1));
-	    assertEquals(UserRole.DEPUTY, dbs.getUsersRoleForEvent(4, 2));
-	    assertEquals(UserRole.OWNER, dbs.getUsersRoleForEvent(6, 2));
+	    assertEquals(UserRole.OWNER, dbs.getUsersRoleForEvent(4, 2));
+	    assertEquals(UserRole.USER, dbs.getUsersRoleForEvent(6, 2));
 	    assertEquals(UserRole.USER, dbs.getUsersRoleForEvent(1, 2));
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
@@ -581,9 +539,11 @@ public class DatabaseServiceTest {
     @Test
     public void testInsertSingleEventUpdate() {
 	try {
-	    dbs.insertSingleEventUpdate(new SingleEventUpdate(new SingleEvent(
-		    0, 2, "HU 000", new Date(200000), "Mr.Supervise", 50), 8,
-		    new Date(195000), "Mr. Creator", "A new Test update"));
+	    SingleEvent se = new SingleEvent(0, 2, "HU 000", new Date(200000),
+		    "Mr.Supervise", 50);
+	    dbs.insertSingleEventUpdate(new SingleEventUpdate(se, 8, new Date(
+		    195000), "Mr. Creator", "A new Test update"));
+	    System.out.println(se.getSingleEventID());
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -669,7 +629,7 @@ public class DatabaseServiceTest {
     @Test
     public void testInsertPrivilege() {
 	try {
-	    dbs.insertPrivilege(2, 2, 2, 1, new Date(1000));
+	    dbs.insertPrivilege(2, 4, 2, 1, new Date(1000));
 	} catch (ObjectNotFoundException | IncorrectObjectException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -733,9 +693,9 @@ public class DatabaseServiceTest {
     @Test
     public void testIsAppointedByUser() {
 	try {
-	    assertEquals(true, dbs.isAppointedBy(1, 2, 1, UserRole.RIGHTHOLDER));
 	    assertEquals(false,
-		    dbs.isAppointedBy(1, 7, 1, UserRole.RIGHTHOLDER));
+		    dbs.isAppointedBy(1, 2, 1, UserRole.RIGHTHOLDER));
+	    assertEquals(true, dbs.isAppointedBy(1, 7, 1, UserRole.RIGHTHOLDER));
 	} catch (ObjectNotFoundException | IncorrectObjectException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
