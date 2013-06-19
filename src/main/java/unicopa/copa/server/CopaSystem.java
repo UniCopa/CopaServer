@@ -27,6 +27,7 @@ import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import unicopa.copa.base.com.exception.APIException;
 import unicopa.copa.base.com.request.AbstractRequest;
 import unicopa.copa.base.com.request.AbstractResponse;
@@ -60,9 +61,10 @@ import unicopa.copa.base.com.request.TestRequest;
 import unicopa.copa.base.com.serialization.ServerSerializer;
 import unicopa.copa.server.com.requestHandler.RequestHandler;
 import unicopa.copa.server.database.DatabaseService;
+import unicopa.copa.server.database.IncorrectObjectException;
+import unicopa.copa.server.database.ObjectAlreadyExsistsException;
 import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.notification.Notifier;
-import unicopa.copa.server.servlet.CopaServlet;
 
 /**
  * This class represents the core of the system. It receives client messages,
@@ -97,11 +99,14 @@ public class CopaSystem {
 		    System.getProperty("user.home") + File.separator
 			    + ".unicopa" + File.separator + "copa"));
 	} catch (IOException ex) {
-	    Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
-		    null, ex);
-	    throw new RuntimeException();
+	    LOG.log(Level.SEVERE, null, ex);
+	    throw new RuntimeException(); // cannot continue with this failure
 	}
-	// TODO init registration
+	try {
+	    registration = new Registration(context);
+	} catch (Exception ex) {
+	    LOG.log(Level.SEVERE, null, ex);
+	}
 	// TODO add notification services
 	loadProperties();
 	loadRequestHandlers();
@@ -179,12 +184,11 @@ public class CopaSystem {
 	    try {
 		reqHandlerClass = Class.forName(handlerName.toString());
 	    } catch (ClassNotFoundException ex) {
-		Logger.getLogger(CopaSystem.class.getName())
-			.log(Level.SEVERE,
-				"The request hanlder for \""
-					+ req.getSimpleName()
-					+ "\" could not be found! This will result in the system not being able to handle this request and return InternatlErrorException instead.",
-				ex);
+		LOG.log(Level.SEVERE,
+			"The request hanlder for \""
+				+ req.getSimpleName()
+				+ "\" could not be found! This will result in the system not being able to handle this request and return InternatlErrorException instead.",
+			ex);
 		continue;
 	    }
 	    RequestHandler reqHandler = null;
@@ -194,8 +198,7 @@ public class CopaSystem {
 	    } catch (NoSuchMethodException | SecurityException
 		    | InstantiationException | IllegalAccessException
 		    | IllegalArgumentException | InvocationTargetException ex) {
-		Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
-			null, ex);
+		LOG.log(Level.SEVERE, null, ex);
 		continue;
 	    }
 	    requestHandlers.put(req, reqHandler);
@@ -218,11 +221,20 @@ public class CopaSystem {
 	    try {
 		userID = context.getDbservice().getUserID(userName);
 	    } catch (ObjectNotFoundException ex) {
-		// user does not exist in database - register
-		// TODO register
-		throw new InternalErrorException(
-			"Fatal: Cannot process client message because of missing user ID: "
-				+ ex.getMessage());
+		// user does not exist in database - register and try again
+		try {
+		    registration.register(userName);
+		    userID = context.getDbservice().getUserID(userName);
+		} catch (NamingException | ObjectAlreadyExsistsException
+			| IncorrectObjectException ex1) {
+		    throw new InternalErrorException(
+			    "Fatal: the user could not be registered to the system (which is required to process requests): "
+				    + ex.getMessage());
+		} catch (ObjectNotFoundException ex1) {
+		    throw new InternalErrorException(
+			    "Fatal: Registration was performed but user still cannot be found in the database: "
+				    + ex.getMessage());
+		}
 	    }
 	    AbstractRequest request = AbstractRequest.deserialize(json);
 	    AbstractResponse response = getRequestHandler(request.getClass())
@@ -234,9 +246,8 @@ public class CopaSystem {
 	    return response.serialize();
 	} catch (InternalErrorException | APIException | PermissionException
 		| RequestNotPracticableException ex) {
-	    // Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
-	    // null, ex);
-	    // TODO log in appropriate way
+	    LOG.log(Level.SEVERE, "Exception while processing client message:",
+		    ex);
 	    return ServerSerializer.serialize(ex); // pass exception to client
 	}
     }
