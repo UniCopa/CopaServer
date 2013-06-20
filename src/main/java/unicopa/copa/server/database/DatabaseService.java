@@ -453,7 +453,7 @@ public class DatabaseService {
      * @param appointedByUserID
      *            the ID of the user that appointed the rightholders to be
      *            returned, '-1' means all users
-     * @return the list of the rightholders ids
+     * @return the list of the rightholder names
      * @throws ObjectNotFoundException
      *             is thrown if the given event or the given user does not exist
      *             in the database
@@ -476,7 +476,7 @@ public class DatabaseService {
      * 
      * @param eventID
      *            the ID of the event
-     * @return the list of the rightholders ids
+     * @return the list of the rightholder names
      * @throws ObjectNotFoundException
      *             is thrown if the given event does not exist in the database
      */
@@ -808,7 +808,7 @@ public class DatabaseService {
      * @param appointedByUserID
      *            the ID of the user that appointed the deputies to be returned,
      *            '-1' means all users
-     * @return the list of userIDs
+     * @return the list of user names
      * @throws ObjectNotFoundException
      *             is thrown if the given user or the event does not exist in
      *             the database
@@ -831,7 +831,7 @@ public class DatabaseService {
      * 
      * @param eventID
      *            the ID of the event
-     * @return the list of userIDs
+     * @return the list of user names
      * @throws ObjectNotFoundException
      *             is thrown if the given event does not exist in the database
      */
@@ -844,7 +844,7 @@ public class DatabaseService {
      * 
      * @param eventID
      *            the ID of the event
-     * @return the list of userIds
+     * @return the list of user names
      * @throws ObjectNotFoundException
      *             is thrown if the given event does not exist in the database
      */
@@ -913,18 +913,24 @@ public class DatabaseService {
 	    ObjectAlreadyExsistsException {
 	checkNull(userSetting, "given UserSettings");
 	checkUser(userID);
+	if (userSetting.getGCMKeys() != null) {
+	    for (String gcmKey : userSetting.getGCMKeys()) {
+		checkNull(gcmKey, "given gcmKey");
+		checkString(gcmKey, 300);
+	    }
+	}
+	deleteAllGCMKeys(userID);
+	for (String gcmKey : userSetting.getGCMKeys()) {
+	    if (existsGCMKey(gcmKey))
+		throw new ObjectAlreadyExsistsException(
+			"There is already an GCMKey with value=" + gcmKey
+				+ " in the database");
+	}
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    UserSettingMapper mapper = session
 		    .getMapper(UserSettingMapper.class);
-	    mapper.deleteAllGCMKeys(userID);
 	    if (userSetting.getGCMKeys() != null
 		    && !userSetting.getGCMKeys().isEmpty()) {
-		for (String gcmKey : userSetting.getGCMKeys()) {
-		    if (existsGCMKey(gcmKey))
-			throw new ObjectAlreadyExsistsException(
-				"There is already an GCMKey with value="
-					+ gcmKey + " in the database");
-		}
 		mapper.insertGCMKeys(userSetting.getGCMKeys(), userID);
 	    }
 	    mapper.updatePerson(userSetting.getLanguage(),
@@ -935,6 +941,15 @@ public class DatabaseService {
 		mapper.insertSubscription(eventID, userSetting
 			.getEventSettings(eventID).getColorCode(), userID);
 	    }
+	    session.commit();
+	}
+    }
+
+    private void deleteAllGCMKeys(int userID) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    UserSettingMapper mapper = session
+		    .getMapper(UserSettingMapper.class);
+	    mapper.deleteAllGCMKeys(userID);
 	    session.commit();
 	}
     }
@@ -1598,7 +1613,7 @@ public class DatabaseService {
     }
 
     /**
-     * Checks weather a eventGroup exists or not
+     * Checks weather an gCMKey exists or not
      * 
      * @param gcmKey
      * @return true if the gcMKey exists in the database, else false
