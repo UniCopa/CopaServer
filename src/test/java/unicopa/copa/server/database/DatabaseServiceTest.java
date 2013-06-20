@@ -100,6 +100,26 @@ public class DatabaseServiceTest {
     }
 
     @Test
+    public void testUpdateUserSettingTest2() {
+	Set<String> gcmKeys = new HashSet<>();
+	gcmKeys.add("TestKey1");
+	gcmKeys.add("TestKey2");
+	Map<Integer, UserEventSettings> eventSettings = new HashMap<Integer, UserEventSettings>();
+	eventSettings.put(3, new UserEventSettings("F0F0F0"));
+
+	UserSettings setting = new UserSettings(gcmKeys, true, "english",
+		eventSettings);
+	try {
+	    dbs.updateUserSetting(setting, dbs.getUserID("derp"));
+	    dbs.updateUserSetting(setting, dbs.getUserID("derp"));
+	} catch (ObjectNotFoundException | IncorrectObjectException
+		| ObjectAlreadyExsistsException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
     public void testGetUserRole() {
 	try {
 	    assertEquals(UserRole.USER, dbs.getUserRole(1));
@@ -543,7 +563,6 @@ public class DatabaseServiceTest {
 		    "Mr.Supervise", 50);
 	    dbs.insertSingleEventUpdate(new SingleEventUpdate(se, 8, new Date(
 		    195000), "Mr. Creator", "A new Test update"));
-	    System.out.println(se.getSingleEventID());
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
