@@ -20,11 +20,11 @@
 
 	<select id='getSubscribedUserIDs' parameterType='int'
 		resultType='int'>
-		Select distinct p.personID
+		Select distinct p.personID as ID
 		From persons p,subscriptionLists l
 		Where
 		p.personID=l.personID and l.eventID=#{eventID}
-		ORDER By p.personID
+		Order By ID DESC
 	</select>
 
 	<select id='getUserGCMKey' parameterType='int' resultType='String'>

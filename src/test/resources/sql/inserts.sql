@@ -71,7 +71,7 @@ insert into eventGroup_has_Categories(categoryID,eventGroupID) values
 		(15,12);
 
 insert into events(eventGroupID, kindOfEvent) values
-		(0,'DUMMY'),
+	   (0,'DUMMY'),
 	   (1,'Uebung 1'),
 	   (1,'Uebung 2'),
 	   (1,'Vorlesung'),
@@ -139,7 +139,7 @@ insert into event_has_Categories(categoryID, eventID) values
 		
 
 insert into singleEvents(eventID,location,sEventDate,duration,supervisor,mostRecent) values
-		(0,'DUMMY',0,0,'DUMMY',false),
+	   (0,'DUMMY',0,0,'DUMMY',false),
 	   (1,'HU 103',1391471714176,20,'Dr. Test',true),
 	   (1,'HU 234',1395471714176,120,'Mr. Super',false),
 	   (1,'LdV 2',1491471714176,80,'The Visor',true),
@@ -188,7 +188,8 @@ insert into persons(userName,firstName,familyName,email,titel,language,eMailNoti
 	('userR','Right','Holder','max@mustermffsann.de','Dr.Prof','german',true),
 	('admin2','Max','Mustermann','max@muste4rmann.com','Dr.','german',false),
 	('test8','Max','Mustersdfgmann','maegx@mustermsfann.com','Dr.','deutsch',true),
-	('testdfg','Max','Mustergmann','max@mufste23rmann.com','Dr.','english',false);
+	('testdfg','Max','Mustergmann','max@mufste23rmann.com','Dr.','english',false),
+	('philip','philip','wendland',' philip.wendland@tu-ilmenau.de','Dev.','deutsch',true);
 	
 insert into privilege(personID,eventID,kindOfPrivilege,gavePrivilege,privDate) values
 	(4,1,3,3,1231414),
@@ -345,4 +346,5 @@ insert into subscriptionLists(personID,eventID,color) values
 	(1,1,'0FF000'),
 	(1,11,'00FFF0'),
 	(1,15,'00FFF0'),
-	(1,3,'FFFFFF');
+	(1,3,'FFFFFF'),
+	(10,1,'FF00FF');
