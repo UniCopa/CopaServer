@@ -17,6 +17,7 @@
 package unicopa.copa.server;
 
 import java.io.File;
+import java.util.logging.Handler;
 import unicopa.copa.server.database.DatabaseService;
 import unicopa.copa.server.notification.Notifier;
 
@@ -30,13 +31,16 @@ public class CopaSystemContext {
     private final Notifier notifier;
     private final File settingsDirectory;
     private final File logDirectory;
+    private final Handler debugLogHandler;
 
     public CopaSystemContext(DatabaseService dbservice, Notifier notifier,
-	    File settingsDirectory, File logDirectory) {
+	    File settingsDirectory, File logDirectory, Handler debugLogHandler) {
 	this.dbservice = dbservice;
 	this.notifier = notifier;
 	this.settingsDirectory = settingsDirectory;
 	this.logDirectory = logDirectory;
+	this.debugLogHandler = debugLogHandler;
+
     }
 
     public DatabaseService getDbservice() {
@@ -53,5 +57,9 @@ public class CopaSystemContext {
 
     public File getLogDirectory() {
 	return logDirectory;
+    }
+
+    public Handler getDebugLogHandler() {
+	return debugLogHandler;
     }
 }

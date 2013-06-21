@@ -91,7 +91,8 @@ public class CopaSystem {
 		    + File.separator + ".unicopa" + File.separator + "copa");
 	    context = new CopaSystemContext(new DatabaseService(new File(
 		    "database")), new Notifier(), baseDir, new File(baseDir,
-		    "logs"));
+		    "logs"), new FileHandler(context.getLogDirectory()
+		    .getCanonicalPath() + "/copa-debug", 10000000, 1));
 	} catch (IOException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	    throw new RuntimeException(); // cannot continue with this failure
