@@ -19,8 +19,11 @@ package unicopa.copa.server;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -29,6 +32,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
+import unicopa.copa.base.ServerInfo;
 import unicopa.copa.base.com.exception.APIException;
 import unicopa.copa.base.com.request.AbstractRequest;
 import unicopa.copa.base.com.request.AbstractResponse;
@@ -93,34 +97,43 @@ public class CopaSystem {
 	    // TODO get database from system properties
 	    File baseDir = new File(System.getProperty("user.home")
 		    + File.separator + ".unicopa" + File.separator + "copa");
+            baseDir.mkdirs();
+            
+            File logDirectory = new File(baseDir,
+		    "logs");
+            logDirectory.mkdirs();
+            
+            // Activate logging to file first
+
+	    LOG.addHandler(new FileHandler(logDirectory
+		    .getCanonicalPath() + "/copa-system.log", 10000000, 1));
+            
 	    Handler debugHandler = DEBUG_MODE ? new FileHandler(context
 		    .getLogDirectory().getCanonicalPath() + "/copa-debug",
 		    10000000, 1) : null;
+            
+            DatabaseService dbservice = new DatabaseService(new File(
+		    "database"));
+            
+            Properties serverInfoProperties = new Properties();
+            serverInfoProperties.load(getClass().getResourceAsStream("/system/version.properties"));
+            
+            List<String> availableRequests = loadRequestHandlers();            
+            
+            ServerInfo serverInfo = new ServerInfo(serverInfoProperties, new Date(), availableRequests);
+            
+            Notifier notifier = new Notifier();
+            
 	    // TODO check if adding handler objects which are null is ok!
-	    context = new CopaSystemContext(new DatabaseService(new File(
-		    "database")), new Notifier(), baseDir, new File(baseDir,
-		    "logs"), debugHandler);
-	} catch (IOException ex) {
+	    context = new CopaSystemContext(dbservice, notifier, baseDir, logDirectory, debugHandler, serverInfo);
+            
+            registration = new Registration(context);
+	} catch (IOException | URISyntaxException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
-	    throw new RuntimeException(); // cannot continue with this failure
-	}
-	init();
-	// log to file
-	try {
-	    LOG.addHandler(new FileHandler(context.getLogDirectory()
-		    .getCanonicalPath() + "/copa-system.log", 10000000, 1));
-	} catch (IOException | SecurityException ex) {
-	    Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
-		    null, ex);
-	}
-	try {
-	    registration = new Registration(context);
-	} catch (Exception ex) {
-	    LOG.log(Level.SEVERE, null, ex);
+	    throw new RuntimeException("Could not fully initialize the system - safety abort."); // cannot continue with this failure
 	}
 	// TODO add notification services
-	loadProperties();
-	loadRequestHandlers();
+//	loadProperties();
     }
 
     /**
@@ -134,17 +147,6 @@ public class CopaSystem {
 	return instance;
     }
 
-    /**
-     * Initialize essential resources.
-     */
-    private void init() {
-	if (!context.getSettingsDirectory().isDirectory()) {
-	    context.getSettingsDirectory().mkdirs();
-	    // TODO log
-	    // TODO copy default files to the directory
-	}
-	context.getLogDirectory().mkdirs();
-    }
 
     /**
      * Create the systems settings directory if necessary and load properties.
@@ -156,8 +158,10 @@ public class CopaSystem {
     /**
      * Load the request handlers for the specified requests. The requests for
      * which handlers should be loaded must be entered below.
+     * 
+     * @return a list with the simple names of all Request classes loaded (where a handler was found)
      */
-    private void loadRequestHandlers() {
+    private List<String> loadRequestHandlers() {
 	// TODO (improvement) load class files from directory
 	// Enable requests (select those for which a RequestHandler should be
 	// registered below)
@@ -191,6 +195,7 @@ public class CopaSystem {
 	    }
 	};
 
+        List<String> availableRequests = new LinkedList<>();
 	// Map Requests to appropriate RequestHandlers
 	for (Class req : requests) {
 	    StringBuilder handlerName = new StringBuilder();
@@ -220,7 +225,9 @@ public class CopaSystem {
 		continue;
 	    }
 	    requestHandlers.put(req, reqHandler);
+            availableRequests.add(req.getSimpleName());
 	}
+        return availableRequests;
     }
 
     /**
