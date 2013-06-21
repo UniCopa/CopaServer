@@ -65,4 +65,8 @@ public class CopaSystemContext {
     public Handler getDebugLogHandler() {
 	return debugLogHandler;
     }
+
+    public ServerInfo getServerInfo() {
+	return serverInfo;
+    }
 }

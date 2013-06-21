@@ -56,6 +56,7 @@ import unicopa.copa.base.com.request.GetEventRequest;
 import unicopa.copa.base.com.request.GetEventsRequest;
 import unicopa.copa.base.com.request.GetMyAppointedUsersRequest;
 import unicopa.copa.base.com.request.GetMyEventsRequest;
+import unicopa.copa.base.com.request.GetServerInfoRequest;
 import unicopa.copa.base.com.request.GetServerStatusNotesRequest;
 import unicopa.copa.base.com.request.GetSingleEventUpdatesRequest;
 import unicopa.copa.base.com.request.GetSubscribedSingleEventUpdatesRequest;
@@ -192,6 +193,7 @@ public class CopaSystem {
 		add(GetEventsRequest.class);
 		add(GetMyAppointedUsersRequest.class);
 		add(GetMyEventsRequest.class);
+		add(GetServerInfoRequest.class);
 		add(GetServerStatusNotesRequest.class);
 		add(GetSingleEventRequest.class);
 		add(GetSingleEventUpdatesRequest.class);
