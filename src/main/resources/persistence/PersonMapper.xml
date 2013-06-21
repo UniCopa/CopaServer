@@ -111,6 +111,12 @@
 		From persons
 		Where email=#{email}
 	</select>
+	
+	<select id='getName' parameterType='int' resultType='map'>
+	    select firstName, familyName
+	    from persons
+	    Where personID=#{userID}
+	</select>
 
 	<insert id='insertPerson' parameterType='map'>
 		insert into

@@ -40,6 +40,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 
 import unicopa.copa.base.ServerStatusNote;
+import unicopa.copa.base.UserData;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
@@ -97,6 +98,18 @@ public class DatabaseServiceTest {
 	runner.setLogWriter(null);
 	// runner.setErrorLogWriter(null);
 	runner.runScript(reader);
+    }
+
+    @Test
+    public void testGetUserData() {
+	try {
+	    UserData res = dbs.getUserData(2);
+	    assertEquals("Derp Derpenson", res.getName());
+	    assertEquals("derp@Derpenson.com", res.getEmail());
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
     }
 
     @Test

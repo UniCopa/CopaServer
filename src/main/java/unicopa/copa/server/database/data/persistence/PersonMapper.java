@@ -52,4 +52,6 @@ public interface PersonMapper {
     public Integer emailExists(@Param("email") String email);
 
     public Integer gcmKeyExists(@Param("gcmKey") String gcmKey);
+
+    public Map<String, String> getName(@Param("userID") int userID);
 }

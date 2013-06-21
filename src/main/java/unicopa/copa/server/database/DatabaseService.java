@@ -1006,8 +1006,14 @@ public class DatabaseService {
      *             is thrown if the given user does not exist in the database
      */
     public UserData getUserData(int userID) throws ObjectNotFoundException {
-	// TODO implement
-	throw new UnsupportedOperationException("Not supported yet.");
+	String email = getEmailAddress(userID);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    Map<String, String> name = mapper.getName(userID);
+	    String fullName = name.get("FIRSTNAME") + " "
+		    + name.get("FAMILYNAME");
+	    return new UserData(fullName, email);
+	}
     }
 
     /**
