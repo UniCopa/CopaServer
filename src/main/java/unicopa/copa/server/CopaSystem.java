@@ -196,6 +196,7 @@ public class CopaSystem {
 		add(GetSingleEventRequest.class);
 		add(GetSingleEventUpdatesRequest.class);
 		add(GetSubscribedSingleEventUpdatesRequest.class);
+		add(GetUserDataRequest.class);
 		add(GetUserSettingsRequest.class);
 		add(RemoveRoleFromUserRequest.class);
 		add(SetUserSettingsRequest.class);
