@@ -85,22 +85,25 @@ public class CopaSystem {
     private Map<Class<? extends AbstractRequest>, RequestHandler> requestHandlers = new HashMap<>();
 
     private CopaSystem() {
-	// log to file
-	try {
-	    LOG.addHandler(new FileHandler("%h/copa-system.%g.log", 10000000, 1));
-	} catch (IOException | SecurityException ex) {
-	    Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
-		    null, ex);
-	}
 	try {
 	    // TODO get database from system properties
+	    File baseDir = new File(System.getProperty("user.home")
+		    + File.separator + ".unicopa" + File.separator + "copa");
 	    context = new CopaSystemContext(new DatabaseService(new File(
-		    "database")), new Notifier(), new File(
-		    System.getProperty("user.home") + File.separator
-			    + ".unicopa" + File.separator + "copa"));
+		    "database")), new Notifier(), baseDir, new File(baseDir,
+		    "logs"));
 	} catch (IOException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	    throw new RuntimeException(); // cannot continue with this failure
+	}
+	init();
+	// log to file
+	try {
+	    LOG.addHandler(new FileHandler(context.getLogDirectory()
+		    .getCanonicalPath() + "/copa-system.log", 10000000, 1));
+	} catch (IOException | SecurityException ex) {
+	    Logger.getLogger(CopaSystem.class.getName()).log(Level.SEVERE,
+		    null, ex);
 	}
 	try {
 	    registration = new Registration(context);
@@ -124,14 +127,21 @@ public class CopaSystem {
     }
 
     /**
-     * Create the systems settings directory if necessary and load properties.
+     * Initialize essential resources.
      */
-    private void loadProperties() {
+    private void init() {
 	if (!context.getSettingsDirectory().isDirectory()) {
 	    context.getSettingsDirectory().mkdirs();
 	    // TODO log
 	    // TODO copy default files to the directory
 	}
+	context.getLogDirectory().mkdirs();
+    }
+
+    /**
+     * Create the systems settings directory if necessary and load properties.
+     */
+    private void loadProperties() {
 	// TODO load properties if necessary
     }
 

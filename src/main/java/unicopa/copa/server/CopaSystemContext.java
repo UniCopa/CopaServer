@@ -29,12 +29,14 @@ public class CopaSystemContext {
     private final DatabaseService dbservice;
     private final Notifier notifier;
     private final File settingsDirectory;
+    private final File logDirectory;
 
     public CopaSystemContext(DatabaseService dbservice, Notifier notifier,
-	    File settingsDirectory) {
+	    File settingsDirectory, File logDirectory) {
 	this.dbservice = dbservice;
 	this.notifier = notifier;
 	this.settingsDirectory = settingsDirectory;
+	this.logDirectory = logDirectory;
     }
 
     public DatabaseService getDbservice() {
@@ -47,5 +49,9 @@ public class CopaSystemContext {
 
     public File getSettingsDirectory() {
 	return settingsDirectory;
+    }
+
+    public File getLogDirectory() {
+	return logDirectory;
     }
 }
