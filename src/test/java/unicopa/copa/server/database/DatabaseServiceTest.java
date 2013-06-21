@@ -310,6 +310,7 @@ public class DatabaseServiceTest {
     @Test
     public void testGetSubscribedUserIDs() {
 	ArrayList<Integer> res = new ArrayList<Integer>();
+	res.add(10);
 	res.add(4);
 	res.add(2);
 	res.add(1);

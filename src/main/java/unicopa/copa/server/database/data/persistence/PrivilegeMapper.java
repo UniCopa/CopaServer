@@ -53,4 +53,7 @@ public interface PrivilegeMapper {
 
     public List<DBUserData> getUsersAppointedUsers(
 	    @Param("gavePrivilege") int gavePrivilege);
+
+    public Integer hasPrivFor(@Param("userID") int userID,
+	    @Param("eventID") int eventID);
 }

@@ -1,77 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright (C) 2013 UniCoPA
- 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
- 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
- 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- -->
+<!-- Copyright (C) 2013 UniCoPA This program is free software: you can redistribute 
+	it and/or modify it under the terms of the GNU General Public License as 
+	published by the Free Software Foundation, either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU General Public License for more details. You should have received a copy 
+	of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>. -->
  <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace='unicopa.copa.server.database.data.persistence.PrivilegeMapper'>
-    
-    <resultMap id="resultDBUserData" type="unicopa.copa.server.database.data.db.DBUserData">
-        <id property="kindOfPrivilege" column="kindOfPrivilege" />
-    	<result property="firstName" column="firstName" />
-    	<result property="familyName" column="familyName" />
-    	<result property="email" column="email" />  	
+
+	<resultMap id="resultDBUserData"
+		type="unicopa.copa.server.database.data.db.DBUserData">
+		<id property="kindOfPrivilege" column="kindOfPrivilege" />
+		<result property="firstName" column="firstName" />
+		<result property="familyName" column="familyName" />
+		<result property="email" column="email" />
 	</resultMap>
-    
-    <select id='getPrivileged' parameterType='int' resultType='String'>
-        select p.firstName || ' ' || p.familyName as Name
-		from persons p, privilege r
-		where p.personID=r.personID and r.eventID=#{eventID} and kindOfPrivilege = #{kindOfPriv}
+
+	<select id='getPrivileged' parameterType='int' resultType='String'>
+		select p.firstName || ' ' || p.familyName as Name
+		from persons p,
+		privilege r
+		where p.personID=r.personID and r.eventID=#{eventID} and
+		kindOfPrivilege = #{kindOfPriv}
 		<if test="appointedByUserID != -1">
-		    and r.gavePrivilege=#{appointedByUserID}
-		</if>	
-    </select>
-    
-    <select id='isAppointedBy' parameterType='map' resultType='int'>
-        Select Count(*)
-        From privilege
-        Where personID=#{userID} and eventID=#{eventID} and gavePrivilege=#{gavePrivilege} and kindOfPrivilege=#{kindOfPrivilege}
-    </select>
-    
-    <select id='getUsersPriviligedEvents' parameterType='int' resultType='map'>
-        Select eventid, kindofprivilege
+			and r.gavePrivilege=#{appointedByUserID}
+		</if>
+	</select>
+
+	<select id='isAppointedBy' parameterType='map' resultType='int'>
+		Select Count(*)
+		From privilege
+		Where personID=#{userID} and eventID=#{eventID} and
+		gavePrivilege=#{gavePrivilege} and kindOfPrivilege=#{kindOfPrivilege}
+	</select>
+
+	<select id='getUsersPriviligedEvents' parameterType='int'
+		resultType='map'>
+		Select eventid, kindofprivilege
 		from privilege
 		where personID=#{userID}
-    </select>
-    
-    <select id='getUsersAppointedUsers' parameterType='int' resultMap='resultDBUserData'>
-        Select r.kindOfPrivilege,p.firstName,p.familyName,p.email
-        From persons p, privilege r
-        Where gavePrivilege=#{gavePrivilege} and p.personID=r.personID and kindOfPrivilege >1
-    </select>
-    
-    <delete id='removePrivilege' parameterType='map'>
-        delete from privilege
-        where personID=#{userID} and eventID=#{eventID}
-    </delete>
-    
-    <delete id='deleteAdmin' parameterType='int'>
-        delete from admins
-        where personID=#{userID}
-    </delete>
-    
-    <insert id='insertPrivilege' parameterType='map'>
-        insert into privilege(personID,eventID,kindOfPrivilege,gavePrivilege,privDate) values
-			(#{personID},#{eventID},#{kindOfPrivilege},#{gavePrivilege},#{privDate})
-    </insert>
-    
-    <insert id='insertAdmin' parameterType='map'>
-        insert into admins(personID,adminDate) values
+	</select>
+
+	<select id='getUsersAppointedUsers' parameterType='int'
+		resultMap='resultDBUserData'>
+		Select r.kindOfPrivilege,p.firstName,p.familyName,p.email
+		From persons p, privilege r
+		Where gavePrivilege=#{gavePrivilege} and p.personID=r.personID and
+		kindOfPrivilege >1
+	</select>
+	
+	<select id='hasPrivFor' parameterType='map' resultType='int'>
+	    Select kindOfPrivilege
+	    From privilege
+	    Where personID=#{userID} and eventID=#{eventID}
+	</select>
+
+	<delete id='removePrivilege' parameterType='map'>
+		delete from privilege
+		where personID=#{userID} and eventID=#{eventID}
+	</delete>
+
+	<delete id='deleteAdmin' parameterType='int'>
+		delete from admins
+		where personID=#{userID}
+	</delete>
+
+	<insert id='insertPrivilege' parameterType='map'>
+		insert into
+		privilege(personID,eventID,kindOfPrivilege,gavePrivilege,privDate)
+		values
+		(#{personID},#{eventID},#{kindOfPrivilege},#{gavePrivilege},#{privDate})
+	</insert>
+
+	<insert id='insertAdmin' parameterType='map'>
+		insert into admins(personID,adminDate) values
 		(#{userID},#{date})
-    </insert>
+	</insert>
 
 </mapper>

@@ -386,8 +386,12 @@ public class DatabaseService {
 		    .getEventColors(userID);
 	    Map<Integer, UserEventSettings> eventSettings = new HashMap<>();
 	    for (Map<String, Integer> map : listEventColor) {
-		eventSettings.put(map.get("EVENTID"), new UserEventSettings(
-			String.valueOf(map.get("COLOR"))));
+		if (map.get("EVENTID") != 0) {
+		    eventSettings.put(
+			    map.get("EVENTID"),
+			    new UserEventSettings(String.valueOf(map
+				    .get("COLOR"))));
+		}
 	    }
 	    return new UserSettings(uGCMKeys, eMailNoty, language,
 		    eventSettings);
@@ -937,9 +941,12 @@ public class DatabaseService {
 		    userSetting.isEmailNotificationEnabled(), userID);
 	    mapper.deleteAllSubscriptions(userID);
 	    for (int eventID : userSetting.getSubscriptions()) {
-		checkColor(userSetting.getEventSettings(eventID).getColorCode());
-		mapper.insertSubscription(eventID, userSetting
-			.getEventSettings(eventID).getColorCode(), userID);
+		if (eventID != 0) {
+		    checkColor(userSetting.getEventSettings(eventID)
+			    .getColorCode());
+		    mapper.insertSubscription(eventID, userSetting
+			    .getEventSettings(eventID).getColorCode(), userID);
+		}
 	    }
 	    session.commit();
 	}
@@ -1329,7 +1336,8 @@ public class DatabaseService {
     }
 
     /**
-     * inserts a privilege entry with the given parameters
+     * inserts a privilege entry with the given parameters, if the given user
+     * has an privilege for that event, the old one is replaced by the new one
      * 
      * @param userID
      * @param eventID
@@ -1352,6 +1360,9 @@ public class DatabaseService {
 	    throw new ObjectNotFoundException("There is no User with ID="
 		    + gavePrivilegeID);
 	checkEvent(eventID);
+	if (hasPrivfor(userID, eventID) != 0) {
+	    removePrivilege(userID, eventID);
+	}
 	checkNull(privDate, "given Date");
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
@@ -1630,6 +1641,24 @@ public class DatabaseService {
 	    if (status == 0)
 		return false;
 	    return true;
+	}
+    }
+
+    /**
+     * Returns the privilege a given user has for a given event. 0=no privilege,
+     * 1=rightholder, 2=deputy, 3=owner
+     * 
+     * @param userID
+     * @param eventID
+     * @return
+     */
+    private Integer hasPrivfor(int userID, int eventID) {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    Integer priv = mapper.hasPrivFor(userID, eventID);
+	    if (priv == null)
+		return 0;
+	    return priv;
 	}
     }
 
