@@ -1,71 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright (C) 2013 UniCoPA
- 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
- 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
- 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- -->
+<!-- Copyright (C) 2013 UniCoPA This program is free software: you can redistribute 
+	it and/or modify it under the terms of the GNU General Public License as 
+	published by the Free Software Foundation, either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU General Public License for more details. You should have received a copy 
+	of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>. -->
  <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace='unicopa.copa.server.database.data.persistence.CategoryMapper'>
-   <resultMap id="DBCategoryNode" type="unicopa.copa.server.database.data.db.DBCategoryNode">
-        <id property="id" column="categoryID" />
-    	<result property="name" column="name" />
-    	<collection property="children" ofType="int">
-    	    	<id property="child" column="ID"/>
-    	</collection>
+	<resultMap id="DBCategoryNode"
+		type="unicopa.copa.server.database.data.db.DBCategoryNode">
+		<id property="id" column="categoryID" />
+		<result property="name" column="name" />
+		<collection property="children" ofType="int">
+			<id property="child" column="ID" />
+		</collection>
 	</resultMap>
-	
-    <resultMap id="DBCategoryNodeLeaf" type="unicopa.copa.server.database.data.db.DBCategoryNode">
-        <id property="id" column="categoryID" />
-    	<result property="name" column="name" />
+
+	<resultMap id="DBCategoryNodeLeaf"
+		type="unicopa.copa.server.database.data.db.DBCategoryNode">
+		<id property="id" column="categoryID" />
+		<result property="name" column="name" />
 	</resultMap>
-	
-    <select id='getChildNodeIDs' parameterType='int' resultType='int'>
-        select c2.categoryID as ID
-		from categories c, category_Connections n, categories c2
-		where c.categoryID=#{categoryID} and c.categoryID=n.categoryNodeParent 
-				and n.categoryNodeChild=c2.categoryID
-    </select>
-    
-    <select id='getDBCategoryNode' parameterType='int' resultMap="DBCategoryNode">
-        select c.categoryID, c.name, c2.categoryID as ID
-		from categories c, category_Connections n, categories c2
-		where c.categoryID=#{categoryID} and c.categoryID=n.categoryNodeParent 
-				and n.categoryNodeChild=c2.categoryID 
-    </select>
-    
-    <select id='getDBCategoryNodeLeaf' parameterType='int' resultMap="DBCategoryNodeLeaf">
-        select c.categoryID, c.name
+
+	<select id='getChildNodeIDs' parameterType='int' resultType='int'>
+		select c2.categoryID as ID
+		from categories c, category_Connections n,
+		categories c2
+		where c.categoryID=#{categoryID} and
+		c.categoryID=n.categoryNodeParent
+		and n.categoryNodeChild=c2.categoryID
+	</select>
+
+	<select id='getDBCategoryNode' parameterType='int' resultMap="DBCategoryNode">
+		select c.categoryID, c.name, c2.categoryID as ID
+		from categories c,
+		category_Connections n, categories c2
+		where c.categoryID=#{categoryID}
+		and c.categoryID=n.categoryNodeParent
+		and n.categoryNodeChild=c2.categoryID
+	</select>
+
+	<select id='getDBCategoryNodeLeaf' parameterType='int'
+		resultMap="DBCategoryNodeLeaf">
+		select c.categoryID, c.name
 		from categories c
 		where c.categoryID=#{categoryID}
-    </select>
-    
-    <select id='categoryExsists' parameterType='int' resultType='int'>
-        select count(*)
-        from categories
-        where categoryID=#{categoryID}
-    </select>
-    
-    <insert id='insertCategory' parameterType='map' useGeneratedKeys="true" keyProperty="category.id">
-        insert into categories(name) values
-	   		(#{category.name})
-    </insert>
-    
-    <insert id='insertCategoryConnection' parameterType='map'>
-        insert into category_Connections(categoryNodeParent,categoryNodeChild) values
-			(#{parentID},#{childID})
-    </insert>
+	</select>
+
+	<select id='categoryExsists' parameterType='int' resultType='int'>
+		select count(*)
+		from categories
+		where categoryID=#{categoryID}
+	</select>
+
+	<insert id='insertCategory' parameterType='map'
+		useGeneratedKeys="true" keyProperty="category.id">
+		insert into categories(name) values
+		(#{category.name})
+	</insert>
+
+	<insert id='insertCategoryConnection' parameterType='map'>
+		insert into category_Connections(categoryNodeParent,categoryNodeChild)
+		values
+		(#{parentID},#{childID})
+	</insert>
 </mapper>
  

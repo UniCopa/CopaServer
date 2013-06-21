@@ -937,9 +937,12 @@ public class DatabaseService {
 		    userSetting.isEmailNotificationEnabled(), userID);
 	    mapper.deleteAllSubscriptions(userID);
 	    for (int eventID : userSetting.getSubscriptions()) {
-		checkColor(userSetting.getEventSettings(eventID).getColorCode());
-		mapper.insertSubscription(eventID, userSetting
-			.getEventSettings(eventID).getColorCode(), userID);
+		if (eventID != 0) {
+		    checkColor(userSetting.getEventSettings(eventID)
+			    .getColorCode());
+		    mapper.insertSubscription(eventID, userSetting
+			    .getEventSettings(eventID).getColorCode(), userID);
+		}
 	    }
 	    session.commit();
 	}

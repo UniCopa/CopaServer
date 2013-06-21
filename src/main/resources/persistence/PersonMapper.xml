@@ -1,125 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright (C) 2013 UniCoPA
- 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
- 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
- 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- -->
+<!-- Copyright (C) 2013 UniCoPA This program is free software: you can redistribute 
+	it and/or modify it under the terms of the GNU General Public License as 
+	published by the Free Software Foundation, either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU General Public License for more details. You should have received a copy 
+	of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>. -->
  <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace='unicopa.copa.server.database.data.persistence.PersonMapper'>
-           
-    <select id='getEmailAddress' parameterType='int' resultType='String'>
-        Select email
+
+	<select id='getEmailAddress' parameterType='int' resultType='String'>
+		Select email
 		From persons
 		Where personID=#{userID}
-    </select>
-    
-    <select id='getSubscribedUserIDs' parameterType='int' resultType='int'>
-        Select distinct p.personID
+	</select>
+
+	<select id='getSubscribedUserIDs' parameterType='int'
+		resultType='int'>
+		Select distinct p.personID
 		From persons p,subscriptionLists l
-		Where p.personID=l.personID and l.eventID=#{eventID}
+		Where
+		p.personID=l.personID and l.eventID=#{eventID}
 		ORDER By p.personID
-    </select>
-    
-    <select id='getUserGCMKey' parameterType='int' resultType='String'>
-        Select distinct g.gCMKey
-        From gCMKeys g
-        Where g.personID=#{userID}
-    </select>
-    
-    <select id='getEventColors' parameterType='int' resultType='hashMap'>
-        Select distinct l.eventID, l.color
-        From subscriptionLists l
-        Where l.personID=#{userID}
-    </select>
-    
-    <select id='getSubscriptions' parameterType='int' resultType='int'>
-        Select distinct l.eventID
-        From subscriptionLists l
-        Where l.personID=#{userID}
-    </select>
-    
-    <select id='getEmailNotification' parameterType='int' resultType='boolean'>
-        Select distinct p.eMailNotification
-        From persons p
-        Where p.personID=#{userID}
-    </select>
-    
-    <select id='getLanguage' parameterType='int' resultType='String'>
-        Select distinct p.language
-        From persons p
-        Where p.personID=#{userID}
-    </select>
-    
-    <select id='getUserID' parameterType='String' resultType='int'>
-        Select personID
-        From persons
-        Where userName=#{userName}
-    </select>
-    
-    <select id='isAdmin' parameterType='int' resultType='map'>
-        Select*
-        From admins
-        Where personID=#{userID}
-    </select>
-    
-    <select id='getPrivilege' parameterType='int' resultType='int'>
-        Select kindOfPrivilege
-        From privilege
-        Where personID=#{userID} and eventID=#{eventID}
-    </select>
-    
-    <select id='getUserName' parameterType='int' resultType='String'>
-        Select userName
-        From persons
-        Where personID=#{userID}
-    </select>
-    
-    <select id='userNameExists' parameterType='String' resultType='int'>
-        Select Count(*)
-        From persons
-        Where userName=#{userName}
-    </select>
-    
-    <select id='userIDExists' parameterType='int' resultType='int'>
-        Select Count(*)
-        From persons
-        Where personID=#{userID}
-    </select>
-    
-    <select id='emailExists' parameterType='String' resultType='int'>
-        Select Count(*)
-        From persons
-        Where email=#{email}
-    </select>
-    
-    <select id='gcmKeyExists' parameterType='String' resultType='int'>
-        Select Count(*)
-        From gCMKeys
-        Where gCMKey=#{gcmKey}
-    </select>
-    
-    <select id='getUserIDByEmail' parameterType='String' resultType='int'>
-        Select userName
-        From persons
-        Where email=#{email}
-    </select>
-    
-    <insert id='insertPerson' parameterType='map'>
-       insert into persons(userName,firstName,familyName,email,titel,language,eMailNotification) values
-			(#{userName},#{firstName},#{familyName},#{email},#{titel},#{language},#{eMailNotification}) 
-    </insert>
-    
+	</select>
+
+	<select id='getUserGCMKey' parameterType='int' resultType='String'>
+		Select distinct g.gCMKey
+		From gCMKeys g
+		Where g.personID=#{userID}
+	</select>
+
+	<select id='getEventColors' parameterType='int' resultType='hashMap'>
+		Select distinct l.eventID, l.color
+		From subscriptionLists l
+		Where l.personID=#{userID}
+	</select>
+
+	<select id='getSubscriptions' parameterType='int' resultType='int'>
+		Select distinct l.eventID
+		From subscriptionLists l
+		Where l.personID=#{userID}
+	</select>
+
+	<select id='getEmailNotification' parameterType='int'
+		resultType='boolean'>
+		Select distinct p.eMailNotification
+		From persons p
+		Where p.personID=#{userID}
+	</select>
+
+	<select id='getLanguage' parameterType='int' resultType='String'>
+		Select distinct p.language
+		From persons p
+		Where p.personID=#{userID}
+	</select>
+
+	<select id='getUserID' parameterType='String' resultType='int'>
+		Select personID
+		From persons
+		Where userName=#{userName}
+	</select>
+
+	<select id='isAdmin' parameterType='int' resultType='map'>
+		Select*
+		From admins
+		Where personID=#{userID}
+	</select>
+
+	<select id='getPrivilege' parameterType='int' resultType='int'>
+		Select kindOfPrivilege
+		From privilege
+		Where personID=#{userID} and eventID=#{eventID}
+	</select>
+
+	<select id='getUserName' parameterType='int' resultType='String'>
+		Select userName
+		From persons
+		Where personID=#{userID}
+	</select>
+
+	<select id='userNameExists' parameterType='String' resultType='int'>
+		Select Count(*)
+		From persons
+		Where userName=#{userName}
+	</select>
+
+	<select id='userIDExists' parameterType='int' resultType='int'>
+		Select Count(*)
+		From persons
+		Where personID=#{userID}
+	</select>
+
+	<select id='emailExists' parameterType='String' resultType='int'>
+		Select Count(*)
+		From persons
+		Where email=#{email}
+	</select>
+
+	<select id='gcmKeyExists' parameterType='String' resultType='int'>
+		Select Count(*)
+		From gCMKeys
+		Where gCMKey=#{gcmKey}
+	</select>
+
+	<select id='getUserIDByEmail' parameterType='String' resultType='int'>
+		Select userName
+		From persons
+		Where email=#{email}
+	</select>
+
+	<insert id='insertPerson' parameterType='map'>
+		insert into
+		persons(userName,firstName,familyName,email,titel,language,eMailNotification)
+		values
+		(#{userName},#{firstName},#{familyName},#{email},#{titel},#{language},#{eMailNotification})
+	</insert>
+
 </mapper>
