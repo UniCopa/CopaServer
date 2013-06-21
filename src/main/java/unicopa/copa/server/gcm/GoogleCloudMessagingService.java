@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.jetty.client.HttpClient;
@@ -39,6 +40,8 @@ import unicopa.copa.server.CopaSystemContext;
  * @author Philip Wendland
  */
 public class GoogleCloudMessagingService {
+    public static final Logger LOG = Logger.getLogger(GoogleCloudMessagingService.class
+	    .getName());    
     private HttpClient client;
     private Properties gcmProps;
 
@@ -51,6 +54,13 @@ public class GoogleCloudMessagingService {
      * 
      */
     public GoogleCloudMessagingService(CopaSystemContext context) {
+        try {
+            LOG.addHandler(new FileHandler(context
+                        .getLogDirectory().getCanonicalPath()
+                        + "/GCM.log", 10000000, 1));
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
 	this.gcmProps = new Properties();
 	File settingsDirectory = new File(context.getSettingsDirectory(), "gcm");
 	settingsDirectory.mkdirs();
@@ -65,8 +75,7 @@ public class GoogleCloudMessagingService {
 			.toURI());
 		unicopa.copa.server.util.IOutils.copyFile(src, gcmConfig);
 	    } catch (URISyntaxException | IOException ex) {
-		Logger.getLogger(GoogleCloudMessagingService.class.getName())
-			.log(Level.SEVERE, null, ex);
+		LOG.log(Level.SEVERE, null, ex);
 	    }
 	}
 	BufferedInputStream stream;
@@ -74,10 +83,10 @@ public class GoogleCloudMessagingService {
 	    stream = new BufferedInputStream(new FileInputStream(gcmConfig));
 	    this.gcmProps.load(stream);
 	} catch (FileNotFoundException ex) {
-	    Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(
+	    LOG.log(
 		    Level.SEVERE, null, ex);
 	} catch (IOException ex) {
-	    Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(
+	    LOG.log(
 		    Level.SEVERE, null, ex);
 	}
 
@@ -90,7 +99,7 @@ public class GoogleCloudMessagingService {
 	try {
 	    client.start();
 	} catch (Exception ex) {
-	    Logger.getLogger(GoogleCloudMessagingService.class.getName()).log(
+	    LOG.log(
 		    Level.SEVERE, null, ex);
 	}
     }
@@ -117,10 +126,8 @@ public class GoogleCloudMessagingService {
 			public void onContent(Response response,
 				ByteBuffer buffer) {
 			    if (response.getStatus() != 200) {
-				Logger.getLogger(
-					GoogleCloudMessagingService.class
-						.getName())
-					.log(Level.INFO,
+				LOG
+					.log(Level.WARNING,
 						"Google Cloud Messaging Server rejected request. Response code: {0}",
 						response.getStatus());
 			    }

@@ -36,6 +36,8 @@ import unicopa.copa.server.gcm.GoogleCloudMessagingService;
  */
 public class GoogleCloudNotificationService extends NotificationService {
     private GoogleCloudMessagingService gcmService;
+    public static final Logger LOG = Logger.getLogger(GoogleCloudNotificationService.class
+	    .getName());    
 
     public GoogleCloudNotificationService(CopaSystemContext context) {
 	super(context);
@@ -75,8 +77,7 @@ public class GoogleCloudNotificationService extends NotificationService {
 	    // send using service
 	    this.gcmService.notify(gcmKeys, "SINGLE_EVENT_UPDATE");
 	} catch (ObjectNotFoundException ex) {
-	    Logger.getLogger(GoogleCloudNotificationService.class.getName())
-		    .log(Level.SEVERE, null, ex);
+	    LOG.log(Level.SEVERE, "Database error.", ex);
 	}
     }
 
@@ -97,8 +98,7 @@ public class GoogleCloudNotificationService extends NotificationService {
 	    // send using service
 	    this.gcmService.notify(usrKeys, event.toString());
 	} catch (ObjectNotFoundException ex) {
-	    Logger.getLogger(GoogleCloudNotificationService.class.getName())
-		    .log(Level.SEVERE, null, ex);
+	    LOG.log(Level.SEVERE, "Database error.", ex);
 	}
     }
 

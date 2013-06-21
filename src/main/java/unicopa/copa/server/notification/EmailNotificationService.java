@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import unicopa.copa.base.UserSettings;
@@ -53,6 +53,8 @@ import unicopa.copa.server.email.UpdateInformation;
 public class EmailNotificationService extends NotificationService {
     private EmailService emailService;
     private Map<InternetAddress, String> centralInstances;
+     public static final Logger LOG = Logger.getLogger(GoogleCloudNotificationService.class
+	    .getName());  
 
     /**
      * Create a new EmailNotificationService.
@@ -62,13 +64,10 @@ public class EmailNotificationService extends NotificationService {
      * 
      * @param context
      *            The system context
-     * @throws FileNotFoundException
-     * @throws IOException
      */
-    public EmailNotificationService(CopaSystemContext context)
-	    throws FileNotFoundException, IOException {
+    public EmailNotificationService(CopaSystemContext context){
 	super(context);
-
+        
 	File settingsDirectory = new File(super.getContext()
 		.getSettingsDirectory(), "email");
 	settingsDirectory.mkdirs();
@@ -82,15 +81,19 @@ public class EmailNotificationService extends NotificationService {
 		src = new File(this.getClass()
 			.getResource("/email/smtp.properties").toURI());
 		unicopa.copa.server.util.IOutils.copyFile(src, smtpConfig);
-	    } catch (URISyntaxException ex) {
-		Logger.getLogger(EmailNotificationService.class.getName()).log(
-			Level.SEVERE, null, ex);
+	    } catch (    URISyntaxException | IOException ex) {
+		LOG.log(
+			Level.SEVERE, "Error copying smtp.properties file to user settings directory", ex);
 	    }
 	}
 	try (BufferedInputStream stream = new BufferedInputStream(
 		new FileInputStream(smtpConfig))) {
 	    smtpProps.load(stream);
-	}
+	} catch (FileNotFoundException ex) {
+            LOG.log(Level.SEVERE, "Did not find smtp.properties.", ex);
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, null,ex);
+        }
 
 	// obtain text templates
 	Map<String, InputStream> texts = new HashMap<>();
@@ -98,8 +101,13 @@ public class EmailNotificationService extends NotificationService {
 	templates.mkdirs();
 	File[] files = unicopa.copa.server.util.IOutils.FileFinder(templates);
 	for (File file : files) {
-	    FileInputStream fis = new FileInputStream(file);
-	    texts.put(file.getName(), fis);
+	    FileInputStream fis;
+            try {
+                fis = new FileInputStream(file);
+                texts.put(file.getName(), fis);
+            } catch (FileNotFoundException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+            }	    
 	}
 
 	// gather external E-Mail addresses and language settigns from
@@ -107,26 +115,31 @@ public class EmailNotificationService extends NotificationService {
 	centralInstances = new HashMap<>();
 	File externalAddrs = new File(settingsDirectory,
 		"externalAddresses.txt");
-	externalAddrs.createNewFile();
-	FileInputStream extAddrs = new FileInputStream(externalAddrs);
-	Scanner scn = new Scanner(new BufferedInputStream(extAddrs));
+        try {
+            externalAddrs.createNewFile();
+            FileInputStream extAddrs = new FileInputStream(externalAddrs);
+            Scanner scn = new Scanner(new BufferedInputStream(extAddrs));
 	scn.nextLine();
 	scn.nextLine();
 	scn.nextLine(); // ignore first three lines
 	while (scn.hasNextLine()) {
 	    String nextAddrStr = scn.useDelimiter(":").next();
 	    String nextLanguage = scn.nextLine();
-	    try {
-		InternetAddress nextAddr = new InternetAddress(nextAddrStr);
+	    InternetAddress nextAddr = new InternetAddress(nextAddrStr);
 		this.centralInstances.put(nextAddr, nextLanguage);
-	    } catch (AddressException ex) {
-		Logger.getLogger(EmailNotificationService.class.getName()).log(
-			Level.SEVERE, null, ex);
-	    }
-	}
-
-	// get a EmailService object
-	this.emailService = new EmailService(smtpProps, texts);
+	    
+        }
+        } catch (IOException | AddressException ex) {
+            LOG.log(Level.SEVERE, "Possibly format errors in  externalAddresses.txt.", ex);
+        }	
+	// get a EmailService object       
+        FileHandler logFH;
+        try {
+            logFH = new FileHandler(context.getLogDirectory().getCanonicalPath()+ "/email.log", 10000000, 1);
+            this.emailService = new EmailService(smtpProps, texts, logFH);
+        } catch (IOException | SecurityException ex) {
+            LOG.log(Level.SEVERE, "Error creating FileHandler for logging.", ex);
+        }	
     }
 
     /**
@@ -202,8 +215,7 @@ public class EmailNotificationService extends NotificationService {
 			    .getUserSettings(usrID);
 		    usrSettings.put(usrID, settings);
 		} catch (ObjectNotFoundException ex) {
-		    Logger.getLogger(EmailNotificationService.class.getName())
-			    .log(Level.SEVERE, null, ex);
+		    LOG.log(Level.SEVERE, "Error obtaining information from database.", ex);
 		}
 	    }
 
@@ -220,9 +232,8 @@ public class EmailNotificationService extends NotificationService {
 		    try {
 			EmailAddr = new InternetAddress(emailString);
 		    } catch (AddressException ex) {
-			Logger.getLogger(
-				EmailNotificationService.class.getName()).log(
-				Level.SEVERE, null, ex);
+			LOG.log(
+				Level.WARNING, "E-Mail address of user"+userID+"propably malformated.",ex);
 		    }
 
 		    // Text-ID
@@ -260,15 +271,11 @@ public class EmailNotificationService extends NotificationService {
 	    }
 
 	    // use EmailService to send emails
-	    try {
+	   
 		this.emailService.notifySingleEventUpdate(emailContexts, info);
-	    } catch (MessagingException ex) {
-		Logger.getLogger(EmailNotificationService.class.getName()).log(
-			Level.SEVERE, null, ex);
-	    }
+	    
 	} catch (ObjectNotFoundException ex) {
-	    Logger.getLogger(EmailNotificationService.class.getName()).log(
-		    Level.SEVERE, null, ex);
+	    LOG.log(Level.SEVERE, null, ex);
 	}
     }
 

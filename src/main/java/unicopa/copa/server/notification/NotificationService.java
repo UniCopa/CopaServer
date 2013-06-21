@@ -16,6 +16,10 @@
  */
 package unicopa.copa.server.notification;
 
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.CopaSystemContext;
 
@@ -39,6 +43,7 @@ public abstract class NotificationService {
     }
 
     private CopaSystemContext context;
+    private static final Logger LOG = Logger.getLogger("unicopa.copa.server.notification");
 
     /**
      * Create a new instance of a notification service.
@@ -49,6 +54,13 @@ public abstract class NotificationService {
      */
     public NotificationService(CopaSystemContext context) {
 	this.context = context;
+        try {
+            LOG.addHandler(new FileHandler(context
+                        .getLogDirectory().getCanonicalPath()
+                        + "/copa-notificationService.log", 10000000, 1));
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
