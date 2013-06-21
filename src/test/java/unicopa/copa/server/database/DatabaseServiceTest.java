@@ -100,28 +100,6 @@ public class DatabaseServiceTest {
     }
 
     @Test
-    public void testGetSubscribed() {
-	try {
-	    UserSettings settings = dbs.getUserSettings(dbs.getUserID("derp"));
-	    for (int i = 0; i < 20; i++) {
-		System.out.println("Event:" + i + " - "
-			+ settings.hasSubscribed(i));
-	    }
-	    settings.addSubscription(0);
-	    dbs.updateUserSetting(settings, dbs.getUserID("derp"));
-	    UserSettings settings2 = dbs.getUserSettings(dbs.getUserID("derp"));
-	    for (int i = 0; i < 20; i++) {
-		System.out.println("Event:" + i + " - "
-			+ settings2.hasSubscribed(i));
-	    }
-	} catch (ObjectNotFoundException | IncorrectObjectException
-		| ObjectAlreadyExsistsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-    }
-
-    @Test
     public void testUpdateUserSettingTest2() {
 	Set<String> gcmKeys = new HashSet<>();
 	gcmKeys.add("TestKey1");
@@ -333,8 +311,8 @@ public class DatabaseServiceTest {
     public void testGetSubscribedUserIDs() {
 	ArrayList<Integer> res = new ArrayList<Integer>();
 	res.add(4);
-	res.add(2);
 	res.add(1);
+	res.add(2);
 	try {
 	    assertEquals(res, dbs.getSubscribedUserIDs(1));
 	} catch (ObjectNotFoundException e) {
