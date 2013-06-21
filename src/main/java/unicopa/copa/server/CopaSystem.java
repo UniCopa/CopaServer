@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -76,6 +77,9 @@ import unicopa.copa.server.notification.Notifier;
  */
 public class CopaSystem {
 
+    private static final boolean DEBUG_MODE = true; // this enables debug
+						    // logging - attention, may
+						    // result in big log files
     private static final Logger LOG = Logger.getLogger(CopaSystem.class
 	    .getName());
     private static CopaSystem instance = new CopaSystem();
@@ -89,10 +93,13 @@ public class CopaSystem {
 	    // TODO get database from system properties
 	    File baseDir = new File(System.getProperty("user.home")
 		    + File.separator + ".unicopa" + File.separator + "copa");
+	    Handler debugHandler = DEBUG_MODE ? new FileHandler(context
+		    .getLogDirectory().getCanonicalPath() + "/copa-debug",
+		    10000000, 1) : null;
+	    // TODO check if adding handler objects which are null is ok!
 	    context = new CopaSystemContext(new DatabaseService(new File(
 		    "database")), new Notifier(), baseDir, new File(baseDir,
-		    "logs"), new FileHandler(context.getLogDirectory()
-		    .getCanonicalPath() + "/copa-debug", 10000000, 1));
+		    "logs"), debugHandler);
 	} catch (IOException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	    throw new RuntimeException(); // cannot continue with this failure
