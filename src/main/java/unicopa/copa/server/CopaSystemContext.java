@@ -36,13 +36,14 @@ public class CopaSystemContext {
     private final ServerInfo serverInfo;
 
     public CopaSystemContext(DatabaseService dbservice, Notifier notifier,
-	    File settingsDirectory, File logDirectory, Handler debugLogHandler, ServerInfo serverInfo) {
+	    File settingsDirectory, File logDirectory, Handler debugLogHandler,
+	    ServerInfo serverInfo) {
 	this.dbservice = dbservice;
 	this.notifier = notifier;
 	this.settingsDirectory = settingsDirectory;
 	this.logDirectory = logDirectory;
 	this.debugLogHandler = debugLogHandler;
-        this.serverInfo = serverInfo;
+	this.serverInfo = serverInfo;
     }
 
     public DatabaseService getDbservice() {

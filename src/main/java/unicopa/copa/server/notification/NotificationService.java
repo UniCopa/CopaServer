@@ -43,7 +43,8 @@ public abstract class NotificationService {
     }
 
     private CopaSystemContext context;
-    private static final Logger LOG = Logger.getLogger("unicopa.copa.server.notification");
+    private static final Logger LOG = Logger
+	    .getLogger("unicopa.copa.server.notification");
 
     /**
      * Create a new instance of a notification service.
@@ -54,13 +55,13 @@ public abstract class NotificationService {
      */
     public NotificationService(CopaSystemContext context) {
 	this.context = context;
-        try {
-            LOG.addHandler(new FileHandler(context
-                        .getLogDirectory().getCanonicalPath()
-                        + "/copa-notificationService.log", 10000000, 1));
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
+	try {
+	    LOG.addHandler(new FileHandler(context.getLogDirectory()
+		    .getCanonicalPath() + "/copa-notificationService.log",
+		    10000000, 1));
+	} catch (IOException ex) {
+	    LOG.log(Level.SEVERE, null, ex);
+	}
     }
 
     /**

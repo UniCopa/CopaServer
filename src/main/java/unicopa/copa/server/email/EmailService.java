@@ -30,9 +30,9 @@ import javax.mail.internet.*;
  * 
  * @author Philip Wendland
  */
-public class EmailService {   
+public class EmailService {
     public static final Logger LOG = Logger.getLogger(EmailService.class
-	    .getName());  
+	    .getName());
     private Properties smtpProps;
     private Authenticator auth;
     private Map<String, String> bodies;
@@ -73,8 +73,9 @@ public class EmailService {
      * 
      * @see unicopa.copa.server.email.TextPattern
      */
-    public EmailService(Properties smtpProps, Map<String, InputStream> texts, FileHandler logFH) {     
-        LOG.addHandler(logFH);
+    public EmailService(Properties smtpProps, Map<String, InputStream> texts,
+	    FileHandler logFH) {
+	LOG.addHandler(logFH);
 	// the properties of the SMTP-Server
 	this.smtpProps = smtpProps;
 	// the username and password to log in to the SMTP-Server
@@ -118,25 +119,25 @@ public class EmailService {
      *            the plain-text body of the E-Mail
      * @throws MessagingException
      */
-    public void postMail(String recipient, String subject, String message){
-        try {
-            // initiate session with the (sending) smtp server
-            Session session = Session.getInstance(smtpProps, auth);
+    public void postMail(String recipient, String subject, String message) {
+	try {
+	    // initiate session with the (sending) smtp server
+	    Session session = Session.getInstance(smtpProps, auth);
 
-            // create and configure message
-            Message msg = new MimeMessage(session);
-            InternetAddress addressTo = new InternetAddress(recipient);
-            msg.setRecipient(Message.RecipientType.TO, addressTo);
-            msg.setSubject(subject);
-            msg.setContent(message, "text/plain");
+	    // create and configure message
+	    Message msg = new MimeMessage(session);
+	    InternetAddress addressTo = new InternetAddress(recipient);
+	    msg.setRecipient(Message.RecipientType.TO, addressTo);
+	    msg.setSubject(subject);
+	    msg.setContent(message, "text/plain");
 
-            // send the E-Mail
-            Transport.send(msg);
-        } catch (AddressException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        } catch (MessagingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
+	    // send the E-Mail
+	    Transport.send(msg);
+	} catch (AddressException ex) {
+	    LOG.log(Level.SEVERE, null, ex);
+	} catch (MessagingException ex) {
+	    LOG.log(Level.SEVERE, null, ex);
+	}
 
     }
 
@@ -158,7 +159,7 @@ public class EmailService {
      * @see unicopa.copa.server.email.EmailContext
      */
     public void notifySingleEventUpdate(List<EmailContext> contexts,
-	    UpdateInformation info){
+	    UpdateInformation info) {
 	// compose texts
 	Map<String, String> processedBodies = replaceTextPatterns(this.bodies,
 		info);
@@ -175,29 +176,29 @@ public class EmailService {
 		String msgBody = processedBodies.get(textID);
 		String subject = processedSubjects.get(textID);
 		Message msg = new MimeMessage(session);
-                try {
-                    msg.setRecipient(Message.RecipientType.TO, addr);
-                    msg.setSubject(subject);
-		msg.setContent(msgBody, "text/plain");
-		Transport.send(msg);
-                } catch (MessagingException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
-                }		
+		try {
+		    msg.setRecipient(Message.RecipientType.TO, addr);
+		    msg.setSubject(subject);
+		    msg.setContent(msgBody, "text/plain");
+		    Transport.send(msg);
+		} catch (MessagingException ex) {
+		    LOG.log(Level.SEVERE, null, ex);
+		}
 	    } else {
 		LOG.log(Level.SEVERE,
 			"Missing E-Mail template. You should provide a template with the following name: {0}",
 			textID);
 		Message msg = new MimeMessage(session);
-                try {
-                    msg.setRecipient(Message.RecipientType.TO, addr);
-                    msg.setSubject("Update from CoPA");
-		msg.setContent(
-			"Hello, \nthere are updates available for you. Visit the website to check them.",
-			"text/plain");
-		Transport.send(msg);
-                } catch (MessagingException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
-                }
+		try {
+		    msg.setRecipient(Message.RecipientType.TO, addr);
+		    msg.setSubject("Update from CoPA");
+		    msg.setContent(
+			    "Hello, \nthere are updates available for you. Visit the website to check them.",
+			    "text/plain");
+		    Transport.send(msg);
+		} catch (MessagingException ex) {
+		    LOG.log(Level.SEVERE, null, ex);
+		}
 
 	    }
 	}

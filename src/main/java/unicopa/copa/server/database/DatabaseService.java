@@ -997,6 +997,20 @@ public class DatabaseService {
     }
 
     /**
+     * Get the UserData of a user.
+     * 
+     * @param userID
+     *            the ID of the user
+     * @return
+     * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
+     */
+    public UserData getUserData(int userID) throws ObjectNotFoundException {
+	// TODO implement
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
      * Removes the Privilege from the user with ID=userID for the event with
      * ID=evenID
      * 

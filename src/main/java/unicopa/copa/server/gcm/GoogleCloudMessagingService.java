@@ -40,8 +40,8 @@ import unicopa.copa.server.CopaSystemContext;
  * @author Philip Wendland
  */
 public class GoogleCloudMessagingService {
-    public static final Logger LOG = Logger.getLogger(GoogleCloudMessagingService.class
-	    .getName());    
+    public static final Logger LOG = Logger
+	    .getLogger(GoogleCloudMessagingService.class.getName());
     private HttpClient client;
     private Properties gcmProps;
 
@@ -54,13 +54,12 @@ public class GoogleCloudMessagingService {
      * 
      */
     public GoogleCloudMessagingService(CopaSystemContext context) {
-        try {
-            LOG.addHandler(new FileHandler(context
-                        .getLogDirectory().getCanonicalPath()
-                        + "/GCM.log", 10000000, 1));
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
+	try {
+	    LOG.addHandler(new FileHandler(context.getLogDirectory()
+		    .getCanonicalPath() + "/GCM.log", 10000000, 1));
+	} catch (IOException ex) {
+	    LOG.log(Level.SEVERE, null, ex);
+	}
 	this.gcmProps = new Properties();
 	File settingsDirectory = new File(context.getSettingsDirectory(), "gcm");
 	settingsDirectory.mkdirs();
@@ -83,11 +82,9 @@ public class GoogleCloudMessagingService {
 	    stream = new BufferedInputStream(new FileInputStream(gcmConfig));
 	    this.gcmProps.load(stream);
 	} catch (FileNotFoundException ex) {
-	    LOG.log(
-		    Level.SEVERE, null, ex);
+	    LOG.log(Level.SEVERE, null, ex);
 	} catch (IOException ex) {
-	    LOG.log(
-		    Level.SEVERE, null, ex);
+	    LOG.log(Level.SEVERE, null, ex);
 	}
 
 	// Instantiate and configure the SslContextFactory
@@ -99,8 +96,7 @@ public class GoogleCloudMessagingService {
 	try {
 	    client.start();
 	} catch (Exception ex) {
-	    LOG.log(
-		    Level.SEVERE, null, ex);
+	    LOG.log(Level.SEVERE, null, ex);
 	}
     }
 
@@ -126,10 +122,9 @@ public class GoogleCloudMessagingService {
 			public void onContent(Response response,
 				ByteBuffer buffer) {
 			    if (response.getStatus() != 200) {
-				LOG
-					.log(Level.WARNING,
-						"Google Cloud Messaging Server rejected request. Response code: {0}",
-						response.getStatus());
+				LOG.log(Level.WARNING,
+					"Google Cloud Messaging Server rejected request. Response code: {0}",
+					response.getStatus());
 			    }
 			}
 		    });

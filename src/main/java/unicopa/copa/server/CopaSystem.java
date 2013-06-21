@@ -59,6 +59,7 @@ import unicopa.copa.base.com.request.GetMyEventsRequest;
 import unicopa.copa.base.com.request.GetServerStatusNotesRequest;
 import unicopa.copa.base.com.request.GetSingleEventUpdatesRequest;
 import unicopa.copa.base.com.request.GetSubscribedSingleEventUpdatesRequest;
+import unicopa.copa.base.com.request.GetUserDataRequest;
 import unicopa.copa.base.com.request.GetUserSettingsRequest;
 import unicopa.copa.base.com.request.RemoveRoleFromUserRequest;
 import unicopa.copa.base.com.request.SetUserSettingsRequest;
@@ -97,43 +98,50 @@ public class CopaSystem {
 	    // TODO get database from system properties
 	    File baseDir = new File(System.getProperty("user.home")
 		    + File.separator + ".unicopa" + File.separator + "copa");
-            baseDir.mkdirs();
-            
-            File logDirectory = new File(baseDir,
-		    "logs");
-            logDirectory.mkdirs();
-            
-            // Activate logging to file first
+	    baseDir.mkdirs();
 
-	    LOG.addHandler(new FileHandler(logDirectory
-		    .getCanonicalPath() + "/copa-system.log", 10000000, 1));
-            
+	    File logDirectory = new File(baseDir, "logs");
+	    logDirectory.mkdirs();
+
+	    // Activate logging to file first
+
+	    LOG.addHandler(new FileHandler(logDirectory.getCanonicalPath()
+		    + "/copa-system.log", 10000000, 1));
+
 	    Handler debugHandler = DEBUG_MODE ? new FileHandler(context
 		    .getLogDirectory().getCanonicalPath() + "/copa-debug",
 		    10000000, 1) : null;
-            
-            DatabaseService dbservice = new DatabaseService(new File(
-		    "database"));
-            
-            Properties serverInfoProperties = new Properties();
-            serverInfoProperties.load(getClass().getResourceAsStream("/system/version.properties"));
-            
-            List<String> availableRequests = loadRequestHandlers();            
-            
-            ServerInfo serverInfo = new ServerInfo(serverInfoProperties, new Date(), availableRequests);
-            
-            Notifier notifier = new Notifier();
-            
+
+	    DatabaseService dbservice = new DatabaseService(
+		    new File("database"));
+
+	    Properties serverInfoProperties = new Properties();
+	    serverInfoProperties.load(getClass().getResourceAsStream(
+		    "/system/version.properties"));
+
+	    List<String> availableRequests = loadRequestHandlers();
+
+	    ServerInfo serverInfo = new ServerInfo(serverInfoProperties,
+		    new Date(), availableRequests);
+
+	    Notifier notifier = new Notifier();
+
 	    // TODO check if adding handler objects which are null is ok!
-	    context = new CopaSystemContext(dbservice, notifier, baseDir, logDirectory, debugHandler, serverInfo);
-            
-            registration = new Registration(context);
+	    context = new CopaSystemContext(dbservice, notifier, baseDir,
+		    logDirectory, debugHandler, serverInfo);
+
+	    registration = new Registration(context);
 	} catch (IOException | URISyntaxException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
-	    throw new RuntimeException("Could not fully initialize the system - safety abort."); // cannot continue with this failure
+	    throw new RuntimeException(
+		    "Could not fully initialize the system - safety abort."); // cannot
+									      // continue
+									      // with
+									      // this
+									      // failure
 	}
 	// TODO add notification services
-//	loadProperties();
+	// loadProperties();
     }
 
     /**
@@ -147,7 +155,6 @@ public class CopaSystem {
 	return instance;
     }
 
-
     /**
      * Create the systems settings directory if necessary and load properties.
      */
@@ -159,7 +166,8 @@ public class CopaSystem {
      * Load the request handlers for the specified requests. The requests for
      * which handlers should be loaded must be entered below.
      * 
-     * @return a list with the simple names of all Request classes loaded (where a handler was found)
+     * @return a list with the simple names of all Request classes loaded (where
+     *         a handler was found)
      */
     private List<String> loadRequestHandlers() {
 	// TODO (improvement) load class files from directory
@@ -195,7 +203,7 @@ public class CopaSystem {
 	    }
 	};
 
-        List<String> availableRequests = new LinkedList<>();
+	List<String> availableRequests = new LinkedList<>();
 	// Map Requests to appropriate RequestHandlers
 	for (Class req : requests) {
 	    StringBuilder handlerName = new StringBuilder();
@@ -225,9 +233,9 @@ public class CopaSystem {
 		continue;
 	    }
 	    requestHandlers.put(req, reqHandler);
-            availableRequests.add(req.getSimpleName());
+	    availableRequests.add(req.getSimpleName());
 	}
-        return availableRequests;
+	return availableRequests;
     }
 
     /**

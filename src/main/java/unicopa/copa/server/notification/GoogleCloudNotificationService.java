@@ -36,8 +36,8 @@ import unicopa.copa.server.gcm.GoogleCloudMessagingService;
  */
 public class GoogleCloudNotificationService extends NotificationService {
     private GoogleCloudMessagingService gcmService;
-    public static final Logger LOG = Logger.getLogger(GoogleCloudNotificationService.class
-	    .getName());    
+    public static final Logger LOG = Logger
+	    .getLogger(GoogleCloudNotificationService.class.getName());
 
     public GoogleCloudNotificationService(CopaSystemContext context) {
 	super(context);
