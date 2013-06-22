@@ -33,7 +33,7 @@ public class CopaSystemContext {
     private final File settingsDirectory;
     private final File logDirectory;
     private final Logger debugLogger;
-    private final ServerInfo serverInfo;
+    private ServerInfo serverInfo;
 
     public CopaSystemContext(DatabaseService dbservice, Notifier notifier,
 	    File settingsDirectory, File logDirectory, Logger debugLogger,
@@ -68,5 +68,14 @@ public class CopaSystemContext {
 
     public ServerInfo getServerInfo() {
 	return serverInfo;
+    }
+
+    /**
+     * Only to be used for initialization!
+     * 
+     * @param info
+     */
+    public void setServerInfo(ServerInfo serverInfo) {
+	this.serverInfo = serverInfo;
     }
 }

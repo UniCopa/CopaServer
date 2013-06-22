@@ -122,17 +122,23 @@ public class CopaSystem {
 	    serverInfoProperties.load(getClass().getResourceAsStream(
 		    "/system/version.properties"));
 
-	    List<String> availableRequests = loadRequestHandlers();
-
-	    Date startDate = new Date();
-	    ServerInfo serverInfo = new ServerInfo(serverInfoProperties,
-		    startDate, availableRequests);
-
 	    Notifier notifier = new Notifier();
 
 	    // TODO check if adding handler objects which are null is ok!
 	    context = new CopaSystemContext(dbservice, notifier, baseDir,
-		    logDirectory, DEBUG_LOG, serverInfo);
+		    logDirectory, DEBUG_LOG, null); // serverInfo is initialized
+						    // below because of cyclic
+						    // dependency
+
+	    List<String> availableRequests = loadRequestHandlers(); // needs
+								    // context
+								    // to be
+								    // initialized
+
+	    Date startDate = new Date();
+	    ServerInfo serverInfo = new ServerInfo(serverInfoProperties,
+		    startDate, availableRequests);
+	    context.setServerInfo(serverInfo);
 
 	    registration = new Registration(context);
 	    LOG.log(Level.INFO, "System fully initialized, started {0}",
@@ -242,6 +248,10 @@ public class CopaSystem {
 	    }
 	    requestHandlers.put(req, reqHandler);
 	    availableRequests.add(req.getSimpleName());
+	    if ("GetServerInfoRequest".equals(req.getSimpleName())) {
+		DEBUG_LOG.info("Added request, getContext()="
+			+ reqHandler.getContext());
+	    }
 	}
 	return availableRequests;
     }
