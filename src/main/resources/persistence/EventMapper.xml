@@ -1,49 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright (C) 2013 UniCoPA
- 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
- 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
- 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- -->
- 
-  <!DOCTYPE mapper
+<!-- Copyright (C) 2013 UniCoPA This program is free software: you can redistribute 
+	it and/or modify it under the terms of the GNU General Public License as 
+	published by the Free Software Foundation, either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU General Public License for more details. You should have received a copy 
+	of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>. -->
+ <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace='unicopa.copa.server.database.data.persistence.EventMapper'>
-    
-    <resultMap id="resultEvents" type="unicopa.copa.base.event.Event">
-        <id property="eventGroupID" column="eventGroupID" />
-    	<id property="eventID" column="eventID" />
-    	<result property="eventName" column="kindOfEvent" />
-    	<collection property="categories" column="categoryID" javaType="ArrayList" 
-    	    ofType="Integer" resultMap="SingleCategory"/>
+
+	<resultMap id="resultEvents" type="unicopa.copa.base.event.Event">
+		<id property="eventGroupID" column="eventGroupID" />
+		<id property="eventID" column="eventID" />
+		<result property="eventName" column="kindOfEvent" />
+		<collection property="categories" column="categoryID"
+			javaType="ArrayList" ofType="Integer" resultMap="SingleCategory" />
 	</resultMap>
-	
-    <resultMap id="SingleCategory" type="Integer">
-        <id property="id" column="categoryID" />     
-    </resultMap>
-        
-    
-    
-    <select id='getEvents' parameterType='map' resultType='unicopa.copa.base.event.Event' resultMap="resultEvents">
+
+	<resultMap id="SingleCategory" type="Integer">
+		<id property="id" column="categoryID" />
+	</resultMap>
+
+
+
+	<select id='getEvents' parameterType='map' resultMap="resultEvents">
 		select e.eventID, e.eventGroupID, e.kindOfEvent, c.categoryID
-		From events e, event_has_Categories c
-		Where e.eventGroupID=#{eventGroupID} and e.eventID=c.eventID and
+		From
+		events e, event_has_Categories c
+		Where e.eventGroupID=#{eventGroupID}
+		and e.eventID=c.eventID and
 		<foreach item="item" index="index" collection="categoryNodeID"
-            open="(" separator="or" close=")">
-            c.categoryID=#{item} 
-        </foreach>
+			open="(" separator="or" close=")">
+			c.categoryID=#{item}
+		</foreach>
+	</select>
 
-    </select>
+	<select id='getEvent' parameterType='int' resultMap="resultEvents">
+		select e.eventID, e.eventGroupID, e.kindOfEvent, c.categoryID
+		From events e,
+		event_has_Categories c
+		Where e.eventID=#{eventID} and
+		e.eventID=c.eventID
+		Order By (c.categoryID)
+	</select>
 
+	<select id='eventExists' parameterType='int' resultType="int">
+		Select Count(*)
+		From events
+		where eventID=#{eventID}
+	</select>
+
+	<insert id='insertEvent' parameterType='map' useGeneratedKeys="true"
+		keyProperty="event.eventID">
+		insert into events(eventGroupID, kindOfEvent) values
+		(#{event.eventGroupID},#{event.eventName})
+	</insert>
+
+	<insert id='insertEventCategorie' parameterType='map'>
+		insert into event_has_Categories(categoryID,eventID) values
+		<foreach item="item" index="index" collection="categoryID"
+			open="" separator="," close="">
+			(#{item},#{eventID})
+		</foreach>
+	</insert>
 </mapper>

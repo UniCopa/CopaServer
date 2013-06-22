@@ -16,8 +16,12 @@
  */
 package unicopa.copa.server.notification;
 
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import unicopa.copa.base.event.SingleEventUpdate;
-import unicopa.copa.server.database.DatabaseService;
+import unicopa.copa.server.CopaSystemContext;
 
 /**
  * A service which notifies clients about an update on a SingleEvent.
@@ -25,7 +29,22 @@ import unicopa.copa.server.database.DatabaseService;
  * @author Felix Wiemuth
  */
 public abstract class NotificationService {
-    private DatabaseService dbservice;
+
+    /**
+     * Events clients can be notified about. This are only events where no
+     * special data has to be sent.
+     */
+    public enum NotificationEvent {
+	USER_SETTINGS_CHANGED, // Inform the user that his settings have changed
+	SERVER_STATUS_NOTE, // Inform the user that there is a new server status
+			    // note
+	USER_EVENT_PERMISSIONS_CHANGED; // Inform the user that his permissons
+					// for events have changed
+    }
+
+    private CopaSystemContext context;
+    private static final Logger LOG = Logger
+	    .getLogger("unicopa.copa.server.notification");
 
     /**
      * Create a new instance of a notification service.
@@ -34,17 +53,25 @@ public abstract class NotificationService {
      *            the database service the notification service should use to
      *            obtain additional information
      */
-    public NotificationService(DatabaseService dbservice) {
-	this.dbservice = dbservice;
+    public NotificationService(CopaSystemContext context) {
+	this.context = context;
+	try {
+	    LOG.addHandler(new FileHandler(context.getLogDirectory()
+		    .getCanonicalPath() + "/copa-notificationService.log",
+		    10000000, 1, true));
+	} catch (IOException ex) {
+	    LOG.log(Level.SEVERE, null, ex);
+	}
     }
 
     /**
-     * Obtain the database service where to get information from.
+     * Obtain the system context.
      * 
+     * @see unicopa.copa.server.CopaSystemContext
      * @return
      */
-    protected DatabaseService dbservice() {
-	return dbservice;
+    protected CopaSystemContext getContext() {
+	return context;
     }
 
     /**
@@ -56,4 +83,13 @@ public abstract class NotificationService {
      */
     public abstract void notifyClients(SingleEventUpdate update);
 
+    /**
+     * Notify a specific client.
+     * 
+     * @param event
+     *            the notification event to inform about
+     * @param userID
+     *            the recipient of the notification event
+     */
+    public abstract void notifyClient(NotificationEvent event, int userID);
 }

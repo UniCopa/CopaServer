@@ -17,8 +17,8 @@
 package unicopa.copa.server.email;
 
 /**
- * \brief The Text-Patterns of the Template for E-Mail message bodies that
- * should be replaced by actual data.
+ * The Text-Patterns of the Template for E-Mail message bodies that should be
+ * replaced by actual data.
  * 
  * @see unicopa.copa.server.email.EmailService.replaceTextPatterns
  * 

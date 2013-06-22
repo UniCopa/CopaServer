@@ -1,0 +1,19 @@
+Appointment cancelled
+Dear Sir / Madam,
+
+We are writing to inform you that _CREATOR_NAME recently cancelled one of your appointments:
+
+Date of the cancellation:    _UPDATE_DATE
+Comment on the cancellation: _COMMENT
+
+Group of the event: _EVENTGROUP_NAME
+Name of the event:  _EVENT_NAME
+
+Date of the cancelled appointment:        _DATE
+Supervisor for the cancelled appointment: _SUPERVISOR
+Location of the cancelled appointment:    _LOCATION
+
+
+Yours sincerely,
+
+CoPA - Change of Plan Application

@@ -18,25 +18,28 @@ package unicopa.copa.server.email;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.mail.*;
 import javax.mail.internet.*;
-import unicopa.copa.base.event.SingleEventUpdate;
 
 /**
- * \brief With the E-Mail Service it is possible to send E-Mails for
- * notifications of updates.
+ * With the E-Mail Service it is possible to send E-Mails for notifications of
+ * updates.
  * 
  * @author Philip Wendland
  */
 public class EmailService {
-
+    public static final Logger LOG = Logger.getLogger(EmailService.class
+	    .getName());
     private Properties smtpProps;
     private Authenticator auth;
     private Map<String, String> bodies;
     private Map<String, String> subjects;
 
     /**
-     * \brief Create a new EmailService.
+     * Create a new EmailService.
      * 
      * @param smtpProps
      *            the environment properties used by the JavaMail API. The path
@@ -70,7 +73,9 @@ public class EmailService {
      * 
      * @see unicopa.copa.server.email.TextPattern
      */
-    public EmailService(Properties smtpProps, Map<String, InputStream> texts) {
+    public EmailService(Properties smtpProps, Map<String, InputStream> texts,
+	    FileHandler logFH) {
+	LOG.addHandler(logFH);
 	// the properties of the SMTP-Server
 	this.smtpProps = smtpProps;
 	// the username and password to log in to the SMTP-Server
@@ -104,38 +109,42 @@ public class EmailService {
     }
 
     /**
-     * \brief Sends a simple plain-text E-Mail.
+     * Sends a simple plain-text E-Mail.
      * 
      * @param recipient
-     *            the reciptient the E-Mail should be sent to, i.e. x@y.com
+     *            the recipient the E-Mail should be sent to, i.e. x@y.com
      * @param subject
      *            the subject of the E-Mail
      * @param message
      *            the plain-text body of the E-Mail
      * @throws MessagingException
      */
-    public void postMail(String recipient, String subject, String message)
-	    throws MessagingException {
-	// initiate session with the (sending) smtp server
-	Session session = Session.getInstance(smtpProps, auth);
+    public void postMail(String recipient, String subject, String message) {
+	try {
+	    // initiate session with the (sending) smtp server
+	    Session session = Session.getInstance(smtpProps, auth);
 
-	// create and configure message
-	Message msg = new MimeMessage(session);
-	InternetAddress addressTo = new InternetAddress(recipient);
-	msg.setRecipient(Message.RecipientType.TO, addressTo);
-	msg.setSubject(subject);
-	msg.setContent(message, "text/plain");
+	    // create and configure message
+	    Message msg = new MimeMessage(session);
+	    InternetAddress addressTo = new InternetAddress(recipient);
+	    msg.setRecipient(Message.RecipientType.TO, addressTo);
+	    msg.setSubject(subject);
+	    msg.setContent(message, "text/plain");
 
-	// send the E-Mail
-	Transport.send(msg);
+	    // send the E-Mail
+	    Transport.send(msg);
+	} catch (AddressException ex) {
+	    LOG.log(Level.SEVERE, null, ex);
+	} catch (MessagingException ex) {
+	    LOG.log(Level.SEVERE, null, ex);
+	}
 
     }
 
     /**
-     * \brief Sends E-Mails to notify the given recipients of the
-     * SingelEventUpdate.
+     * Sends E-Mails to notify the given recipients of the SingelEventUpdate.
      * 
-     * Note: The format of the E-Mail depents on the data obtained from the
+     * Note: The format of the E-Mail depends on the data obtained from the
      * parameter "update" and the "TextID" obtained from the parameter contexts.
      * For each TextID there should be one entry in the "texts" parameter which
      * was passed to the constructor when you created your EmailContext object.
@@ -143,95 +152,100 @@ public class EmailService {
      * @param contexts
      *            a list of EmailContexts (Containing E-Mail-Addresses and
      *            TextID's)
-     * @param update
-     *            a SingleEventUpdate
+     * @param info
+     *            the information that should be passed to the recipients
      * @throws MessagingException
-     * @see unicopa.copa.base.event.SingleEventUpdate
-     * @see unicopa.copa.base.event.SingleEvent
+     * @see unicopa.copa.server.email.UpdateInformation
      * @see unicopa.copa.server.email.EmailContext
      */
     public void notifySingleEventUpdate(List<EmailContext> contexts,
-	    SingleEventUpdate update, String eventGroupName, String eventName)
-	    throws MessagingException {
+	    UpdateInformation info) {
 	// compose texts
 	Map<String, String> processedBodies = replaceTextPatterns(this.bodies,
-		update, eventGroupName, eventName);
+		info);
 	Map<String, String> processedSubjects = replaceTextPatterns(
-		this.subjects, update, eventGroupName, eventName);
+		this.subjects, info);
 
 	// send E-Mails
-	Session session = Session.getInstance(smtpProps, auth);
+	Session session = Session.getInstance(this.smtpProps, this.auth);
 	for (EmailContext ctx : contexts) {
 	    InternetAddress addr = ctx.getEmailAddress();
 	    String textID = ctx.getTextID();
-	    String msgBody = processedBodies.get(textID);
-	    String subject = processedSubjects.get(textID);
+	    if (processedBodies.containsKey(textID)
+		    && processedSubjects.containsKey(textID)) {
+		String msgBody = processedBodies.get(textID);
+		String subject = processedSubjects.get(textID);
+		Message msg = new MimeMessage(session);
+		try {
+		    msg.setRecipient(Message.RecipientType.TO, addr);
+		    msg.setSubject(subject);
+		    msg.setContent(msgBody, "text/plain");
+		    Transport.send(msg);
+		} catch (MessagingException ex) {
+		    LOG.log(Level.SEVERE, null, ex);
+		}
+	    } else {
+		LOG.log(Level.SEVERE,
+			"Missing E-Mail template. You should provide a template with the following name: {0}",
+			textID);
+		Message msg = new MimeMessage(session);
+		try {
+		    msg.setRecipient(Message.RecipientType.TO, addr);
+		    msg.setSubject("Update from CoPA");
+		    msg.setContent(
+			    "Hello, \nthere are updates available for you. Visit the website to check them.",
+			    "text/plain");
+		    Transport.send(msg);
+		} catch (MessagingException ex) {
+		    LOG.log(Level.SEVERE, null, ex);
+		}
 
-	    Message msg = new MimeMessage(session);
-	    msg.setRecipient(Message.RecipientType.TO, addr);
-	    msg.setSubject(subject);
-	    msg.setContent(msgBody, "text/plain");
-	    Transport.send(msg);
+	    }
 	}
     }
 
     /**
-     * \brief This method returns a Map with the TextPatterns being replaced by
-     * the data obtained from the parameters.
+     * This method returns a Map with the TextPatterns being replaced by the
+     * data obtained from the parameters.
      * 
      * The parameters SingleEventUpdate, eventGroupName and eventName define the
-     * replacements for the Testpatterns.
+     * replacements for the Test-Patterns.
      * 
      * @param inputMap
-     *            The map where the values contain the TextPatterns that should
+     *            the map where the values contain the TextPatterns that should
      *            be replaced.
-     * @param update
-     *            The SingleEventUpdate to obtain data from. _UPDATE_DATE,
-     *            _CREATOR_NAME and _COMMENT will be directly obtained from
-     *            SingleEventUpdate. _LOCATION, _DATE and _SUPERVISOR will be
-     *            obtained from the new SingleEvent which is encapsulated in the
-     *            SingleEventUpdate.
-     * @param eventGroupName
-     *            The Name of the EventGroup for the new SingleEvent.
-     *            _EVENTGROUP_NAME will be replaced by this.
-     * @param eventName
-     *            The Name of the Event for the new SingleEvent. _EVENT_NAME
-     *            will be replaced by this.
+     * @param info
+     *            the information that should replace the TextPatterns
      * @return a processed copy of the parameter inputMap
      * 
-     * @see unicopa.copa.server.email.TextPatterns for the TextPatterns that
-     *      should be replaced
+     * @see unicopa.copa.server.email.TextPatterns
+     * @see unicopa.copa.server.email.UpdateInformation
      */
 
     private static Map<String, String> replaceTextPatterns(
-	    final Map<String, String> inputMap, final SingleEventUpdate update,
-	    final String eventGroupName, final String eventName) {
+	    final Map<String, String> inputMap, final UpdateInformation info) {
 	Map<String, String> messages = new HashMap<>();
 	messages.putAll(inputMap);
 
-	String updateDate = update.getUpdateDate().toString();
-	String creatorName = update.getCreatorName();
-	String comment = update.getComment();
-	String newLocation = update.getUpdatedSingleEvent().getLocation();
-	String newDate = update.getUpdatedSingleEvent().getDate().toString();
-	String newSupervisor = update.getUpdatedSingleEvent().getSupervisor();
-
 	for (Map.Entry<String, String> entry : messages.entrySet()) {
 	    String text = entry.getValue();
-	    text = text.replaceAll(TextPatterns._UPDATE_DATE.toString(),
-		    updateDate);
-	    text = text.replaceAll(TextPatterns._CREATOR_NAME.toString(),
-		    creatorName);
-	    text = text.replaceAll(TextPatterns._COMMENT.toString(), comment);
-	    text = text.replaceAll(TextPatterns._LOCATION.toString(),
-		    newLocation);
-	    text = text.replaceAll(TextPatterns._DATE.toString(), newDate);
-	    text = text.replaceAll(TextPatterns._SUPERVISOR.toString(),
-		    newSupervisor);
-	    text = text.replaceAll(TextPatterns._EVENTGROUP_NAME.toString(),
-		    eventGroupName);
-	    text = text.replaceAll(TextPatterns._EVENT_NAME.toString(),
-		    eventName);
+	    text = text
+		    .replaceAll(TextPatterns._UPDATE_DATE.toString(),
+			    info.getUpdateDate().toString())
+		    .replaceAll(TextPatterns._CREATOR_NAME.toString(),
+			    info.getCreatorName())
+		    .replaceAll(TextPatterns._COMMENT.toString(),
+			    info.getComment())
+		    .replaceAll(TextPatterns._LOCATION.toString(),
+			    info.getLocation())
+		    .replaceAll(TextPatterns._DATE.toString(),
+			    info.getDate().toString())
+		    .replaceAll(TextPatterns._SUPERVISOR.toString(),
+			    info.getSupervisor())
+		    .replaceAll(TextPatterns._EVENTGROUP_NAME.toString(),
+			    info.getEventGroupName())
+		    .replaceAll(TextPatterns._EVENT_NAME.toString(),
+			    info.getEventName());
 	    entry.setValue(text);
 	}
 

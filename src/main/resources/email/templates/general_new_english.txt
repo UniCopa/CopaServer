@@ -1,0 +1,20 @@
+New appointment
+Dear Sir / Madam,
+
+We are writing to inform you that _CREATOR_NAME recently created a new appointment:
+
+Creation date:    			_UPDATE_DATE
+Comment: 					
+_COMMENT
+
+Group of the event: _EVENTGROUP_NAME
+Name of the event:  _EVENT_NAME
+
+Date of the new appointment:        _DATE
+Supervisor for the new appointment: _SUPERVISOR
+Location for the new appointment:   _LOCATION
+
+
+Yours sincerely,
+
+CoPA - Change of Plan Application

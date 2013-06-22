@@ -19,7 +19,7 @@ package unicopa.copa.server.email;
 import javax.mail.internet.InternetAddress;
 
 /**
- * \brief The Context which is passed as a list to the E-Mail service.
+ * The Context which is passed as a list to the E-Mail service.
  * 
  * This class contains the E-Mail address and the ID of the Text Template for
  * the E-Mail body and subject.

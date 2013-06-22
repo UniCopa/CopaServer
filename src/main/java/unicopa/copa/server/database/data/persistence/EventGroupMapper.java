@@ -24,6 +24,17 @@ import unicopa.copa.base.event.EventGroup;
 
 public interface EventGroupMapper {
 
-	public List<EventGroup> getEventGroups(@Param("categoryNodeID") List<Integer> categoryNodeID, @Param("searchTerm") String searchTerm);
+    public List<EventGroup> getEventGroups(
+	    @Param("categoryNodeID") List<Integer> categoryNodeID,
+	    @Param("searchTerm") String searchTerm);
 
+    public EventGroup getEventGroup(@Param("eventGroupID") int eventGroupID);
+
+    public void insertEventGroup(@Param("eventGroup") EventGroup eventGroup);
+
+    public void insertEventGroupCategory(
+	    @Param("eventGroupID") int eventGroupID,
+	    @Param("categoryList") List<Integer> categoryList);
+
+    public Integer eventGroupExists(@Param("eventGroupID") int eventGroupID);
 }

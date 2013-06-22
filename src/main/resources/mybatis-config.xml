@@ -1,46 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--
-  Copyright (C) 2013 UniCoPA
- 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
- 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
- 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- -->
+<!-- Copyright (C) 2013 UniCoPA This program is free software: you can redistribute 
+	it and/or modify it under the terms of the GNU General Public License as 
+	published by the Free Software Foundation, either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU General Public License for more details. You should have received a copy 
+	of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>. -->
  
 
 <!DOCTYPE configuration
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <properties>
-        <property name="url" value=""/>
-        <property name="username" value=""/>
-        <property name="password" value=""/>
-    </properties>            
-    <environments default="operation">
-        <environment id="operation">
-            <transactionManager type="JDBC"/>            
-            <dataSource type="POOLED">
-                <property name="driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-                <property name="url" value="${url}"/>
-                <property name="username" value="${username}"/>
-                <property name="password" value="${password}"/>
-            </dataSource>
-        </environment>
-    </environments>
-    <mappers>
-        <mapper resource="persistence/EventGroupMapper.xml"/>
-		<mapper resource="persistence/SingleEventMapper.xml"/>
-		<mapper resource="persistence/EventMapper.xml"/>
-		<mapper resource="persistence/CategoryMapper.xml"/>
-    </mappers>
+	<properties>
+		<property name="url" value="" />
+		<property name="username" value="" />
+		<property name="password" value="" />
+	</properties>
+	<environments default="operation">
+		<environment id="operation">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
+				<property name="url" value="${url}" />
+				<property name="username" value="${username}" />
+				<property name="password" value="${password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="persistence/EventGroupMapper.xml" />
+		<mapper resource="persistence/SingleEventMapper.xml" />
+		<mapper resource="persistence/EventMapper.xml" />
+		<mapper resource="persistence/CategoryMapper.xml" />
+		<mapper resource="persistence/PersonMapper.xml" />
+		<mapper resource="persistence/PrivilegeMapper.xml" />
+		<mapper resource="persistence/UserSettingMapper.xml" />
+		<mapper resource="persistence/SingleEventUpdateMapper.xml" />
+		<mapper resource="persistence/ServerStatusMapper.xml" />
+	</mappers>
 </configuration>

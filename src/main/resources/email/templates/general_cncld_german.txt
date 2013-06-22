@@ -1,0 +1,19 @@
+[CoPA] Termin abgesagt
+Sehr geehrte Damen und Herren,
+
+Ein Termin wurde kürzlich von _CREATOR_NAME abgesagt:
+
+Zeitpunkt der Absage:    _UPDATE_DATE
+Kommentar: 				 _COMMENT
+
+Event-Gruppe: _EVENTGROUP_NAME
+Event-Name:   _EVENT_NAME
+
+Ursprüngliches Datum:            _DATE
+Ursprünglicher Verantwortlicher: _SUPERVISOR
+Ursprünglicher Ort:    			 _LOCATION
+
+
+Mit freundlichen Grüßen
+
+CoPA - Change of Plan Application

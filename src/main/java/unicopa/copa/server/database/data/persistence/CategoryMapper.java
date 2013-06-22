@@ -20,7 +20,22 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-public interface CategoryMapper {
-	public List<Integer> getChildNodes(@Param("categoryID") int categoryID);
+import unicopa.copa.base.event.CategoryNodeImpl;
+import unicopa.copa.server.database.data.db.DBCategoryNode;
 
+public interface CategoryMapper {
+
+    public List<Integer> getChildNodeIDs(@Param("categoryID") int categoryID);
+
+    public DBCategoryNode getDBCategoryNode(@Param("categoryID") int categoryID);
+
+    public DBCategoryNode getDBCategoryNodeLeaf(
+	    @Param("categoryID") int categoryID);
+
+    public Integer categoryExsists(@Param("categoryID") int categoryID);
+
+    public void insertCategory(@Param("category") CategoryNodeImpl category);
+
+    public void insertCategoryConnection(@Param("parentID") int parentID,
+	    @Param("childID") int childID);
 }

@@ -16,6 +16,7 @@
  */
 package unicopa.copa.server.database.data.persistence;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -25,4 +26,19 @@ import unicopa.copa.base.event.SingleEvent;
 public interface SingleEventMapper {
 
     public SingleEvent getSingleEvent(@Param("singleEventID") int singleEventID);
+
+    public List<SingleEvent> getCurrentSingleEvent(
+	    @Param("eventID") int eventID, @Param("since") long since);
+
+    public void insertSingleEvent(@Param("singleEvent") SingleEvent se,
+	    @Param("sEventDate") long sEventDate,
+	    @Param("isRecent") boolean isRecent);
+
+    public void updateSingleEventStatus(@Param("isRecent") boolean isRecent,
+	    @Param("singleEventID") int singleEventID);
+
+    public boolean getSingleEventStatus(
+	    @Param("singleEventID") int singleEventID);
+
+    public int singleEventExists(@Param("singleEventID") int singleEventID);
 }

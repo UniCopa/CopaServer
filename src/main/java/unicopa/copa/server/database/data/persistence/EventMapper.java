@@ -23,5 +23,15 @@ import unicopa.copa.base.event.Event;
 
 public interface EventMapper {
 
-	 public List<Event> getEvents(@Param("eventGroupID") int eventGroupID,@Param("categoryNodeID")  List<Integer> categoryNodeID);
+    public List<Event> getEvents(@Param("eventGroupID") int eventGroupID,
+	    @Param("categoryNodeID") List<Integer> categoryNodeID);
+
+    public Event getEvent(@Param("eventID") int eventID);
+
+    public Integer eventExists(@Param("eventID") int eventID);
+
+    public void insertEvent(@Param("event") Event event);
+
+    public void insertEventCategorie(@Param("eventID") int eventID,
+	    @Param("categoryID") List<Integer> categoryList);
 }

@@ -16,22 +16,23 @@
  */
 package unicopa.copa.server.notification;
 
+import java.util.LinkedList;
 import java.util.List;
 import unicopa.copa.base.event.SingleEventUpdate;
+import unicopa.copa.server.notification.NotificationService.NotificationEvent;
 
 /**
  * This class holds all notification services available to the system. If
- * notifications should be sent, it is enought to pass it to the notifier and it
+ * notifications should be sent, it is enough to pass it to the notifier and it
  * delegates the task to the different notification services.
  * 
  * @author Felix Wiemuth
  */
 public class Notifier {
-
-    private List<NotificationService> services;
+    private List<NotificationService> services = new LinkedList<>();
 
     /**
-     * For each notification service, use their 'notifyClients' interface with
+     * For each notification service, use their 'notifyClient' interface with
      * this update to inform clients about this update.
      * 
      * @param update
@@ -40,6 +41,21 @@ public class Notifier {
     public void notifyClients(SingleEventUpdate update) {
 	for (NotificationService service : services) {
 	    service.notifyClients(update);
+	}
+    }
+
+    /**
+     * For each notification service, use their 'notifyClient' interface with
+     * this notification event to inform a client about an event.
+     * 
+     * @param event
+     *            the notification event to inform about
+     * @param userID
+     *            the ID of the user whom to inform
+     */
+    public void notifyClient(NotificationEvent event, int userID) {
+	for (NotificationService service : services) {
+	    service.notifyClient(event, userID);
 	}
     }
 

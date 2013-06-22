@@ -1,43 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright (C) 2013 UniCoPA
- 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
- 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
- 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- -->
+<!-- Copyright (C) 2013 UniCoPA This program is free software: you can redistribute 
+	it and/or modify it under the terms of the GNU General Public License as 
+	published by the Free Software Foundation, either version 3 of the License, 
+	or (at your option) any later version. This program is distributed in the 
+	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+	GNU General Public License for more details. You should have received a copy 
+	of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>. -->
  
    <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  
-<mapper namespace='unicopa.copa.server.database.data.persistence.SingleEventMapper'>
-    
-    <resultMap id="resultSingleEvent" type="unicopa.copa.base.event.SingleEvent">
-        <constructor>
-            <idArg column="SEventDate" javaType="long"/>   
-        </constructor>
-        <id property="singleEventID" column="singleEventID" />
-    	<id property="eventID" column="eventID" />
-    	<id property="durationMinutes" column="duration" />
-    	<result property="location" column="location" />
-    	<result property="supervisor" column="supervisor" />
-    </resultMap>
+
+<mapper
+	namespace='unicopa.copa.server.database.data.persistence.SingleEventMapper'>
+
+	<resultMap id="resultSingleEvent" type="unicopa.copa.base.event.SingleEvent">
+		<constructor>
+			<idArg column="SEventDate" javaType="long" />
+		</constructor>
+		<id property="singleEventID" column="singleEventID" />
+		<id property="eventID" column="eventID" />
+		<id property="durationMinutes" column="duration" />
+		<result property="location" column="location" />
+		<result property="supervisor" column="supervisor" />
+	</resultMap>
 
 
-    <select id='getSingleEvent' parameterType='int' resultMap="resultSingleEvent">
-		select s.singleEventID, s.eventID, s.location,s.SEventDate,s.supervisor,s.duration 
-		From  singleEvents s
-		Where s.singleEventID=#{singleEventID}		
-    </select>
+	<select id='getSingleEvent' parameterType='int' resultMap="resultSingleEvent">
+		select s.singleEventID, s.eventID,
+		s.location,s.SEventDate,s.supervisor,s.duration
+		From singleEvents s
+		Where s.singleEventID=#{singleEventID}
+	</select>
+
+	<select id='getCurrentSingleEvent' parameterType='map'
+		resultMap="resultSingleEvent">
+		select s.singleEventID, s.eventID,
+		s.location,s.SEventDate,s.supervisor,s.duration
+		From singleEvents s
+		Where s.mostRecent=true and s.sEventDate>=#{since} and
+		s.eventID = #{eventID}
+	</select>
+
+	<select id='getSingleEventStatus' parameterType='int'
+		resultType='boolean'>
+		Select mostRecent
+		From singleEvents
+		Where singleEventID=#{singleEventID}
+	</select>
+
+	<select id='singleEventExists' parameterType='int' resultType='int'>
+		select count(*)
+		from singleEvents
+		where singleEventID=#{singleEventID}
+	</select>
+
+	<insert id='insertSingleEvent' parameterType='map'
+		useGeneratedKeys="true" keyProperty="singleEvent.singleEventID">
+		insert into
+		singleEvents(eventID,location,sEventDate,duration,supervisor,mostRecent)
+		values
+		(#{singleEvent.eventID},#{singleEvent.location},#{sEventDate},#{singleEvent.durationMinutes},#{singleEvent.supervisor},#{isRecent})
+	</insert>
+
+	<update id='updateSingleEventStatus' parameterType='map'>
+		update singleEvents
+		Set mostRecent=#{isRecent}
+		Where singleEventID=#{singleEventID}
+	</update>
 
 </mapper>

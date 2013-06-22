@@ -1,0 +1,19 @@
+[CoPA] Termin geändert
+Sehr geehrte Damen und Herren,
+
+_CREATOR_NAME hat kürzlich einen Termin geändert:
+
+Date of the update:    _UPDATE_DATE
+Kommentar: 			   _COMMENT
+
+Event-Gruppe: _EVENTGROUP_NAME
+Event-Name:  _EVENT_NAME
+
+Datum des aktualisierten Termins:            _DATE
+Verantwortlicher des aktualisierten Termins: _SUPERVISOR
+Ort des aktualisierten Termins:  	       	 _LOCATION
+
+
+Mit freundlichen Grüßen
+
+CoPA - Change of Plan Application
