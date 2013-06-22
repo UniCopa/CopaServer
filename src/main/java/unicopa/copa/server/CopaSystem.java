@@ -88,6 +88,7 @@ public class CopaSystem {
 						    // result in big log files
     private static final Logger LOG = Logger.getLogger(CopaSystem.class
 	    .getName());
+    private static final Logger DEBUG_LOG = Logger.getLogger("debug");
     private static CopaSystem instance = new CopaSystem();
     private Properties systemProperties = new Properties(); // TODO use
     private CopaSystemContext context;
@@ -104,14 +105,15 @@ public class CopaSystem {
 	    File logDirectory = new File(baseDir, "logs");
 	    logDirectory.mkdirs();
 
-	    // Activate logging to file first
+	    // Activate logging to files first
 
 	    LOG.addHandler(new FileHandler(logDirectory.getCanonicalPath()
 		    + "/copa-system.log", 10000000, 1));
 
-	    Handler debugHandler = DEBUG_MODE ? new FileHandler(
-		    logDirectory.getCanonicalPath() + "/copa-debug.log",
-		    10000000, 1) : null;
+	    if (DEBUG_MODE) {
+		DEBUG_LOG.addHandler(new FileHandler(logDirectory
+			.getCanonicalPath() + "/copa-debug.log", 10000000, 1));
+	    }
 
 	    DatabaseService dbservice = new DatabaseService(
 		    new File("database"));
@@ -130,7 +132,7 @@ public class CopaSystem {
 
 	    // TODO check if adding handler objects which are null is ok!
 	    context = new CopaSystemContext(dbservice, notifier, baseDir,
-		    logDirectory, debugHandler, serverInfo);
+		    logDirectory, DEBUG_LOG, serverInfo);
 
 	    registration = new Registration(context);
 	    LOG.log(Level.INFO, "System fully initialized, started {0}",
