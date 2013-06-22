@@ -23,6 +23,8 @@ import unicopa.copa.server.database.DatabaseService;
 import unicopa.copa.server.notification.Notifier;
 
 /**
+ * Provides access to subsystems and information that is needed by different
+ * components of the system.
  * 
  * @author Felix Wiemuth
  */
