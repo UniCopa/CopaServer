@@ -109,7 +109,8 @@ public class CopaSystem {
 	    LOG.addHandler(new FileHandler(logDirectory.getCanonicalPath()
 		    + "/copa-system.log", 10000000, 1));
 
-	    Handler debugHandler = DEBUG_MODE ? new FileHandler(logDirectory.getCanonicalPath() + "/copa-debug",
+	    Handler debugHandler = DEBUG_MODE ? new FileHandler(
+		    logDirectory.getCanonicalPath() + "/copa-debug.log",
 		    10000000, 1) : null;
 
 	    DatabaseService dbservice = new DatabaseService(
@@ -121,7 +122,7 @@ public class CopaSystem {
 
 	    List<String> availableRequests = loadRequestHandlers();
 
-            Date startDate = new Date();
+	    Date startDate = new Date();
 	    ServerInfo serverInfo = new ServerInfo(serverInfoProperties,
 		    startDate, availableRequests);
 
@@ -132,7 +133,8 @@ public class CopaSystem {
 		    logDirectory, debugHandler, serverInfo);
 
 	    registration = new Registration(context);
-            LOG.log(Level.INFO, "System fully initialized, started {0}", startDate);
+	    LOG.log(Level.INFO, "System fully initialized, started {0}",
+		    startDate);
 	} catch (IOException | URISyntaxException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	    throw new RuntimeException(
