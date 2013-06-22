@@ -249,10 +249,6 @@ public class CopaSystem {
 	    }
 	    requestHandlers.put(req, reqHandler);
 	    availableRequests.add(req.getSimpleName());
-	    if ("GetServerInfoRequest".equals(req.getSimpleName())) {
-		DEBUG_LOG.info("Added request, getContext()="
-			+ reqHandler.getContext());
-	    }
 	}
 	return availableRequests;
     }
