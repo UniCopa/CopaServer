@@ -121,8 +121,9 @@ public class CopaSystem {
 
 	    List<String> availableRequests = loadRequestHandlers();
 
+            Date startDate = new Date();
 	    ServerInfo serverInfo = new ServerInfo(serverInfoProperties,
-		    new Date(), availableRequests);
+		    startDate, availableRequests);
 
 	    Notifier notifier = new Notifier();
 
@@ -131,6 +132,7 @@ public class CopaSystem {
 		    logDirectory, debugHandler, serverInfo);
 
 	    registration = new Registration(context);
+            LOG.log(Level.INFO, "System fully initialized, started {0}", startDate);
 	} catch (IOException | URISyntaxException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	    throw new RuntimeException(
