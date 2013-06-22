@@ -125,7 +125,6 @@ public class CopaSystem {
 
 	    Notifier notifier = new Notifier();
 
-	    // TODO check if adding handler objects which are null is ok!
 	    context = new CopaSystemContext(dbservice, notifier, baseDir,
 		    logDirectory, DEBUG_LOG, null); // serverInfo is initialized
 						    // below because of cyclic
@@ -142,8 +141,11 @@ public class CopaSystem {
 	    context.setServerInfo(serverInfo);
 
 	    registration = new Registration(context);
-	    LOG.log(Level.INFO, "System fully initialized, started {0}",
-		    startDate);
+	    LOG.log(Level.INFO,
+		    "System fully initialized, started {0}.\nversion: {1}\nAPI version: {2}\ncommit ID: {3}",
+		    new Object[] { startDate, serverInfo.getVersion(),
+			    serverInfo.getApiVersion(),
+			    serverInfo.getCommitID() });
 	} catch (IOException | URISyntaxException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	    throw new RuntimeException(
