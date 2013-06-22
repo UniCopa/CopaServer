@@ -56,7 +56,7 @@ public class GoogleCloudMessagingService {
     public GoogleCloudMessagingService(CopaSystemContext context) {
 	try {
 	    LOG.addHandler(new FileHandler(context.getLogDirectory()
-		    .getCanonicalPath() + "/GCM.log", 10000000, 1));
+		    .getCanonicalPath() + "/GCM.log", 10000000, 1, true));
 	} catch (IOException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	}

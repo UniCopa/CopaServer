@@ -58,7 +58,7 @@ public abstract class NotificationService {
 	try {
 	    LOG.addHandler(new FileHandler(context.getLogDirectory()
 		    .getCanonicalPath() + "/copa-notificationService.log",
-		    10000000, 1));
+		    10000000, 1, true));
 	} catch (IOException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	}

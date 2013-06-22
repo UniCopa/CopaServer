@@ -138,7 +138,7 @@ public class EmailNotificationService extends NotificationService {
 	FileHandler logFH;
 	try {
 	    logFH = new FileHandler(context.getLogDirectory()
-		    .getCanonicalPath() + "/email.log", 10000000, 1);
+		    .getCanonicalPath() + "/email.log", 10000000, 1, true);
 	    this.emailService = new EmailService(smtpProps, texts, logFH);
 	} catch (IOException | SecurityException ex) {
 	    LOG.log(Level.SEVERE, "Error creating FileHandler for logging.", ex);

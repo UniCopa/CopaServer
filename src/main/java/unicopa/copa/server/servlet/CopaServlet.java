@@ -57,7 +57,7 @@ public class CopaServlet extends HttpServlet implements Filter {
 	try {
 	    LOG.addHandler(new FileHandler(system.getContext()
 		    .getLogDirectory().getCanonicalPath()
-		    + "/copa-servlet.log", 10000000, 1));
+		    + "/copa-servlet.log", 10000000, 1, true));
 	} catch (IOException | SecurityException ex) {
 	    Logger.getLogger(CopaServlet.class.getName()).log(Level.SEVERE,
 		    null, ex);

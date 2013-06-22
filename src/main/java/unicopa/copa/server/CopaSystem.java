@@ -108,11 +108,12 @@ public class CopaSystem {
 	    // Activate logging to files first
 
 	    LOG.addHandler(new FileHandler(logDirectory.getCanonicalPath()
-		    + "/copa-system.log", 10000000, 1));
+		    + "/copa-system.log", 10000000, 1, true));
 
 	    if (DEBUG_MODE) {
 		DEBUG_LOG.addHandler(new FileHandler(logDirectory
-			.getCanonicalPath() + "/copa-debug.log", 10000000, 1));
+			.getCanonicalPath() + "/copa-debug.log", 10000000, 1,
+			true));
 	    }
 
 	    DatabaseService dbservice = new DatabaseService(
