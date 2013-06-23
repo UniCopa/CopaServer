@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 UniCopa
+ * Copyright (C) 2013 UniCoPA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,36 +17,53 @@
 //TODO own repository!
 package unicopa.copa.server.module.eventimport.impl;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import unicopa.copa.server.module.eventimport.EventImportService;
-import unicopa.copa.server.module.eventimport.model.Event;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
+import unicopa.copa.server.module.eventimport.model.EventImportContainer;
+import unicopa.copa.server.util.SimpleHttpsClient;
 
 /**
  * 
  * @author Felix Wiemuth
  */
 public class TUIlmenauEventImportService implements EventImportService {
-    // private final URI host;
-    private HttpClient client;
+    private SimpleHttpsClient client;
+    private Properties settings = new Properties();
+    private static final Logger LOG = Logger.getLogger(TUIlmenauEventImportService.class.getName());
+    
+    private static URI REQ_GET_COURSES;
 
-    public TUIlmenauEventImportService() throws Exception { // TODO specific
-							    // exception
-	// try {
-	// host = new URI("http://domain.com/"); //TODO read from configuration
-	// file
-	// } catch (URISyntaxException ex) {
-	// Logger.getLogger(TUIlmenauEventImportService.class.getName()).log(Level.SEVERE,
-	// null, ex);
-	// throw new Exception();
-	// }
-	client = new HttpClient();
-	client.start();
+    public TUIlmenauEventImportService(InputStream settingsStream) throws IOException {
+        settings.load(settingsStream);
+        try {
+            REQ_GET_COURSES = new URI(settings.getProperty("uri_getCourses"));
+            client = new SimpleHttpsClient(new URI(settings.getProperty("auth_uri")));
+        } catch (URISyntaxException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+        client.authenticate(settings.getProperty("user"), settings.getProperty("password"));
     }
 
-    public List<Event> getEvents() throws Exception {
-	ContentResponse response = client.GET("URL"); // TODO set URL
-	return Event.fromJsonList(response.getContentAsString());
+    @Override
+    public EventImportContainer getSnapshot() throws Exception {
+        client.start();
+        String json = client.GET(REQ_GET_COURSES);
+        client.stop();
+        return null;
     }
+    
+    public EventImportContainer getSnapshotTest() throws Exception {
+        client.start();
+        System.out.println("Do request to URI " + REQ_GET_COURSES.toString());
+        System.out.println("Response: " + client.GET(REQ_GET_COURSES));
+        client.stop();
+        return null;
+    }
+    
 }

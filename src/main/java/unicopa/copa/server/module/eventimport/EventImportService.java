@@ -1,6 +1,5 @@
-//TODO ADAPT
 /*
- * Copyright (C) 2013 UniCopa
+ * Copyright (C) 2013 UniCoPA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +16,7 @@
  */
 package unicopa.copa.server.module.eventimport;
 
-import java.util.List;
-import unicopa.copa.server.module.eventimport.model.Event;
+import unicopa.copa.server.module.eventimport.model.EventImportContainer;
 
 /**
  * 
@@ -26,6 +24,6 @@ import unicopa.copa.server.module.eventimport.model.Event;
  */
 public interface EventImportService {
     // TODO specific exceptions
-    public List<Event> getEvents() throws Exception;
+    public EventImportContainer getSnapshot() throws Exception;
 
 }

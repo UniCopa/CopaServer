@@ -16,14 +16,20 @@
  */
 package unicopa.copa.server.module.eventimport.model;
 
+import java.util.List;
+import unicopa.copa.base.event.CategoryNodeImpl;
+import unicopa.copa.base.event.EventGroup;
+import unicopa.copa.base.event.Event;
+import unicopa.copa.base.event.SingleEvent;
+
 /**
- * 
+ * Contains the complete data imported to be integrated into the system.
  * @author Felix Wiemuth
  */
-public class SingleEvent {
-    private String type;
-    private String date;
-    private String duration;
-    private String location;
-
+public class EventImportContainer {
+    private CategoryNodeImpl categoryTree;
+    private List<EventGroup> eventGroups;
+    private List<Event> events;
+    private List<SingleEvent> singleEvents;
+    
 }
