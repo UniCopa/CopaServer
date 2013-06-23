@@ -16,29 +16,63 @@
  */
 package unicopa.copa.server.module.eventimport.impl;
 
+import com.google.gson.reflect.TypeToken;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import unicopa.copa.server.module.eventimport.serialization.Serializer;
 
 /**
- *
+ * TODO: own repository, parent CopaServer
+ * 
  * @author Felix Wiemuth
  */
 public class TUIlmenauEventImportServiceTest {
     TUIlmenauEventImportService service;
-    
+
     public TUIlmenauEventImportServiceTest() {
     }
-    
+
     @Before
     public void setUp() throws IOException {
-        service = new TUIlmenauEventImportService(new FileInputStream("eventImport.properties"));
+	service = new TUIlmenauEventImportService(new FileInputStream(
+		"eventImport.properties"));
     }
-    
+
     @After
     public void tearDown() {
+    }
+
+    @Test
+    public void testSerialization() {
+	List<Integer> groups = new LinkedList<>();
+	groups.add(2);
+	groups.add(4);
+	CourseEvent event = new CourseEvent(CourseEventType.Vorlesungen,
+		new Date(42), 20, "Hs2", groups);
+	System.out.println("Serialized: " + Serializer.getGson().toJson(event));
+    }
+
+    @Test
+    public void testDeserialization() {
+	CourseEvent event = Serializer
+		.getGson()
+		.fromJson(
+			"{\"type\":\"Vorlesungen\",\"date\":{\"millis\":42000},\"duration\":30,\"location\":\"Sr K 2026\",\"groups\":[488]}",
+			CourseEvent.class);
+
+	String jsonList = "[{\"type\":\"Vorlesungen\",\"date\":{\"millis\":42000},\"duration\":30,\"location\":\"Sr K 2026\",\"groups\":[488]},{\"type\":\"Vorlesungen\",\"date\":{\"millis\":42000},\"duration\":10,\"location\":\"Sr K 2032\",\"groups\":[]},{\"type\":\"Vorlesungen\",\"date\":{\"millis\":420000},\"duration\":90,\"location\":\"Sr K 2026\",\"groups\":[433,323,12123123,88]}]";
+	Type collectionType = new TypeToken<Collection<CourseEvent>>() {
+	}.getType();
+	List<CourseEvent> events = Serializer.getGson().fromJson(jsonList,
+		collectionType);
     }
 
     /**
@@ -46,6 +80,6 @@ public class TUIlmenauEventImportServiceTest {
      */
     @Test
     public void testGetSnapshotTest() throws Exception {
-        service.getSnapshotTest();
+	service.getSnapshotTest();
     }
 }

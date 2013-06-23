@@ -26,6 +26,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.BasicAuthentication;
+import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
@@ -37,15 +38,16 @@ public class SimpleHttpsClient {
 
     private HttpClient client;
     private URI authURI;
-//    private String loginURL;
-//    private String reqURL;
+
+    // private String loginURL;
+    // private String reqURL;
 
     public SimpleHttpsClient(URI authURI) {
-        this.authURI = authURI;
+	this.authURI = authURI;
 	// Configure HttpClient
-        // Instantiate and configure the SslContextFactory
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        client = new HttpClient(sslContextFactory);
+	// Instantiate and configure the SslContextFactory
+	SslContextFactory sslContextFactory = new SslContextFactory();
+	client = new HttpClient(sslContextFactory);
 	client.setFollowRedirects(false);
     }
 
@@ -59,36 +61,41 @@ public class SimpleHttpsClient {
     }
 
     /**
-     * Authenticate at the given login URL using HTTP basic access authentication.
+     * Authenticate at the given login URL using HTTP basic access
+     * authentication.
+     * 
      * @param user
-     * @param pwd 
+     * @param pwd
      */
     public void authenticate(String user, String pwd) {
-        // Add authentication credentials
-        AuthenticationStore auth = client.getAuthenticationStore();
-            //TODO what to do with realm?
-            //TODO URI: Required? How to specifiy to allow access to everything?
-        System.out.println("HttpsClient: Add authentication for URI: " + authURI);
-        //TODO use default realm / correct realm!
-            auth.addAuthentication(new BasicAuthentication(authURI, "sPi API", user, pwd));
-        
+	// Add authentication credentials
+	AuthenticationStore auth = client.getAuthenticationStore();
+	// TODO what to do with realm?
+	// TODO URI: Required? How to specifiy to allow access to everything?
+	System.out.println("HttpsClient: Add authentication for URI: "
+		+ authURI);
+	// TODO use default realm / correct realm!
+	auth.addAuthentication(new DigestAuthentication(authURI, "", user, pwd));
+	// auth.addAuthentication(new BasicAuthentication(authURI, "sPi API",
+	// user, pwd));
+
     }
 
-    
     /**
      * 
      * @param text
-     * @return 
+     * @return
      */
     public String GET(URI uri) {
-        try {
-            ContentResponse response = client.GET(uri);
-            System.out.println("Status: " + response.getStatus());
-            return response.getContentAsString();
-        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
-            Logger.getLogger(SimpleHttpsClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+	try {
+	    ContentResponse response = client.GET(uri);
+	    System.out.println("Status: " + response.getStatus());
+	    return response.getContentAsString();
+	} catch (InterruptedException | TimeoutException | ExecutionException ex) {
+	    Logger.getLogger(SimpleHttpsClient.class.getName()).log(
+		    Level.SEVERE, null, ex);
+	}
+	return null;
     }
 
     public void stop() throws Exception {
