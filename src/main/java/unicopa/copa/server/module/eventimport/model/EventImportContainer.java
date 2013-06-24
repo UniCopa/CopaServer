@@ -16,12 +16,8 @@
  */
 package unicopa.copa.server.module.eventimport.model;
 
-import java.util.LinkedList;
 import java.util.List;
 import unicopa.copa.base.event.CategoryNodeImpl;
-import unicopa.copa.base.event.EventGroup;
-import unicopa.copa.base.event.Event;
-import unicopa.copa.base.event.SingleEvent;
 
 /**
  * Contains the complete data imported to be integrated into the system.
@@ -29,38 +25,51 @@ import unicopa.copa.base.event.SingleEvent;
  * @author Felix Wiemuth
  */
 public class EventImportContainer {
-    private CategoryNodeImpl categoryTree = new CategoryNodeImpl(0, "");
-    private List<EventGroup> eventGroups = new LinkedList<>();
-    private List<Event> events = new LinkedList<>();
-    private List<SingleEvent> singleEvents = new LinkedList<>();
+    private CategoryNodeImpl categoryTree;
+    private List<EventGroupContainer> eventGroupContainers;
 
+    // public boolean addEventGroup(EventGroup e) {
+    // return eventGroups.add(e);
+    // }
+    //
+    // public boolean addEvent(Event e) {
+    // return events.add(e);
+    // }
+    //
+    // public boolean addSingleEvent(SingleEvent e) {
+    // return singleEvents.add(e);
+    // }
+    //
+    // public CategoryNodeImpl getCategoryTree() {
+    // return categoryTree;
+    // }
+    //
+    // public List<EventGroup> getEventGroups() {
+    // return eventGroups;
+    // }
+    //
+    // public List<Event> getEvents() {
+    // return events;
+    // }
+    //
+    // public List<SingleEvent> getSingleEvents() {
+    // return singleEvents;
+    // }
+
+    // private List<Event> events = new LinkedList<>();
+    // private List<SingleEvent> singleEvents = new LinkedList<>();
     // TODO only save list of EventGroupContainers
-
-    public boolean addEventGroup(EventGroup e) {
-	return eventGroups.add(e);
-    }
-
-    public boolean addEvent(Event e) {
-	return events.add(e);
-    }
-
-    public boolean addSingleEvent(SingleEvent e) {
-	return singleEvents.add(e);
+    public EventImportContainer(CategoryNodeImpl categoryTree,
+	    List<EventGroupContainer> eventGroupContainers) {
+	this.categoryTree = categoryTree;
+	this.eventGroupContainers = eventGroupContainers;
     }
 
     public CategoryNodeImpl getCategoryTree() {
 	return categoryTree;
     }
 
-    public List<EventGroup> getEventGroups() {
-	return eventGroups;
-    }
-
-    public List<Event> getEvents() {
-	return events;
-    }
-
-    public List<SingleEvent> getSingleEvents() {
-	return singleEvents;
+    public List<EventGroupContainer> getEventGroupContainers() {
+	return eventGroupContainers;
     }
 }

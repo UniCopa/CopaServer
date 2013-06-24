@@ -31,6 +31,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import unicopa.copa.base.event.CategoryNode;
 import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
@@ -72,6 +73,7 @@ public class TUIlmenauEventImportService implements EventImportService {
 									 // (by
 									 // specifiying
 									 // root)
+    private Map<Group, CategoryNode> categoryCache = new HashMap<>();
 
     public TUIlmenauEventImportService(InputStream settingsStream,
 	    LimitedDatabaseAccess access) throws IOException {
@@ -92,11 +94,14 @@ public class TUIlmenauEventImportService implements EventImportService {
 
     @Override
     public EventImportContainer getSnapshot() throws URISyntaxException {
+	// Start the client for this import session
 	client.start();
 
-	EventImportContainer container = new EventImportContainer();
-	EventGroupContainer eventGroups = new EventGroupContainer();
+	// Collect all EventGroups here to be finally returned inside an
+	// EventImportContainer
+	List<EventGroupContainer> eventGroupContainers = new LinkedList<>();
 
+	// Get a list of all courses (EventGroups) from the server
 	String jsonCourses = client.GET(REQ_GET_COURSES);
 	List<Course> courses = Serializer.getGson().fromJson(jsonCourses,
 		new TypeToken<Collection<Course>>() {
@@ -106,10 +111,12 @@ public class TUIlmenauEventImportService implements EventImportService {
 	// its "dates" are distributed to events, depending on the type and the
 	// group(!).
 	for (Course course : courses) {
+	    // Get a list of all dates for the current course (EventGroup) from
+	    // the server
 	    String jsonCourseEvents = client.GET(new URI(String.format(
 		    REQ_GET_COURSE_EVENTS, course.getId())));
 	    List<CourseEvent> courseEvents = Serializer.getGson().fromJson(
-		    jsonCourses, new TypeToken<Collection<CourseEvent>>() {
+		    jsonCourseEvents, new TypeToken<Collection<CourseEvent>>() {
 		    }.getType());
 
 	    List<Integer> owners = new LinkedList<>(); // ID of users to become
@@ -124,13 +131,15 @@ public class TUIlmenauEventImportService implements EventImportService {
 		}
 	    }
 
-	    // collect events for this course: an event is identified by the
+	    // Collect events for this course (EventGroup): an event is
+	    // identified by the
 	    // combination of groups
 	    Map<Set<Group>, EventContainer> eventsMap = new HashMap();
 
 	    // TODO note that categories at eventgroup are the ones unioned from
 	    // the events
 
+	    // Distribute "dates" as SingleEvents to Events
 	    for (CourseEvent courseEvent : courseEvents) {
 		SingleEvent singleEvent = new SingleEvent(0, 0,
 			courseEvent.getLocation(), courseEvent.getDate(), "",
@@ -151,17 +160,23 @@ public class TUIlmenauEventImportService implements EventImportService {
 			eventName.append(group.getCompactForm()).append(",");
 		    }
 		    eventName.deleteCharAt(eventName.length() - 1);
-		    // TODO set category in EventContainer?
+
+		    // Construct the Event
 		    Event event = new Event(0, 0, eventName.toString(), null); // IDs
-									       // and
-									       // categories
 									       // must
 									       // be
 									       // set
 									       // by
+									       // the
 									       // database
+
+		    // Collect the categories for this event
+		    List<CategoryNode> categories = new LinkedList<>();
+		    for (Group group : groups) {
+			categories.add(categoryCache.get(group));
+		    }
 		    eventContainer = new EventContainer(event,
-			    new LinkedList<SingleEvent>(), owners);
+			    new LinkedList<SingleEvent>(), owners, categories);
 		    eventsMap.put(groups, eventContainer);
 		}
 		eventContainer.getSingleEvents().add(singleEvent);
@@ -170,9 +185,28 @@ public class TUIlmenauEventImportService implements EventImportService {
 	    // TODO sort to events after generating SingleEvents?
 
 	    // TODO construct these at the end when all information is there...
+
+	    // The events for this EventGroup
+	    List<EventContainer> eventContainers = new LinkedList<>(
+		    eventsMap.values());
+
+	    // The categories for the EventGroup
+	    Set<CategoryNode> categories = new HashSet<>();
+	    for (EventContainer eventContainer : eventContainers) {
+		categories.addAll(eventContainer.getCategories());
+	    }
+
+	    // Construct the EventGroup with the collected data
 	    EventGroup eventGroup = new EventGroup(0, course.getName(), "",
-		    null);
-	    EventGroupContainer eventGroupConainer = new EventGroupContainer();
+		    null); // IDs for EventGroup and categories must be set by
+			   // database
+
+	    // Construct the EventGroupContainer with the collected data
+	    EventGroupContainer eventGroupConainer = new EventGroupContainer(
+		    eventGroup, eventContainers, categories);
+	    // Add the container to the final list which contains everything
+	    // collected in this method
+	    eventGroupContainers.add(eventGroupConainer);
 	}
 	try {
 	    client.stop();
@@ -180,7 +214,7 @@ public class TUIlmenauEventImportService implements EventImportService {
 	    Logger.getLogger(TUIlmenauEventImportService.class.getName()).log(
 		    Level.WARNING, "Could not stop HTTPS client.", ex);
 	}
-	return null;
+	return new EventImportContainer(categoryTree, eventGroupContainers);
     }
 
     /**
@@ -197,7 +231,12 @@ public class TUIlmenauEventImportService implements EventImportService {
 	    String jsonGroup = client.GET(new URI(String.format(REQ_GET_GROUP,
 		    id)));
 	    group = Serializer.getGson().fromJson(jsonGroup, Group.class);
-	    categoryTree.insertNode(group.toList()); // merge into category tree
+	    groupCache.put(id, group); // add to cache
+	    CategoryNode inserted = categoryTree.insertNode(group.toList()); // merge
+									     // into
+									     // category
+									     // tree
+	    categoryCache.put(group, inserted);
 	}
 	return group;
     }

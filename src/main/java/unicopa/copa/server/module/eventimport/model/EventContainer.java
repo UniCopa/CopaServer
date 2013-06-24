@@ -17,6 +17,8 @@
 package unicopa.copa.server.module.eventimport.model;
 
 import java.util.List;
+import unicopa.copa.base.event.CategoryNode;
+import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.SingleEvent;
 
@@ -28,12 +30,14 @@ public class EventContainer {
     private Event event;
     private List<SingleEvent> singleEvents;
     private List<Integer> owners;
+    private List<CategoryNode> categories;
 
     public EventContainer(Event event, List<SingleEvent> singleEvents,
-	    List<Integer> owners) {
+	    List<Integer> owners, List<CategoryNode> categories) {
 	this.event = event;
 	this.singleEvents = singleEvents;
 	this.owners = owners;
+	this.categories = categories;
     }
 
     public Event getEvent() {
@@ -48,4 +52,7 @@ public class EventContainer {
 	return owners;
     }
 
+    public List<CategoryNode> getCategories() {
+	return categories;
+    }
 }

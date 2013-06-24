@@ -43,7 +43,7 @@ public class TUIlmenauEventImportServiceTest {
     @Before
     public void setUp() throws IOException {
 	service = new TUIlmenauEventImportService(new FileInputStream(
-		"eventImport.properties"));
+		"eventImport.properties"), null);
     }
 
     @After

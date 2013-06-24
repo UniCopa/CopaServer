@@ -16,8 +16,9 @@
  */
 package unicopa.copa.server.module.eventimport.model;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import unicopa.copa.base.event.CategoryNode;
 import unicopa.copa.base.event.EventGroup;
 
 /**
@@ -26,7 +27,15 @@ import unicopa.copa.base.event.EventGroup;
  */
 public class EventGroupContainer {
     private EventGroup eventGroup;
-    private List<EventContainer> events = new LinkedList<>();
+    private List<EventContainer> events;
+    private Set<CategoryNode> categories;
+
+    public EventGroupContainer(EventGroup eventGroup,
+	    List<EventContainer> events, Set<CategoryNode> categories) {
+	this.eventGroup = eventGroup;
+	this.events = events;
+	this.categories = categories;
+    }
 
     public EventGroup getEventGroup() {
 	return eventGroup;

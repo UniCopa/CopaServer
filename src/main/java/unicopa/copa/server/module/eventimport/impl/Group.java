@@ -44,10 +44,10 @@ public class Group {
 
     public String getCompactForm() {
 	StringBuilder sb = new StringBuilder();
-	sb.append(degree).append("/").append(course).append("/")
+	sb.append(degree).append("-").append(course).append("-")
 		.append(semester);
 	if (!subgroup.isEmpty()) {
-	    sb.append("/").append(subgroup);
+	    sb.append("-").append(subgroup);
 	}
 	return sb.toString();
     }

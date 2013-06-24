@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.client.util.DigestAuthentication;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
@@ -75,9 +76,9 @@ public class SimpleHttpsClient {
 	System.out.println("HttpsClient: Add authentication for URI: "
 		+ authURI);
 	// TODO use default realm / correct realm!
-	auth.addAuthentication(new DigestAuthentication(authURI, "", user, pwd));
-	// auth.addAuthentication(new BasicAuthentication(authURI, "sPi API",
-	// user, pwd));
+	// auth.addAuthentication(new DigestAuthentication(authURI, "", user,
+	// pwd));
+	auth.addAuthentication(new BasicAuthentication(authURI, "", user, pwd));
 
     }
 
@@ -90,6 +91,8 @@ public class SimpleHttpsClient {
 	try {
 	    ContentResponse response = client.GET(uri);
 	    System.out.println("Status: " + response.getStatus());
+	    System.out.println("Authorization: "
+		    + response.getHeaders().get(HttpHeader.AUTHORIZATION));
 	    return response.getContentAsString();
 	} catch (InterruptedException | TimeoutException | ExecutionException ex) {
 	    Logger.getLogger(SimpleHttpsClient.class.getName()).log(
