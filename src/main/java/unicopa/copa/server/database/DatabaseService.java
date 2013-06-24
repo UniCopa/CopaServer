@@ -1683,6 +1683,92 @@ public class DatabaseService {
     }
 
     /**
+     * Deletes all entries of the tables: eventGroups, events, categories,
+     * eventGroup_has_Categories, category_Connections, singleEvents,
+     * singleEventUpdates, subscriptionLists, event_has_Categories, privilege
+     */
+    private void clear() {
+	deleteSubscriptionList();
+	deleteSingleEvents();
+	deletePrivilege();
+	deleteEvents();
+	deleteEventGroups();
+	deleteCategorys();
+    }
+
+    /**
+     * Deletes all entries of the tables: events, event_has_Categories
+     */
+    private void deleteEvents() {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventMapper mapper = session.getMapper(EventMapper.class);
+	    mapper.deleteEventHasCategories();
+	    mapper.deleteEvent();
+	    session.commit();
+	}
+    }
+
+    /**
+     * Deletes all entries of the tables: categories, category_Connections
+     */
+    private void deleteCategorys() {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
+	    mapper.deleteCategoryConnection();
+	    mapper.deleteCategory();
+	    session.commit();
+	}
+    }
+
+    /**
+     * Deletes all entries of the tables: eventGroups, eventGroup_has_Categories
+     */
+    private void deleteEventGroups() {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
+	    mapper.deleteEventGroupHasCategories();
+	    mapper.deleteEventGroup();
+	    session.commit();
+	}
+    }
+
+    /**
+     * Deletes all entries of the tables: singleEvents, singleEventUpdates
+     */
+    private void deleteSingleEvents() {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    SingleEventMapper mapper = session
+		    .getMapper(SingleEventMapper.class);
+	    mapper.deleteSingleEventUpdates();
+	    mapper.deleteSingleEvent();
+	    session.commit();
+	}
+    }
+
+    /**
+     * Deletes all entries of the table subscriptionLists
+     */
+    private void deleteSubscriptionList() {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    UserSettingMapper mapper = session
+		    .getMapper(UserSettingMapper.class);
+	    mapper.deleteSubscriptionLists();
+	    session.commit();
+	}
+    }
+
+    /**
+     * Deletes all entries of the table privilege
+     */
+    public void deletePrivilege() {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
+	    mapper.deletePrivilege();
+	    session.commit();
+	}
+    }
+
+    /**
      * 
      * @param database
      * @throws unicopa.copa.server.database.util.DatabaseUtil.ConnectException

@@ -68,5 +68,15 @@
 		values
 		(#{parentID},#{childID})
 	</insert>
+	
+	<delete id='deleteCategory'>
+	    delete
+	    from categories
+	</delete>
+	
+	<delete id='deleteCategoryConnection'>
+	    delete
+	    from category_Connections
+	</delete>
 </mapper>
  

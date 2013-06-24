@@ -66,4 +66,14 @@
 			(#{item},#{eventID})
 		</foreach>
 	</insert>
+	
+	<delete id='deleteEvent'>
+	    delete
+	    from events
+	</delete>
+	
+	<delete id='deleteEventHasCategories'>
+	    delete
+	    from event_has_Categories
+	</delete>
 </mapper>

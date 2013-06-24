@@ -56,4 +56,6 @@ public interface PrivilegeMapper {
 
     public Integer hasPrivFor(@Param("userID") int userID,
 	    @Param("eventID") int eventID);
+
+    public void deletePrivilege();
 }

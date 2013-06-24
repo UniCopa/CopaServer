@@ -189,7 +189,14 @@ insert into persons(userName,firstName,familyName,email,titel,language,eMailNoti
 	('admin2','Max','Mustermann','max@muste4rmann.com','Dr.','german',false),
 	('test8','Max','Mustersdfgmann','maegx@mustermsfann.com','Dr.','deutsch',true),
 	('testdfg','Max','Mustergmann','max@mufste23rmann.com','Dr.','english',false),
-	('philip','philip','wendland',' philip.wendland@tu-ilmenau.de','Dev.','deutsch',true);
+	('philip','philip','wendland',' philip.wendland@tu-ilmenau.de','Dev.','deutsch',true),
+	('david','da','kn','da@kn.com','Dev.','english',false),
+	('christiane','q','n','q@n.com','Dev.','english',false),
+	('felix','fe','lix','feli@x.com','Dev.','english',false),
+	('martin','mar','tin','mar@tin.com','Dev.','english',false),
+	('robin','ro','bin','ro@bin.com','Dev.','english',false),
+	('tuki','tu','ki','tu@ki.com','Dev.','english',false),
+	('philipp','phi','lipp','phi@lipp.com','Dev.','english',false);
 	
 insert into privilege(personID,eventID,kindOfPrivilege,gavePrivilege,privDate) values
 	(4,1,3,3,1231414),

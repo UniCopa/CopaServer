@@ -49,4 +49,6 @@ public interface UserSettingMapper {
     public void insertSubscription(@Param("eventID") int eventID,
 	    @Param("color") String color, @Param("userID") int userID);
 
+    public void deleteSubscriptionLists();
+
 }

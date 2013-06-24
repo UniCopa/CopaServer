@@ -68,4 +68,14 @@
 			(#{item},#{eventGroupID})
 		</foreach>
 	</insert>
+	
+	<delete id='deleteEventGroup'>
+	    delete
+	    from eventGroups
+	</delete>
+	
+	<delete id='deleteEventGroupHasCategories'>
+	    delete
+	    from eventGroup_has_Categories
+	</delete>
 </mapper>

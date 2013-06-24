@@ -34,4 +34,8 @@ public interface EventMapper {
 
     public void insertEventCategorie(@Param("eventID") int eventID,
 	    @Param("categoryID") List<Integer> categoryList);
+
+    public void deleteEventHasCategories();
+
+    public void deleteEvent();
 }

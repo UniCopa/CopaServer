@@ -38,4 +38,8 @@ public interface CategoryMapper {
 
     public void insertCategoryConnection(@Param("parentID") int parentID,
 	    @Param("childID") int childID);
+
+    public void deleteCategory();
+
+    public void deleteCategoryConnection();
 }

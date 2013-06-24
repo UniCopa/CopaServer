@@ -69,5 +69,15 @@
 		Set mostRecent=#{isRecent}
 		Where singleEventID=#{singleEventID}
 	</update>
+	
+	<delete id='deleteSingleEventUpdates'>
+	    delete
+	    from singleEventUpdates
+	</delete>
+	
+	<delete id='deleteSingleEvent'>
+	    delete
+	    from singleEvents
+	</delete>
 
 </mapper>

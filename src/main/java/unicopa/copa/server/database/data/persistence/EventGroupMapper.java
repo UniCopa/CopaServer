@@ -37,4 +37,8 @@ public interface EventGroupMapper {
 	    @Param("categoryList") List<Integer> categoryList);
 
     public Integer eventGroupExists(@Param("eventGroupID") int eventGroupID);
+
+    public void deleteEventGroup();
+
+    public void deleteEventGroupHasCategories();
 }

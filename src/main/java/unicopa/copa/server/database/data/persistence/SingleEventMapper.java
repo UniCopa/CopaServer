@@ -41,4 +41,8 @@ public interface SingleEventMapper {
 	    @Param("singleEventID") int singleEventID);
 
     public int singleEventExists(@Param("singleEventID") int singleEventID);
+
+    public void deleteSingleEventUpdates();
+
+    public void deleteSingleEvent();
 }

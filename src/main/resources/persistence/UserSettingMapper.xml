@@ -73,4 +73,9 @@
 		From persons p
 		Where p.personID=#{userID}
 	</select>
+	
+	<delete id='deleteSubscriptionLists'>
+	    delete
+	    from subscriptionLists
+	</delete>
 </mapper>

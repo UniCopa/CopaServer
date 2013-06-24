@@ -80,5 +80,10 @@
 		insert into admins(personID,adminDate) values
 		(#{userID},#{date})
 	</insert>
+	
+	<delete id='deletePrivilege'>
+	    delete
+	    from privilege
+	</delete>
 
 </mapper>
