@@ -27,10 +27,11 @@ import unicopa.copa.server.CopaSystemContext;
 import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectAlreadyExsistsException;
 import unicopa.copa.server.database.ObjectNotFoundException;
+import unicopa.copa.server.notification.NotificationService;
 
 /**
  * 
- * @author Philip
+ * @author Philip Wendland, Felix Wiemuth
  */
 public class SetUserSettingsRequestHandler extends RequestHandler {
 
@@ -46,6 +47,12 @@ public class SetUserSettingsRequestHandler extends RequestHandler {
 	    SetUserSettingsRequest req = (SetUserSettingsRequest) request;
 	    getContext().getDbservice().updateUserSetting(
 		    req.getUserSettings(), userID);
+	    // notify
+	    getContext()
+		    .getNotifier()
+		    .notifyClient(
+			    NotificationService.NotificationEvent.USER_SETTINGS_CHANGED,
+			    userID);
 	    return new SetUserSettingsResponse();
 	} catch (ObjectNotFoundException | IncorrectObjectException
 		| ObjectAlreadyExsistsException ex) {

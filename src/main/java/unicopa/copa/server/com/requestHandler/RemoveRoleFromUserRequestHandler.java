@@ -27,6 +27,7 @@ import unicopa.copa.base.com.request.RemoveRoleFromUserResponse;
 import unicopa.copa.server.CopaSystemContext;
 import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectNotFoundException;
+import unicopa.copa.server.notification.NotificationService;
 
 /**
  * 
@@ -81,6 +82,11 @@ public class RemoveRoleFromUserRequestHandler extends RequestHandler {
 	try {
 	    getContext().getDbservice().setUserRoleForEvent(userToRemove,
 		    req.getEventID(), UserRole.USER, userID);
+	    getContext()
+		    .getNotifier()
+		    .notifyClient(
+			    NotificationService.NotificationEvent.USER_EVENT_PERMISSIONS_CHANGED,
+			    userID);
 	} catch (IncorrectObjectException | ObjectNotFoundException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}

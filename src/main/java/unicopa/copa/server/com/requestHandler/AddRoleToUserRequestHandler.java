@@ -17,6 +17,7 @@
 package unicopa.copa.server.com.requestHandler;
 
 import unicopa.copa.base.UserRole;
+import unicopa.copa.base.UserSettings;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
@@ -26,7 +27,9 @@ import unicopa.copa.base.com.request.AddRoleToUserRequest;
 import unicopa.copa.base.com.request.AddRoleToUserResponse;
 import unicopa.copa.server.CopaSystemContext;
 import unicopa.copa.server.database.IncorrectObjectException;
+import unicopa.copa.server.database.ObjectAlreadyExsistsException;
 import unicopa.copa.server.database.ObjectNotFoundException;
+import unicopa.copa.server.notification.NotificationService;
 
 /**
  * 
@@ -93,12 +96,23 @@ public class AddRoleToUserRequestHandler extends RequestHandler {
 	    throw new RequestNotPracticableException(
 		    "The user specified already has the given role.");
 	}
-
-	// Set the role
 	try {
+	    // Set the role
 	    getContext().getDbservice().setUserRoleForEvent(userToAdd,
 		    req.getEventID(), req.getRole(), userID);
-	} catch (IncorrectObjectException | ObjectNotFoundException ex) {
+	    // notify
+	    getContext()
+		    .getNotifier()
+		    .notifyClient(
+			    NotificationService.NotificationEvent.USER_EVENT_PERMISSIONS_CHANGED,
+			    userID);
+	    // add subscription
+	    UserSettings userSettings = getContext().getDbservice()
+		    .getUserSettings(userID);
+	    userSettings.addSubscription(req.getEventID());
+	    getContext().getDbservice().updateUserSetting(userSettings, userID);
+	} catch (IncorrectObjectException | ObjectNotFoundException
+		| ObjectAlreadyExsistsException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
 
