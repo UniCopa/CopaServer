@@ -1,4 +1,4 @@
-Appointment cancelled
+[CoPA] Appointment cancelled
 Dear Sir / Madam,
 
 We are writing to inform you that _CREATOR_NAME recently cancelled an appointment:

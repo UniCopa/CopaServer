@@ -4,7 +4,7 @@ Sehr geehrter CoPA-Nutzer,
 Einer Ihrer Termine hat sich kürzlich geändert:
 
 Ersteller der Änderung: _CREATOR_NAME
-Datum der Änderung:    _UPDATE_DATE
+Datum der Änderung:     _UPDATE_DATE
 Kommentar: 
 _COMMENT
 

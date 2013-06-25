@@ -1,4 +1,4 @@
-Appointment changed
+[CoPA] Appointment changed
 Dear Sir / Madam,
 
 We are writing to inform you that _CREATOR_NAME recently changed an appointment.

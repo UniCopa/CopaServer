@@ -5,7 +5,7 @@ We are writing to inform you that there is a new appointment for one of your reg
 You can see the information below.
 
 Creator of the appointment: _CREATOR_NAME
-Creation date:    			_UPDATE_DATE
+Creation date:    	    _UPDATE_DATE
 Comment: 					
 _COMMENT
 

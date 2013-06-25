@@ -125,7 +125,7 @@ public class EmailNotificationService extends NotificationService {
 	    scn.nextLine(); // ignore first three lines
 	    while (scn.hasNextLine()) {
 		String nextAddrStr = scn.useDelimiter(":").next();
-		String nextLanguage = scn.nextLine();
+		String nextLanguage = scn.skip(":").nextLine();
 		InternetAddress nextAddr = new InternetAddress(nextAddrStr);
 		this.centralInstances.put(nextAddr, nextLanguage);
 
@@ -172,10 +172,15 @@ public class EmailNotificationService extends NotificationService {
 	    // obtain EventGroupName, EventName from db.
 	    // Note: We have to get the Event-ID from the old single event,
 	    // because the new single event might be null
-	    int oldID = update.getOldSingleEventID();
-	    SingleEvent oldSingleEvent = super.getContext().getDbservice()
-		    .getSingleEvent(oldID);
-	    int eventID = oldSingleEvent.getEventID();
+            int eventID;
+            if(!update.isSingleEventCreation()){
+                int oldID = update.getOldSingleEventID();
+                SingleEvent oldSingleEvent = super.getContext().getDbservice()
+                        .getSingleEvent(oldID);
+                eventID = oldSingleEvent.getEventID();
+            }else{               
+                eventID = update.getUpdatedSingleEvent().getEventID();
+            }
 	    Event event = super.getContext().getDbservice().getEvent(eventID);
 	    int eventGroupID = event.getEventGroupID();
 	    String eventGroupName = super.getContext().getDbservice()
@@ -194,6 +199,9 @@ public class EmailNotificationService extends NotificationService {
 		date = update.getUpdatedSingleEvent().getDate();
 		supervisor = update.getUpdatedSingleEvent().getSupervisor();
 	    } else {
+                int oldID = update.getOldSingleEventID();
+                SingleEvent oldSingleEvent = super.getContext().getDbservice()
+                        .getSingleEvent(oldID);
 		location = oldSingleEvent.getLocation();
 		date = oldSingleEvent.getDate();
 		supervisor = oldSingleEvent.getSupervisor();
@@ -268,7 +276,7 @@ public class EmailNotificationService extends NotificationService {
 		textID.append("general_");
 		textID.append(kindOfUpd);
 		textID.append(lang);
-		textID.append(".txt");
+		textID.append(".txt");               
 		EmailContext ctx = new EmailContext(entry.getKey(),
 			textID.toString());
 		emailContexts.add(ctx);

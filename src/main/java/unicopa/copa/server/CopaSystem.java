@@ -71,6 +71,8 @@ import unicopa.copa.server.database.DatabaseService;
 import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectAlreadyExsistsException;
 import unicopa.copa.server.database.ObjectNotFoundException;
+import unicopa.copa.server.notification.EmailNotificationService;
+import unicopa.copa.server.notification.GoogleCloudNotificationService;
 import unicopa.copa.server.notification.Notifier;
 
 /**
@@ -146,6 +148,11 @@ public class CopaSystem {
 		    new Object[] { startDate, serverInfo.getVersion(),
 			    serverInfo.getApiVersion(),
 			    serverInfo.getCommitID() });
+            
+            EmailNotificationService emailNotificationService = new EmailNotificationService(context);
+            GoogleCloudNotificationService googleCloudNotificationService = new GoogleCloudNotificationService(context);            
+            notifier.addNotificationService(emailNotificationService);
+            notifier.addNotificationService(googleCloudNotificationService);
 	} catch (IOException | URISyntaxException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	    throw new RuntimeException(
@@ -154,7 +161,7 @@ public class CopaSystem {
 									      // with
 									      // this
 									      // failure
-	}
+	}        
 	// TODO add notification services
 	// loadProperties();
     }

@@ -179,7 +179,7 @@ public class EmailService {
 		try {
 		    msg.setRecipient(Message.RecipientType.TO, addr);
 		    msg.setSubject(subject);
-		    msg.setContent(msgBody, "text/plain");
+		    msg.setContent(msgBody, "text/plain;charset=utf-8");
 		    Transport.send(msg);
 		} catch (MessagingException ex) {
 		    LOG.log(Level.SEVERE, null, ex);

@@ -1,9 +1,9 @@
-New appointment
+[CoPA] New appointment
 Dear Sir / Madam,
 
 We are writing to inform you that _CREATOR_NAME recently created a new appointment:
 
-Creation date:    			_UPDATE_DATE
+Creation date: _UPDATE_DATE
 Comment: 					
 _COMMENT
 

@@ -12,7 +12,7 @@ Event-Name:   _EVENT_NAME
 
 Datum des neuen Termins:            _DATE
 Verantwortlicher des neuen Termins: _SUPERVISOR
-Ort des neuen Termins: 			    _LOCATION
+Ort des neuen Termins: 		    _LOCATION
 
 
 Mit freundlichen Grüßen
