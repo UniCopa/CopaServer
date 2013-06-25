@@ -14,25 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package unicopa.copa.server.module.eventimport;
-
-import unicopa.copa.server.GeneralUserPermission;
-import unicopa.copa.server.database.ObjectNotFoundException;
+package unicopa.copa.server;
 
 /**
+ * Represents special permissions for users. For example, a special permission
+ * may allow automatic assignment of UserRoles to users.
  * 
  * @author Felix Wiemuth
  */
-public interface LimitedDatabaseAccess {
-    /**
-     * Try to find a user in the database whose name data does a good match to
-     * the given name.
-     * 
-     * @param personName
-     * @return the ID of the user found
-     */
-    public int matchName(String personName,
-	    GeneralUserPermission minimumRequiredPermission)
-	    throws ObjectNotFoundException;
-
+public enum GeneralUserPermission {
+    NONE, POSSIBLE_OWNER;
 }
