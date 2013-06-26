@@ -49,13 +49,12 @@ public class AddSingleEventUpdateRequestHandler extends RequestHandler {
 	checkEventPermission(userID, req.getUpdatedSingleEvent().getEventID(),
 		UserRole.RIGHTHOLDER);
 	try {
-	    executor.updateSingleEvent(req.getUpdatedSingleEvent()
-		    .getSingleEventID(), req.getUpdatedSingleEvent(), req
-		    .getComment(), userID);
+	    int updatedSingleEventID = executor.updateSingleEvent(req
+		    .getUpdatedSingleEvent().getSingleEventID(), req
+		    .getUpdatedSingleEvent(), req.getComment(), userID);
+	    return new AddSingleEventUpdateResponse(updatedSingleEventID);
 	} catch (ObjectNotFoundException | IncorrectObjectException ex) {
 	    throw new RequestNotPracticableException(ex.getMessage());
 	}
-	return new AddSingleEventUpdateResponse(req.getUpdatedSingleEvent()
-		.getSingleEventID());
     }
 }

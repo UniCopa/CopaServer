@@ -35,6 +35,15 @@ public class AddSingleEventUpdateExecutor extends AbstractExecutor {
 	super(context);
     }
 
+    /**
+     * Add a SingleEvent.
+     * 
+     * @param singleEvent
+     * @param comment
+     * @param userID
+     * @throws ObjectNotFoundException
+     * @throws IncorrectObjectException
+     */
     public void addSingleEvent(SingleEvent singleEvent, String comment,
 	    int userID) throws ObjectNotFoundException,
 	    IncorrectObjectException {
@@ -44,7 +53,18 @@ public class AddSingleEventUpdateExecutor extends AbstractExecutor {
 	insertUpdateAndNotify(update);
     }
 
-    public void updateSingleEvent(int oldSingleEventID,
+    /**
+     * Update a SingleEvent.
+     * 
+     * @param oldSingleEventID
+     * @param newSingleEvent
+     * @param comment
+     * @param userID
+     * @return the ID of the newly created SingleEvent
+     * @throws ObjectNotFoundException
+     * @throws IncorrectObjectException
+     */
+    public int updateSingleEvent(int oldSingleEventID,
 	    SingleEvent newSingleEvent, String comment, int userID)
 	    throws ObjectNotFoundException, IncorrectObjectException {
 	SingleEvent oldSingleEvent = getContext().getDbservice()
@@ -59,8 +79,18 @@ public class AddSingleEventUpdateExecutor extends AbstractExecutor {
 		newSingleEventCorrected, oldSingleEventID, new Date(),
 		getContext().getDbservice().getUserName(userID), comment);
 	insertUpdateAndNotify(update);
+	return update.getUpdatedSingleEvent().getSingleEventID();
     }
 
+    /**
+     * Cancel a SingleEvent.
+     * 
+     * @param oldSingleEventID
+     * @param comment
+     * @param userID
+     * @throws ObjectNotFoundException
+     * @throws IncorrectObjectException
+     */
     public void cancelSingleEvent(int oldSingleEventID, String comment,
 	    int userID) throws ObjectNotFoundException,
 	    IncorrectObjectException {
