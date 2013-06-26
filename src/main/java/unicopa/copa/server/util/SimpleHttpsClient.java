@@ -17,7 +17,6 @@
 package unicopa.copa.server.util;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
@@ -26,8 +25,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.BasicAuthentication;
-import org.eclipse.jetty.client.util.DigestAuthentication;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
@@ -39,12 +36,11 @@ public class SimpleHttpsClient {
 
     private HttpClient client;
     private URI authURI;
+    private String realm;
 
-    // private String loginURL;
-    // private String reqURL;
-
-    public SimpleHttpsClient(URI authURI) {
+    public SimpleHttpsClient(URI authURI, String realm) {
 	this.authURI = authURI;
+	this.realm = realm;
 	// Configure HttpClient
 	// Instantiate and configure the SslContextFactory
 	SslContextFactory sslContextFactory = new SslContextFactory();
@@ -71,28 +67,20 @@ public class SimpleHttpsClient {
     public void authenticate(String user, String pwd) {
 	// Add authentication credentials
 	AuthenticationStore auth = client.getAuthenticationStore();
-	// TODO what to do with realm?
-	// TODO URI: Required? How to specifiy to allow access to everything?
-	System.out.println("HttpsClient: Add authentication for URI: "
-		+ authURI);
-	// TODO use default realm / correct realm!
-	// auth.addAuthentication(new DigestAuthentication(authURI, "", user,
-	// pwd));
-	auth.addAuthentication(new BasicAuthentication(authURI, "", user, pwd));
-
+	auth.addAuthentication(new BasicAuthentication(authURI, realm, user,
+		pwd));
     }
 
     /**
+     * Performs a GET request to the specified URI.
      * 
-     * @param text
+     * @param uri
+     *            the URI to GET
      * @return
      */
     public String GET(URI uri) {
 	try {
 	    ContentResponse response = client.GET(uri);
-	    System.out.println("Status: " + response.getStatus());
-	    System.out.println("Authorization: "
-		    + response.getHeaders().get(HttpHeader.AUTHORIZATION));
 	    return response.getContentAsString();
 	} catch (InterruptedException | TimeoutException | ExecutionException ex) {
 	    Logger.getLogger(SimpleHttpsClient.class.getName()).log(

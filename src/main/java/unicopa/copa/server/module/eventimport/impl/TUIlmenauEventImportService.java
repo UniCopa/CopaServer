@@ -76,15 +76,23 @@ public class TUIlmenauEventImportService implements EventImportService {
 									 // root)
     private Map<Group, CategoryNode> categoryCache = new HashMap<>();
 
+    /**
+     * Create the EventImportService.
+     * 
+     * @param settingsStream
+     * @param access
+     * @throws IOException
+     */
     public TUIlmenauEventImportService(InputStream settingsStream,
 	    LimitedDatabaseAccess access) throws IOException {
-	settings.load(settingsStream);
+	settings.loadFromXML(settingsStream);
 	REQ_GET_COURSE_EVENTS = settings.getProperty("uri_getCourseEvents");
-	REQ_GET_GROUP = settings.getProperty("uri_getGroups");
+	REQ_GET_GROUP = settings.getProperty("uri_getGroup");
 	try {
 	    REQ_GET_COURSES = new URI(settings.getProperty("uri_getCourses"));
 	    client = new SimpleHttpsClient(new URI(
-		    settings.getProperty("auth_uri")));
+		    settings.getProperty("auth_uri")),
+		    settings.getProperty("realm"));
 	} catch (URISyntaxException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	}
@@ -242,16 +250,4 @@ public class TUIlmenauEventImportService implements EventImportService {
 	}
 	return group;
     }
-
-    // private EventImportContainer compose(List<Course> courses,
-    // List<CourseEvent> courseEvents)
-
-    public EventImportContainer getSnapshotTest() throws Exception {
-	client.start();
-	System.out.println("Do request to URI " + REQ_GET_COURSES.toString());
-	System.out.println("Response: " + client.GET(REQ_GET_COURSES));
-	client.stop();
-	return null;
-    }
-
 }

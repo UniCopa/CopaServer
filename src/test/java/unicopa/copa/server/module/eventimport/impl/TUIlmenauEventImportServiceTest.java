@@ -43,7 +43,7 @@ public class TUIlmenauEventImportServiceTest {
     @Before
     public void setUp() throws IOException {
 	service = new TUIlmenauEventImportService(new FileInputStream(
-		"eventImport.properties"), null);
+		"eventImport.xml"), null);
     }
 
     @After
@@ -73,13 +73,5 @@ public class TUIlmenauEventImportServiceTest {
 	}.getType();
 	List<CourseEvent> events = Serializer.getGson().fromJson(jsonList,
 		collectionType);
-    }
-
-    /**
-     * Test of getSnapshot method, of class TUIlmenauEventImportService.
-     */
-    @Test
-    public void testGetSnapshotTest() throws Exception {
-	service.getSnapshotTest();
     }
 }
