@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -143,16 +142,17 @@ public class CopaSystem {
 	    context.setServerInfo(serverInfo);
 
 	    registration = new Registration(context);
+	    EmailNotificationService emailNotificationService = new EmailNotificationService(
+		    context);
+	    GoogleCloudNotificationService googleCloudNotificationService = new GoogleCloudNotificationService(
+		    context);
+	    notifier.addNotificationService(emailNotificationService);
+	    notifier.addNotificationService(googleCloudNotificationService);
 	    LOG.log(Level.INFO,
 		    "System fully initialized, started {0}.\nversion: {1}\nAPI version: {2}\ncommit ID: {3}",
 		    new Object[] { startDate, serverInfo.getVersion(),
 			    serverInfo.getApiVersion(),
 			    serverInfo.getCommitID() });
-            
-            EmailNotificationService emailNotificationService = new EmailNotificationService(context);
-            GoogleCloudNotificationService googleCloudNotificationService = new GoogleCloudNotificationService(context);            
-            notifier.addNotificationService(emailNotificationService);
-            notifier.addNotificationService(googleCloudNotificationService);
 	} catch (IOException | URISyntaxException ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	    throw new RuntimeException(
@@ -161,9 +161,7 @@ public class CopaSystem {
 									      // with
 									      // this
 									      // failure
-	}        
-	// TODO add notification services
-	// loadProperties();
+	}
     }
 
     /**
