@@ -18,11 +18,11 @@ package unicopa.copa.server.module.eventimport.model;
 
 import java.util.List;
 import unicopa.copa.base.event.CategoryNode;
-import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.SingleEvent;
 
 /**
+ * Encapsulates an Event with related data.
  * 
  * @author Felix Wiemuth
  */

@@ -22,6 +22,7 @@ import unicopa.copa.base.event.CategoryNode;
 import unicopa.copa.base.event.EventGroup;
 
 /**
+ * Encapsulates an EventGroup with related data.
  * 
  * @author Felix Wiemuth
  */
@@ -43,5 +44,9 @@ public class EventGroupContainer {
 
     public List<EventContainer> getEvents() {
 	return events;
+    }
+
+    public Set<CategoryNode> getCategories() {
+	return categories;
     }
 }
