@@ -36,6 +36,9 @@ import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
+import unicopa.copa.server.GeneralUserPermission;
+import unicopa.copa.server.database.IncorrectObjectException;
+import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.module.eventimport.serialization.Serializer;
 import unicopa.copa.server.module.eventimport.EventImportService;
 import unicopa.copa.server.module.eventimport.LimitedDatabaseAccess;
@@ -136,12 +139,25 @@ public class TUIlmenauEventImportService implements EventImportService {
 	    // TODO add texts only
 	    // for (String person : course.getLecturers()) {
 	    // try {
-	    // owners.add(access.matchName(person,
+	    // owners.addAll(access.matchName(person,
 	    // GeneralUserPermission.POSSIBLE_OWNER));
 	    // } catch (ObjectNotFoundException ex) {
 	    // // Did not find a match //TODO log warning
+	    // } catch (IncorrectObjectException e) {
+	    // Incorrect Input //TODO log warning?
 	    // }
 	    // }
+
+	    for (String person : course.getLecturers()) {
+		try {
+		    owners.addAll(access.matchName(person,
+			    GeneralUserPermission.POSSIBLE_OWNER));
+		} catch (ObjectNotFoundException ex) {
+		    // Did not find a match //TODO log warning
+		} catch (IncorrectObjectException e) {
+		    // Incorrect Input //TODO log warning?
+		}
+	    }
 
 	    // Collect events for this course (EventGroup): an event is
 	    // identified by the

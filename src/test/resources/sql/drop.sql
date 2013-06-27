@@ -1,3 +1,4 @@
+DROP TABLE possibleOwners;
 DROP TABLE event_has_Categories;
 DROP TABLE eventGroup_has_Categories;
 DROP TABLE category_Connections;

@@ -43,7 +43,8 @@ public interface PersonMapper {
 	    @Param("familyName") String familyName,
 	    @Param("email") String email, @Param("titel") String titel,
 	    @Param("language") String language,
-	    @Param("eMailNotification") boolean eMailNotification);
+	    @Param("eMailNotification") boolean eMailNotification,
+	    @Param("perm") int perm);
 
     public Integer userNameExists(@Param("userName") String userName);
 
@@ -53,5 +54,11 @@ public interface PersonMapper {
 
     public Integer gcmKeyExists(@Param("gcmKey") String gcmKey);
 
+    public Integer getGeneralUserPermission(@Param("userID") int userID);
+
     public Map<String, String> getName(@Param("userID") int userID);
+
+    public List<Integer> getUserByFamilyNameWithPermission(
+	    @Param("familyName") String familyName,
+	    @Param("generalUserPermission") int generalUserPermission);
 }

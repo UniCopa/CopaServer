@@ -178,25 +178,25 @@ insert into singleEvents(eventID,location,sEventDate,duration,supervisor,mostRec
 	   (28,'HU 1233',1391471714176,20,'The Visor',true);
 	   
 	   
-
-insert into persons(userName,firstName,familyName,email,titel,language,eMailNotification) values
-	('user123','Max','Mustermann','max@musteffrmann.com','Dr.','german',true),
-	('derp','Derp','Derpenson','derp@Derpenson.com','','english',true),
-	('userA','Der','Admin','ad@min.com','Dr.','german',false),
-	('userO','Own','er','pwn@ner.com','Dr.','german',true),
-	('userD','Dep','uty','max@muste3rmfann.com','Dr.','german',true),
-	('userR','Right','Holder','max@mustermffsann.de','Dr.Prof','german',true),
-	('admin2','Max','Mustermann','max@muste4rmann.com','Dr.','german',false),
-	('test8','Max','Mustersdfgmann','maegx@mustermsfann.com','Dr.','deutsch',true),
-	('testdfg','Max','Mustergmann','max@mufste23rmann.com','Dr.','english',false),
-	('philip','philip','wendland',' philip.wendland@tu-ilmenau.de','Dev.','deutsch',true),
-	('david','da','kn','da@kn.com','Dev.','english',false),
-	('christiane','q','n','q@n.com','Dev.','english',false),
-	('felix','fe','lix','feli@x.com','Dev.','english',false),
-	('martin','mar','tin','mar@tin.com','Dev.','english',false),
-	('robin','ro','bin','ro@bin.com','Dev.','english',false),
-	('tuki','tu','ki','tu@ki.com','Dev.','english',false),
-	('philipp','phi','lipp','phi@lipp.com','Dev.','english',false);
+insert into persons(userName,firstName,familyName,email,titel,language,eMailNotification,generalUserPermission) values
+	('user123','Max','Mustermann','max@musteffrmann.com','Dr.','german',true,1),
+	('derp','Derp','Derpenson','derp@Derpenson.com','','english',true,1),
+	('userA','Der','Admin','ad@min.com','Dr.','german',false,1),
+	('userO','Own','er','pwn@ner.com','Dr.','german',true,1),
+	('userD','Dep','uty','max@muste3rmfann.com','Dr.','german',true,1),
+	('userR','Right','Holder','max@mustermffsann.de','Dr.Prof','german',true,1),
+	('admin2','Max','Mustermann','max@muste4rmann.com','Dr.','german',false,1),
+	('test8','Max','Mustersdfgmann','maegx@mustermsfann.com','Dr.','german',true,0),
+	('testdfg','Max','Mustergmann','max@mufste23rmann.com','Dr.','english',false,0),
+	('philip','philip','wendland','philip.wendland@tu-ilmenau.de','Dev.','german',true,1),
+	('david','da','kn','da@kn.com','Dev.','english',false,1),
+	('christiane','q','n','q@n.com','Dev.','english',false,1),
+	('felix','fe','lix','feli@x.com','Dev.','english',false,1),
+	('martin','mar','tin','mar@tin.com','Dev.','english',false,1),
+	('robin','ro','bin','ro@bin.com','Dev.','english',false,1),
+	('tuki','tu','ki','tu@ki.com','Dev.','english',false,1),
+	('philipp','phi','lipp','phi@lipp.com','Dev.','english',false,1),
+	('test123','Another','Mustermann','Another@mann.de','','german',false,0);
 	
 insert into privilege(personID,eventID,kindOfPrivilege,gavePrivilege,privDate) values
 	(4,1,3,3,1231414),
@@ -355,3 +355,9 @@ insert into subscriptionLists(personID,eventID,color) values
 	(1,15,'00FFF0'),
 	(1,3,'FFFFFF'),
 	(10,1,'FF00FF');
+
+	insert into possibleOwners(eventID, possibleOwnerName) values
+	(1,'Dr. Test'),
+	(1,'Herr Prof. Owner'),
+	(4,'Dr. Dr. Prof. Derp'),
+	(5,'Frau Herr Dr. Prof. Dingensens');

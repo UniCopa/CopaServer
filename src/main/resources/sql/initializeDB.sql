@@ -7,19 +7,20 @@ CREATE TABLE persons(
 	email varchar(100) NOT NULL UNIQUE, 
 	titel varchar(50), 
 	language varchar(50) NOT NULL DEFAULT 'english', 
-	eMailNotification boolean, 
+	eMailNotification boolean,
+	generalUserPermission int NOT NULL, --0=NONE, 1=POSSIBLE_OWNER
 	PRIMARY KEY (personID)
 );
 
 CREATE TABLE eventGroups (
-	eventGroupID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1), 
+	eventGroupID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1), -- entry with id=0 should be an dummy eventGroup 
 	eventGroupName varchar(70) NOT NULL, 
 	eventGroupInfo varchar(500), 
 	PRIMARY KEY (eventGroupID)
 );
 
 CREATE TABLE events (
-	eventID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1), 
+	eventID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1), -- entry with id=0 should be an dummy event 
 	eventGroupID int NOT NULL, 
 	kindOfEvent varchar(70) NOT NULL, 
 	PRIMARY KEY (eventID),
@@ -48,11 +49,11 @@ CREATE TABLE category_Connections(
 	FOREIGN KEY (categoryNodeChild) REFERENCES categories(categoryID)
 );
 
-CREATE TABLE singleEvents(
-	singleEventID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1), 
+CREATE TABLE singleEvents( 
+	singleEventID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1), -- entry with id=0 should be an dummy singleEvent 
 	eventID int NOT NULL, 
 	location varchar(70) NOT NULL, 
-	sEventDate BIGINT  NOT NULL,
+	sEventDate BIGINT  NOT NULL, 
 	duration int NOT NULL, 
 	supervisor varchar(70) NOT NULL,
 	mostRecent boolean NOT NULL,
@@ -89,7 +90,7 @@ CREATE TABLE gCMKeys(
 CREATE TABLE subscriptionLists(
 	personID int NOT NULL, 
 	eventID int NOT NULL, 
-	color varchar(6), 
+	color varchar(6), --RRGGBB
 	PRIMARY KEY (personID, eventID),
 	FOREIGN KEY (personID) REFERENCES persons(personID),
 	FOREIGN KEY (eventID) REFERENCES events(eventID)
@@ -99,7 +100,7 @@ CREATE TABLE subscriptionLists(
 CREATE TABLE privilege(
 	personID int NOT NULL, 
 	eventID int NOT NULL, 
-	kindOfPrivilege int NOT NULL, 
+	kindOfPrivilege int NOT NULL, --1=Rightholder, 2=Deputy, 3=Owner
 	gavePrivilege int NOT NULL, 
 	privDate BIGINT  NOT NULL,
 	PRIMARY KEY (personID, eventID),
@@ -121,4 +122,12 @@ CREATE TABLE server_status_notes(
 	statusmsg varchar(1000) NOT NULL,
 	noteDate BIGINT NOT NULL,
 	PRIMARY KEY (noteID)
+);
+
+CREATE TABLE possibleOwners(
+	possibleOwnerID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+	eventID int NOT NULL,
+	possibleOwnerName varchar(100) NOT NULL,
+	PRIMARY KEY (possibleOwnerID),
+	FOREIGN KEY (eventID) REFERENCES events(eventID)
 );

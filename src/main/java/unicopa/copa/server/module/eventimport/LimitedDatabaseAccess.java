@@ -16,12 +16,15 @@
  */
 package unicopa.copa.server.module.eventimport;
 
+import java.util.List;
+
 import unicopa.copa.server.GeneralUserPermission;
+import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectNotFoundException;
 
 /**
  * 
- * @author Felix Wiemuth
+ * @author Felix Wiemuth, Nintaro
  */
 public interface LimitedDatabaseAccess {
     /**
@@ -31,8 +34,8 @@ public interface LimitedDatabaseAccess {
      * @param personName
      * @return the ID of the user found
      */
-    public int matchName(String personName,
+    public List<Integer> matchName(String personName,
 	    GeneralUserPermission minimumRequiredPermission)
-	    throws ObjectNotFoundException;
+	    throws ObjectNotFoundException, IncorrectObjectException;
 
 }

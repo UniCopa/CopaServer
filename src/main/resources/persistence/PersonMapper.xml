@@ -81,6 +81,12 @@
 		From persons
 		Where personID=#{userID}
 	</select>
+	
+	<select id='getUserByFamilyNameWithPermission' parameterType='map' resultType='int'>
+	    Select personID
+	    From persons
+	    Where familyName=#{familyName} and generalUserPermission>=#{generalUserPermission}
+	</select>
 
 	<select id='userNameExists' parameterType='String' resultType='int'>
 		Select Count(*)
@@ -107,7 +113,7 @@
 	</select>
 
 	<select id='getUserIDByEmail' parameterType='String' resultType='int'>
-		Select userName
+		Select personID
 		From persons
 		Where email=#{email}
 	</select>
@@ -117,12 +123,18 @@
 	    from persons
 	    Where personID=#{userID}
 	</select>
+	
+	<select id='getGeneralUserPermission' parameterType='int' resultType='int'>
+	    select generalUserPermission
+	    from persons
+	    Where personID=#{userID}
+	</select>
 
 	<insert id='insertPerson' parameterType='map'>
 		insert into
-		persons(userName,firstName,familyName,email,titel,language,eMailNotification)
+		persons(userName,firstName,familyName,email,titel,language,eMailNotification,generalUserPermission)
 		values
-		(#{userName},#{firstName},#{familyName},#{email},#{titel},#{language},#{eMailNotification})
+		(#{userName},#{firstName},#{familyName},#{email},#{titel},#{language},#{eMailNotification},#{perm})
 	</insert>
 
 </mapper>

@@ -52,6 +52,20 @@
 		From events
 		where eventID=#{eventID}
 	</select>
+	
+	<select id='getPossibleOwners' parameterType='int' resultType='String'>
+	    Select possibleOwnerName
+	    from possibleOwners
+	    Where eventID=#{eventID}
+	</select>
+	
+	<insert id='insertPossibleOwners' parameterType='map'>
+		insert into possibleOwners(eventID, possibleOwnerName) values
+		<foreach item="item" index="index" collection="ownerList"
+			open="" separator="," close="">
+			(#{eventID},#{item})
+		</foreach>
+	</insert>
 
 	<insert id='insertEvent' parameterType='map' useGeneratedKeys="true"
 		keyProperty="event.eventID">
@@ -75,5 +89,10 @@
 	<delete id='deleteEventHasCategories'>
 	    delete
 	    from event_has_Categories
+	</delete>
+	
+	<delete id='deletePossibleOwners'>
+	    delete
+	    from possibleOwners
 	</delete>
 </mapper>

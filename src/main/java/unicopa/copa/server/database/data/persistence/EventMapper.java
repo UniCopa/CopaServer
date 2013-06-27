@@ -38,4 +38,11 @@ public interface EventMapper {
     public void deleteEventHasCategories();
 
     public void deleteEvent();
+
+    public void deletePossibleOwners();
+
+    public List<String> getPossibleOwners(@Param("eventID") int eventID);
+
+    public void insertPossibleOwners(@Param("eventID") int eventID,
+	    @Param("ownerList") List<String> ownerList);
 }

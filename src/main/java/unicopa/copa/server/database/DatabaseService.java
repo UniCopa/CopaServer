@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSession;
@@ -46,11 +45,13 @@ import unicopa.copa.base.ServerStatusNote;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
+import unicopa.copa.base.event.CategoryNode;
 import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.base.event.SingleEventUpdate;
+import unicopa.copa.server.GeneralUserPermission;
 import unicopa.copa.server.database.data.db.DBCategoryNode;
 import unicopa.copa.server.database.data.db.DBSingleEventUpdate;
 import unicopa.copa.server.database.data.db.DBUserData;
@@ -64,6 +65,8 @@ import unicopa.copa.server.database.data.persistence.SingleEventMapper;
 import unicopa.copa.server.database.data.persistence.SingleEventUpdateMapper;
 import unicopa.copa.server.database.data.persistence.UserSettingMapper;
 import unicopa.copa.server.database.util.DatabaseUtil;
+import unicopa.copa.server.module.eventimport.model.EventContainer;
+import unicopa.copa.server.module.eventimport.model.EventGroupContainer;
 
 /**
  * The database service provides an interface to the database. It allows to
@@ -521,9 +524,6 @@ public class DatabaseService {
 		case (3):
 		    ownerEvents.add(result.get("EVENTID"));
 		    break;
-		default:
-		    // TODO throw exception?
-		    break;
 		}
 	    }
 	    Map<UserRole, List<Integer>> userPrivMap = new HashMap<>();
@@ -561,9 +561,6 @@ public class DatabaseService {
 		case (3):
 		    ownerList.add(new UserData(user.getFirstname() + " "
 			    + user.getFamilyname(), user.getEmail()));
-		    break;
-		default:
-		    // TODO throw Exception?
 		    break;
 		}
 	    }
@@ -862,6 +859,39 @@ public class DatabaseService {
     }
 
     /**
+     * Returns the list of userIDs of all users that have the given familyName
+     * and have a generalUserPermission that is higher or equal to the given one
+     * 
+     * @param familyName
+     * @param generalUserPermission
+     * @return
+     * @throws IncorrectObjectException
+     *             is thrown if the given gerneralUserPermission is not valid
+     */
+    public List<Integer> getUserByFamilyNameWithPermission(String familyName,
+	    GeneralUserPermission generalUserPermission)
+	    throws IncorrectObjectException {
+	int permission = 0;
+	switch (generalUserPermission) {
+	case POSSIBLE_OWNER:
+	    permission = 1;
+	    break;
+	case NONE:
+	    permission = 0;
+	    break;
+	default:
+	    throw new IncorrectObjectException(generalUserPermission
+		    + " is no valid GeneralUserPermission");
+	}
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    List<Integer> permList = mapper.getUserByFamilyNameWithPermission(
+		    familyName, permission);
+	    return permList;
+	}
+    }
+
+    /**
      * Get the categoryNodeImpl with ID=categoryID.
      * 
      * @param categoryID
@@ -952,6 +982,11 @@ public class DatabaseService {
 	}
     }
 
+    /**
+     * Deletes all GCMKeys of the given user
+     * 
+     * @param userID
+     */
     private void deleteAllGCMKeys(int userID) {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    UserSettingMapper mapper = session
@@ -1104,6 +1139,8 @@ public class DatabaseService {
      *            the language, default is english
      * @param eMailNotification
      *            should the person be notified per E-Mail
+     * @param generalUserPermission
+     *            the generalUserPermission, should not be null
      * @throws ObjectAlreadyExsistsException
      *             is thrown if there is already an entry with the same email or
      *             userName in the database
@@ -1113,8 +1150,20 @@ public class DatabaseService {
      */
     public void insertPerson(String userName, String firstName,
 	    String familyName, String email, String titel, String language,
-	    boolean eMailNotification) throws ObjectAlreadyExsistsException,
-	    IncorrectObjectException {
+	    boolean eMailNotification,
+	    GeneralUserPermission generalUserPermission)
+	    throws ObjectAlreadyExsistsException, IncorrectObjectException {
+	int permission = 0;
+	switch (generalUserPermission) {
+	case NONE:
+	    break;
+	case POSSIBLE_OWNER:
+	    permission = 1;
+	    break;
+	default:
+	    throw new IncorrectObjectException(generalUserPermission
+		    + " is no valid GerneralUserPermission");
+	}
 	checkNull(userName, "given String(userName)");
 	checkString(userName, 20);
 	checkNull(firstName, "given String(firstName)");
@@ -1136,7 +1185,7 @@ public class DatabaseService {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PersonMapper mapper = session.getMapper(PersonMapper.class);
 	    mapper.insertPerson(userName, firstName, familyName, email, titel,
-		    language, eMailNotification);
+		    language, eMailNotification, permission);
 	    session.commit();
 	}
     }
@@ -1266,7 +1315,8 @@ public class DatabaseService {
     }
 
     /**
-     * Inserts the given Event into the database
+     * Inserts the given Event into the database. It also inserts the
+     * EventhasCategories entries.
      * 
      * @param event
      * @throws ObjectNotFoundException
@@ -1392,8 +1442,60 @@ public class DatabaseService {
 	}
     }
 
+    // TODO JUnit test!!!!
     /**
-     * inserts the given EventGroup into the database
+     * Inserts a EventGroupContainer into the database. This method should only
+     * be used on an database without EventGroup,Event or SingleEvent entries.
+     * But it has to contain the given Categories.
+     * 
+     * @param eventGroupContainerList
+     * @throws ObjectNotFoundException
+     *             is thrown if one of the given categories in the
+     *             eventGroupContainer does not exist in the database
+     * @throws IncorrectObjectException
+     *             is thrown if one of the given parameters is null where it
+     *             must not or a given string does not meet the needed
+     *             requirements
+     */
+    public void insertEventGroupContainer(
+	    List<EventGroupContainer> eventGroupContainerList)
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	Event tempEvent = null;
+	// insert the eventGroups
+	for (EventGroupContainer eventGroupContainer : eventGroupContainerList) {
+	    for (CategoryNode category : eventGroupContainer.getCategories()) {
+		checkCategory(category.getId());
+	    }
+	    insertEventGroup(eventGroupContainer.getEventGroup());
+	    // insert the events
+	    for (EventContainer eventContainer : eventGroupContainer
+		    .getEvents()) {
+		tempEvent = new Event(0, eventGroupContainer.getEventGroup()
+			.getEventGroupID(), eventContainer.getEvent()
+			.getEventName(), eventContainer.getEvent()
+			.getCategories());
+		insertEvent(tempEvent);
+		// insert the singleEvents
+		for (SingleEvent singleEvent : eventContainer.getSingleEvents()) {
+		    insertSingleEventUpdate(new SingleEventUpdate(
+			    new SingleEvent(0, tempEvent.getEventID(),
+				    singleEvent.getLocation(),
+				    singleEvent.getDate(),
+				    singleEvent.getSupervisor(),
+				    singleEvent.getDurationMinutes()), 0,
+			    new Date(), "EventImportService",
+			    "Inserted by EventImportService"));
+		}
+
+	    }
+
+	}
+
+    }
+
+    /**
+     * inserts the given EventGroup into the database, also inserts the
+     * eventGroupHasCategorys entries
      * 
      * @param eventGroup
      * @throws ObjectNotFoundException
@@ -1637,7 +1739,7 @@ public class DatabaseService {
      */
     private void checkString(String stringToCheck, int stringMaxLength)
 	    throws IncorrectObjectException {
-	if (stringToCheck.length() > stringMaxLength)
+	if (stringToCheck != null && stringToCheck.length() > stringMaxLength)
 	    throw new IncorrectObjectException("String " + stringToCheck
 		    + "is too long. maximum length is" + stringMaxLength);
 
@@ -1683,17 +1785,88 @@ public class DatabaseService {
     }
 
     /**
+     * Returns the GeneralUserPermission for the given user
+     * 
+     * @param userID
+     * @return the GeneralUserPermission
+     * @throws ObjectNotFoundException
+     *             is thrown if the userID does not exist in the database
+     * @throws IncorrectObjectException
+     */
+    public GeneralUserPermission getGeneralUserPermission(int userID)
+	    throws ObjectNotFoundException, IncorrectObjectException {
+	checkUser(userID);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    Integer perm = mapper.getGeneralUserPermission(userID);
+	    switch (perm) {
+	    case (0):
+		return GeneralUserPermission.NONE;
+	    case (1):
+		return GeneralUserPermission.POSSIBLE_OWNER;
+	    default:
+		throw new IncorrectObjectException(perm
+			+ "does not belong to an GeneralUserPermission");
+	    }
+	}
+    }
+
+    /**
+     * Returns the list of possible Owners for the given event
+     * 
+     * @param eventID
+     * @return
+     * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist
+     */
+    public List<String> getPossibleOwners(int eventID)
+	    throws ObjectNotFoundException {
+	checkEvent(eventID);
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventMapper mapper = session.getMapper(EventMapper.class);
+	    List<String> possibleOwnerList = mapper.getPossibleOwners(eventID);
+	    return possibleOwnerList;
+	}
+    }
+
+    /**
+     * Inserts the given list of names as possible owners for the event with the
+     * given id
+     * 
+     * @param eventID
+     * @param possibleOwnerList
+     * @throws IncorrectObjectException
+     *             is thrown if one of the given strings has not the needed form
+     * @throws ObjectNotFoundException
+     *             is thrown if the given event does not exist in the database
+     */
+    public void insertPossibleOwners(int eventID, List<String> possibleOwnerList)
+	    throws IncorrectObjectException, ObjectNotFoundException {
+	checkEvent(eventID);
+	for (String owner : possibleOwnerList) {
+	    checkString(owner, 100);
+	}
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventMapper mapper = session.getMapper(EventMapper.class);
+	    mapper.insertPossibleOwners(eventID, possibleOwnerList);
+	    session.commit();
+	}
+    }
+
+    /**
      * Deletes all entries of the tables: eventGroups, events, categories,
      * eventGroup_has_Categories, category_Connections, singleEvents,
      * singleEventUpdates, subscriptionLists, event_has_Categories, privilege
      */
     private void clear() {
+	// TODO test
 	deleteSubscriptionList();
 	deleteSingleEvents();
 	deletePrivilege();
 	deleteEvents();
 	deleteEventGroups();
 	deleteCategorys();
+	deletePossibleOwners();
     }
 
     /**
@@ -1704,6 +1877,14 @@ public class DatabaseService {
 	    EventMapper mapper = session.getMapper(EventMapper.class);
 	    mapper.deleteEventHasCategories();
 	    mapper.deleteEvent();
+	    session.commit();
+	}
+    }
+
+    private void deletePossibleOwners() {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventMapper mapper = session.getMapper(EventMapper.class);
+	    mapper.deletePossibleOwners();
 	    session.commit();
 	}
     }

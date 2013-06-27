@@ -37,6 +37,7 @@ import org.apache.ibatis.jdbc.ScriptRunner;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import unicopa.copa.base.ServerStatusNote;
@@ -49,11 +50,17 @@ import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.base.event.SingleEventUpdate;
+import unicopa.copa.server.GeneralUserPermission;
 import unicopa.copa.server.database.util.DatabaseUtil;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+/**
+ * 
+ * @author Nintaro
+ *
+ */
 public class DatabaseServiceTest {
-    private static String dbURL = "CopaTestDB";
+    private static String dbURL = "database";
     private static DatabaseService dbs;
     private static final String RESOURCE_SQL_INSERTS = "/sql/inserts.sql";
     private static final String RESOURCE_SQL_DROP = "/sql/drop.sql";
@@ -550,7 +557,8 @@ public class DatabaseServiceTest {
     @Test
     public void testInsertPerson1() {
 	try {
-	    dbs.insertPerson("A", "B", "C", "D", "E", "english", false);
+	    dbs.insertPerson("A", "B", "C", "D", "E", "english", false,
+		    GeneralUserPermission.NONE);
 	} catch (ObjectAlreadyExsistsException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -562,12 +570,14 @@ public class DatabaseServiceTest {
 
     @Test(expected = ObjectAlreadyExsistsException.class)
     public void testInsertPerson2() throws Exception {
-	dbs.insertPerson("A", "B", "C", "F", "E", "english", false);
+	dbs.insertPerson("A", "B", "C", "F", "E", "english", false,
+		GeneralUserPermission.NONE);
     }
 
     @Test(expected = ObjectAlreadyExsistsException.class)
     public void testInsertPerson3() throws Exception {
-	dbs.insertPerson("F", "B", "C", "D", "E", "english", false);
+	dbs.insertPerson("F", "B", "C", "D", "E", "english", false,
+		GeneralUserPermission.NONE);
     }
 
     @Test
@@ -744,6 +754,45 @@ public class DatabaseServiceTest {
 	    dbs.insertEventGroup(new EventGroup(0, "insertTestEG",
 		    "This is a TestEG", cat));
 	} catch (ObjectNotFoundException | IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
+    public void testPossibleOwners1() {
+	try {
+	    assertEquals("Dr. Test", dbs.getPossibleOwners(1).get(0));
+	    assertEquals("Herr Prof. Owner", dbs.getPossibleOwners(1).get(1));
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
+    public void testPossibleOwners2() {
+	try {
+	    List<String> ownerList = new ArrayList<>();
+	    ownerList.add("Derpy");
+	    ownerList.add("Owner2");
+	    dbs.insertPossibleOwners(4, ownerList);
+	} catch (ObjectNotFoundException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	} catch (IncorrectObjectException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+
+    @Test
+    public void testPossibleOwners3() {
+	try {
+	    assertEquals("Dr. Dr. Prof. Derp", dbs.getPossibleOwners(4).get(0));
+	    assertEquals("Derpy", dbs.getPossibleOwners(4).get(1));
+	    assertEquals("Owner2", dbs.getPossibleOwners(4).get(2));
+	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
