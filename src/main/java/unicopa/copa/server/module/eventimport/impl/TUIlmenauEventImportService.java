@@ -36,8 +36,6 @@ import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
-import unicopa.copa.server.GeneralUserPermission;
-import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.module.eventimport.serialization.Serializer;
 import unicopa.copa.server.module.eventimport.EventImportService;
 import unicopa.copa.server.module.eventimport.LimitedDatabaseAccess;
@@ -47,14 +45,17 @@ import unicopa.copa.server.module.eventimport.model.EventImportContainer;
 import unicopa.copa.server.util.SimpleHttpsClient;
 
 /**
- * TODO: own repository, parent CopaServer TODO: use in the following way: get
- * EventImportContainer from here, let database insert data and set the IDs!
- * container also contains map from event to {role,user} => hand container over
- * to permission import system
+ * The EventImportService for the TU Ilmenau.
  * 
  * @author Felix Wiemuth
  */
 public class TUIlmenauEventImportService implements EventImportService {
+    // TODO: own repository, parent CopaServer TODO: use in the following way:
+    // get
+    // EventImportContainer from here, let database insert data and set the IDs!
+    // container also contains map from event to {role,user} => hand container
+    // over
+    // to permission import system
     private SimpleHttpsClient client;
     private Properties settings = new Properties();
     private static final Logger LOG = Logger
@@ -132,14 +133,15 @@ public class TUIlmenauEventImportService implements EventImportService {
 						       // owners of the events
 						       // from this group
 
-	    for (String person : course.getLecturers()) {
-		try {
-		    owners.add(access.matchName(person,
-			    GeneralUserPermission.POSSIBLE_OWNER));
-		} catch (ObjectNotFoundException ex) {
-		    // Did not find a match //TODO log warning
-		}
-	    }
+	    // TODO add texts only
+	    // for (String person : course.getLecturers()) {
+	    // try {
+	    // owners.add(access.matchName(person,
+	    // GeneralUserPermission.POSSIBLE_OWNER));
+	    // } catch (ObjectNotFoundException ex) {
+	    // // Did not find a match //TODO log warning
+	    // }
+	    // }
 
 	    // Collect events for this course (EventGroup): an event is
 	    // identified by the

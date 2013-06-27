@@ -27,10 +27,10 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import unicopa.copa.server.module.eventimport.model.EventImportContainer;
 import unicopa.copa.server.module.eventimport.serialization.Serializer;
 
 /**
- * TODO: own repository, parent CopaServer
  * 
  * @author Felix Wiemuth
  */
@@ -73,5 +73,15 @@ public class TUIlmenauEventImportServiceTest {
 	}.getType();
 	List<CourseEvent> events = Serializer.getGson().fromJson(jsonList,
 		collectionType);
+    }
+
+    /**
+     * Test of getSnapshot method, of class TUIlmenauEventImportService.
+     */
+    @Test
+    public void testGetSnapshot() throws Exception {
+	TUIlmenauEventImportService service = new TUIlmenauEventImportService(
+		new FileInputStream("eventImport.xml"), null);
+	EventImportContainer snapshot = service.getSnapshot();
     }
 }
