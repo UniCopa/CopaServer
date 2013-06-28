@@ -152,11 +152,12 @@ public class CopaSystem {
 									       // generalize:
 									       // load
 									       // class
-	    // TODO use correct parameters
-	    eventImportService = new TUIlmenauEventImportService(null, null); // TODO
-									      // generalize:
-									      // load
-									      // class
+	    // TODO activate with correct parameters
+	    // eventImportService = new TUIlmenauEventImportService(null, null);
+	    // // TODO
+	    // generalize:
+	    // load
+	    // class
 	    EmailNotificationService emailNotificationService = new EmailNotificationService(
 		    context);
 	    GoogleCloudNotificationService googleCloudNotificationService = new GoogleCloudNotificationService(

@@ -91,9 +91,10 @@ public class CopaServlet extends HttpServlet implements Filter {
 			    + " The request to the system must "
 			    + " be the value of this parameter."));
 	} else {
-	    GeneralUserPermission userPermission = system
-		    .getUserPermissionMapper()
-		    .getGeneralUserPermission(request);
+	    GeneralUserPermission userPermission = GeneralUserPermission.NONE;
+	    // = system
+	    // .getUserPermissionMapper()
+	    // .getGeneralUserPermission(request);
 	    resp = system.processClientMessage(req, userName, userPermission);
 	}
 	response.getWriter().print(resp);
