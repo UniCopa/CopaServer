@@ -64,6 +64,9 @@ import unicopa.copa.server.database.data.persistence.SingleEventMapper;
 import unicopa.copa.server.database.data.persistence.SingleEventUpdateMapper;
 import unicopa.copa.server.database.data.persistence.UserSettingMapper;
 import unicopa.copa.server.database.util.DatabaseUtil;
+import unicopa.copa.server.module.eventimport.model.EventGroupImport;
+import unicopa.copa.server.module.eventimport.model.EventImport;
+import unicopa.copa.server.module.eventimport.model.EventImportContainer;
 
 /**
  * The database service provides an interface to the database. It allows to
@@ -1465,15 +1468,15 @@ public class DatabaseService {
     // }
     // insertEventGroup(eventGroupContainer.getEventGroup());
     // // insert the events
-    // for (EventImport eventContainer : eventGroupContainer
+    // for (EventImport eventImport : eventGroupContainer
     // .getEvents()) {
     // tempEvent = new Event(0, eventGroupContainer.getEventGroup()
-    // .getEventGroupID(), eventContainer.getEvent()
-    // .getEventName(), eventContainer.getEvent()
+    // .getEventGroupID(), eventImport.getEvent()
+    // .getEventName(), eventImport.getEvent()
     // .getCategories());
     // insertEvent(tempEvent);
     // // insert the singleEvents
-    // for (SingleEvent singleEvent : eventContainer.getSingleEvents()) {
+    // for (SingleEvent singleEvent : eventImport.getSingleEvents()) {
     // insertSingleEventUpdate(new SingleEventUpdate(
     // new SingleEvent(0, tempEvent.getEventID(),
     // singleEvent.getLocation(),
@@ -1944,6 +1947,54 @@ public class DatabaseService {
 	    mapper.deletePrivilege();
 	    session.commit();
 	}
+    }
+
+    /*
+     * Clean the database (delete all EventGroups, SingleEvents, Events and
+     * dependant data) and import the events given by an EventImportContainer.
+     * 
+     * @param container
+     */
+    public void importEvents(EventImportContainer container) {
+	// TODO 1. clean database
+	// TODO 2. insert category tree: container.getCategoryTree() - the IDs
+	// must be set on insert so that the can be used for inserting
+	// categories for Events and EventGroups below
+
+	// Insert EventGroups
+	for (EventGroupImport eventGroupImport : container
+		.getEventGroupContainers()) {
+	    // TODO create & insert event group
+	    // TODO insert categories for EventGroup
+	    // Create and Insert Events for current EventGroup
+	    for (EventImport eventImport : eventGroupImport.getEvents()) {
+		// TODO insert Event (with possible owners -> field
+		// "eventImportData" etc.)
+		// TODO insert categories for Event
+		// Insert SingleEvents
+		for (SingleEvent singleEvent : eventImport.getSingleEvents()) {
+		    // TODO insert SingleEvent
+		}
+	    }
+	}
+    }
+
+    /**
+     * Try to match the given user as an owner to events by using the possible
+     * owners list the events were imported with.
+     * 
+     * @param userID
+     */
+    public void matchOwners(int userID) {
+	// TODO implement
+    }
+
+    /**
+     * Try to find users to be owners for each event by using the possible
+     * owners list the events were imported with.
+     */
+    public void matchOwners() {
+	// TODO implement
     }
 
     /**
