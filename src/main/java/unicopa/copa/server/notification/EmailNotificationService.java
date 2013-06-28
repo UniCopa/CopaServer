@@ -117,12 +117,19 @@ public class EmailNotificationService extends NotificationService {
 	File externalAddrs = new File(settingsDirectory,
 		"externalAddresses.txt");
 	try {
-	    externalAddrs.createNewFile();
+	    if (!externalAddrs.exists()) {
+		File src = new File(this.getClass()
+			.getResource("externalAddresses.txt").toURI());
+		unicopa.copa.server.util.IOutils.copyFile(src, smtpConfig);
+	    }
 	    FileInputStream extAddrs = new FileInputStream(externalAddrs);
 	    Scanner scn = new Scanner(new BufferedInputStream(extAddrs));
-	    scn.nextLine();
-	    scn.nextLine();
-	    scn.nextLine(); // ignore first three lines
+	    if (scn.hasNextLine())
+		scn.nextLine();
+	    if (scn.hasNextLine())
+		scn.nextLine();
+	    if (scn.hasNextLine())
+		scn.nextLine(); // ignore first three lines
 	    while (scn.hasNextLine()) {
 		String nextAddrStr = scn.useDelimiter(":").next();
 		String nextLanguage = scn.skip(":").nextLine();
@@ -133,6 +140,8 @@ public class EmailNotificationService extends NotificationService {
 	} catch (IOException | AddressException ex) {
 	    LOG.log(Level.SEVERE,
 		    "Possibly format errors in  externalAddresses.txt.", ex);
+	} catch (URISyntaxException ex) {
+	    LOG.log(Level.SEVERE, null, ex);
 	}
 	// get a EmailService object
 	FileHandler logFH;
