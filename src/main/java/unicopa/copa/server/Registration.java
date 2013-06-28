@@ -115,7 +115,7 @@ public class Registration {
 
 	// create user
 	this.copaCtx.getDbservice().insertPerson(username, gnString, snString,
-		mailString, "", "english", true);
+		mailString, "", "english", true, userPermission);
 
 	// Close the context when we're done
 	ctx.close();
