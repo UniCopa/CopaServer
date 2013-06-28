@@ -16,6 +16,9 @@
  */
 package unicopa.copa.server.module.eventimport.impl;
 
+import unicopa.copa.server.module.eventimport.impl.tuilmenau.CourseEventType;
+import unicopa.copa.server.module.eventimport.impl.tuilmenau.CourseEvent;
+import unicopa.copa.server.module.eventimport.impl.tuilmenau.TUIlmenauEventImportService;
 import com.google.gson.reflect.TypeToken;
 import java.io.FileInputStream;
 import java.io.IOException;

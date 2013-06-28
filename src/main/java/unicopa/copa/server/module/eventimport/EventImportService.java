@@ -25,5 +25,4 @@ import unicopa.copa.server.module.eventimport.model.EventImportContainer;
 public interface EventImportService {
     // TODO specific exceptions
     public EventImportContainer getSnapshot() throws Exception;
-
 }

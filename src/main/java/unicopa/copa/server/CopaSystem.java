@@ -70,7 +70,8 @@ import unicopa.copa.server.database.DatabaseService;
 import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectAlreadyExsistsException;
 import unicopa.copa.server.database.ObjectNotFoundException;
-import unicopa.copa.server.module.eventimport.impl.UserRoleMatcher;
+import unicopa.copa.server.module.eventimport.EventImportService;
+import unicopa.copa.server.module.eventimport.impl.tuilmenau.TUIlmenauEventImportService;
 import unicopa.copa.server.notification.EmailNotificationService;
 import unicopa.copa.server.notification.GoogleCloudNotificationService;
 import unicopa.copa.server.notification.Notifier;
@@ -95,6 +96,7 @@ public class CopaSystem {
     private Properties systemProperties = new Properties(); // TODO use
     private CopaSystemContext context;
     private Registration registration;
+    private EventImportService eventImportService;
     private Map<Class<? extends AbstractRequest>, RequestHandler> requestHandlers = new HashMap<>();
 
     private CopaSystem() {
@@ -282,6 +284,9 @@ public class CopaSystem {
 		try {
 		    registration.register(userName, userPermission);
 		    userID = context.getDbservice().getUserID(userName);
+		    // new user registered - make him owner at events where he
+		    // is eligible
+		    context.getDbservice().matchOwners(userID);
 		} catch (NamingException | ObjectAlreadyExsistsException
 			| IncorrectObjectException ex1) {
 		    throw new InternalErrorException(

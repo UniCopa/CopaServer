@@ -14,35 +14,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package unicopa.copa.server.module.eventimport.impl;
+package unicopa.copa.server.module.eventimport.impl.tuilmenau;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * 
  * @author Felix Wiemuth
  */
-public class Course {
+public class Group {
+    private String degree;
+    private String course;
+    private int semester; // may be 0
+    private String subgroup; // may be empty
 
-    private int id;
-    private List<String> lecturers;
-    private String name;
-
-    public Course(int id, List<String> lecturers, String name) {
-	this.id = id;
-	this.lecturers = lecturers;
-	this.name = name;
+    public Group() {
     }
 
-    public int getId() {
-	return id;
+    public List<String> toList() {
+	List<String> path = new LinkedList<>();
+	path.add(degree);
+	path.add("" + semester);
+	if (!(subgroup == null || subgroup.isEmpty())) {
+	    path.add(subgroup);
+	}
+	return path;
     }
 
-    public List<String> getLecturers() {
-	return lecturers;
-    }
-
-    public String getName() {
-	return name;
+    public String getCompactForm() {
+	StringBuilder sb = new StringBuilder();
+	sb.append(degree).append("-").append(course).append("-")
+		.append(semester);
+	if (!subgroup.isEmpty()) {
+	    sb.append("-").append(subgroup);
+	}
+	return sb.toString();
     }
 }
