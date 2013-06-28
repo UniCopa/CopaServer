@@ -45,7 +45,6 @@ import unicopa.copa.base.ServerStatusNote;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
-import unicopa.copa.base.event.CategoryNode;
 import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
@@ -65,8 +64,6 @@ import unicopa.copa.server.database.data.persistence.SingleEventMapper;
 import unicopa.copa.server.database.data.persistence.SingleEventUpdateMapper;
 import unicopa.copa.server.database.data.persistence.UserSettingMapper;
 import unicopa.copa.server.database.util.DatabaseUtil;
-import unicopa.copa.server.module.eventimport.model.EventContainer;
-import unicopa.copa.server.module.eventimport.model.EventGroupContainer;
 
 /**
  * The database service provides an interface to the database. It allows to
@@ -1442,56 +1439,56 @@ public class DatabaseService {
 	}
     }
 
-    // TODO JUnit test!!!!
-    /**
-     * Inserts a EventGroupContainer into the database. This method should only
-     * be used on an database without EventGroup,Event or SingleEvent entries.
-     * But it has to contain the given Categories.
-     * 
-     * @param eventGroupContainerList
-     * @throws ObjectNotFoundException
-     *             is thrown if one of the given categories in the
-     *             eventGroupContainer does not exist in the database
-     * @throws IncorrectObjectException
-     *             is thrown if one of the given parameters is null where it
-     *             must not or a given string does not meet the needed
-     *             requirements
-     */
-    public void insertEventGroupContainer(
-	    List<EventGroupContainer> eventGroupContainerList)
-	    throws ObjectNotFoundException, IncorrectObjectException {
-	Event tempEvent = null;
-	// insert the eventGroups
-	for (EventGroupContainer eventGroupContainer : eventGroupContainerList) {
-	    for (CategoryNode category : eventGroupContainer.getCategories()) {
-		checkCategory(category.getId());
-	    }
-	    insertEventGroup(eventGroupContainer.getEventGroup());
-	    // insert the events
-	    for (EventContainer eventContainer : eventGroupContainer
-		    .getEvents()) {
-		tempEvent = new Event(0, eventGroupContainer.getEventGroup()
-			.getEventGroupID(), eventContainer.getEvent()
-			.getEventName(), eventContainer.getEvent()
-			.getCategories());
-		insertEvent(tempEvent);
-		// insert the singleEvents
-		for (SingleEvent singleEvent : eventContainer.getSingleEvents()) {
-		    insertSingleEventUpdate(new SingleEventUpdate(
-			    new SingleEvent(0, tempEvent.getEventID(),
-				    singleEvent.getLocation(),
-				    singleEvent.getDate(),
-				    singleEvent.getSupervisor(),
-				    singleEvent.getDurationMinutes()), 0,
-			    new Date(), "EventImportService",
-			    "Inserted by EventImportService"));
-		}
-
-	    }
-
-	}
-
-    }
+    // // TODO JUnit test!!!!
+    // /**
+    // * Inserts a EventGroupImport into the database. This method should only
+    // * be used on an database without EventGroup,Event or SingleEvent entries.
+    // * But it has to contain the given Categories.
+    // *
+    // * @param eventGroupContainerList
+    // * @throws ObjectNotFoundException
+    // * is thrown if one of the given categories in the
+    // * eventGroupContainer does not exist in the database
+    // * @throws IncorrectObjectException
+    // * is thrown if one of the given parameters is null where it
+    // * must not or a given string does not meet the needed
+    // * requirements
+    // */
+    // public void insertEventGroupContainer(
+    // List<EventGroupImport> eventGroupContainerList)
+    // throws ObjectNotFoundException, IncorrectObjectException {
+    // Event tempEvent = null;
+    // // insert the eventGroups
+    // for (EventGroupImport eventGroupContainer : eventGroupContainerList) {
+    // for (CategoryNode category : eventGroupContainer.getCategories()) {
+    // checkCategory(category.getId());
+    // }
+    // insertEventGroup(eventGroupContainer.getEventGroup());
+    // // insert the events
+    // for (EventImport eventContainer : eventGroupContainer
+    // .getEvents()) {
+    // tempEvent = new Event(0, eventGroupContainer.getEventGroup()
+    // .getEventGroupID(), eventContainer.getEvent()
+    // .getEventName(), eventContainer.getEvent()
+    // .getCategories());
+    // insertEvent(tempEvent);
+    // // insert the singleEvents
+    // for (SingleEvent singleEvent : eventContainer.getSingleEvents()) {
+    // insertSingleEventUpdate(new SingleEventUpdate(
+    // new SingleEvent(0, tempEvent.getEventID(),
+    // singleEvent.getLocation(),
+    // singleEvent.getDate(),
+    // singleEvent.getSupervisor(),
+    // singleEvent.getDurationMinutes()), 0,
+    // new Date(), "EventImportService",
+    // "Inserted by EventImportService"));
+    // }
+    //
+    // }
+    //
+    // }
+    //
+    // }
 
     /**
      * inserts the given EventGroup into the database, also inserts the
