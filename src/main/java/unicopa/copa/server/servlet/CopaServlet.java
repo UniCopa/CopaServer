@@ -16,7 +16,14 @@
  */
 package unicopa.copa.server.servlet;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +51,7 @@ import unicopa.copa.server.GeneralUserPermission;
 public class CopaServlet extends HttpServlet implements Filter {
 
     private CopaSystem system;
+    private List<String> permissions;
     private static final Logger LOG = Logger.getLogger(CopaServlet.class
 	    .getName());
     private static final String PARAM_REQUEST = "req"; // the parameter name of
@@ -63,6 +71,7 @@ public class CopaServlet extends HttpServlet implements Filter {
 	    Logger.getLogger(CopaServlet.class.getName()).log(Level.SEVERE,
 		    null, ex);
 	}
+
     }
 
     /**
@@ -91,9 +100,7 @@ public class CopaServlet extends HttpServlet implements Filter {
 			    + " The request to the system must "
 			    + " be the value of this parameter."));
 	} else {
-	    GeneralUserPermission userPermission = system
-		    .getUserPermissionMapper()
-		    .getGeneralUserPermission(request);
+	    GeneralUserPermission userPermission = determineGeneralPermission(request);
 	    resp = system.processClientMessage(req, userName, userPermission);
 	}
 	response.getWriter().print(resp);
@@ -126,5 +133,41 @@ public class CopaServlet extends HttpServlet implements Filter {
 			    "The server failed to handle the request: "
 				    + e.getMessage())));
 	}
+    }
+
+    public GeneralUserPermission determineGeneralPermission(
+	    HttpServletRequest request) {
+	if (this.permissions == null) {
+	    File settingsDirectory = new File(this.system.getContext()
+		    .getSettingsDirectory(), "permissions");
+	    settingsDirectory.mkdirs();
+	    File permissionsFile = new File(settingsDirectory,
+		    "permissions.txt");
+	    try {
+		permissionsFile.createNewFile();
+		this.permissions = new ArrayList<>();
+		FileInputStream extAddrs = new FileInputStream(permissionsFile);
+		Scanner scn = new Scanner(new BufferedInputStream(extAddrs));
+		scn.nextLine();
+		scn.nextLine();
+		scn.nextLine(); // ignore first three lines
+		while (scn.hasNextLine()) {
+		    String nextRole = scn.nextLine();
+		    this.permissions.add(nextRole);
+		}
+
+	    } catch (FileNotFoundException ex) {
+		LOG.log(Level.SEVERE, null, ex);
+	    } catch (IOException ex) {
+		LOG.log(Level.SEVERE, null, ex);
+	    }
+	}
+
+	for (String role : permissions) {
+	    if (request.isUserInRole(role)) {
+		return GeneralUserPermission.POSSIBLE_OWNER;
+	    }
+	}
+	return GeneralUserPermission.NONE;
     }
 }

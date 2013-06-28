@@ -1,0 +1,3 @@
+The first three lines of this document are being ignored!
+Every user associated with one of the role names below can be automatically assigned as an owner of a specific event.
+Seperate role names by a new line.

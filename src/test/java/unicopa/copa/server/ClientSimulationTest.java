@@ -28,6 +28,7 @@ import unicopa.copa.base.com.exception.PermissionException;
 import unicopa.copa.base.com.exception.RequestNotPracticableException;
 import unicopa.copa.base.com.request.GetSingleEventRequest;
 import unicopa.copa.base.com.request.GetSingleEventResponse;
+import unicopa.copa.server.GeneralUserPermission;
 
 /**
  * Simulate client requests to the service. All requests should be tested here.
@@ -62,7 +63,7 @@ public class ClientSimulationTest {
     public void testGetSingleEventRequest() throws Exception {
 	AbstractRequest req = new GetSingleEventRequest(1);
 	String send = req.serialize();
-	String recv = system.processClientMessage(send, "");
+	String recv = system.processClientMessage(send, "", GeneralUserPermission.NONE);
 	AbstractResponse resp = AbstractResponse.deserialize(recv);
 	GetSingleEventResponse response = (GetSingleEventResponse) resp;
 	// TODO assert equals
@@ -71,7 +72,7 @@ public class ClientSimulationTest {
     @Test(expected = APIException.class)
     public void testWrongAPIUsage() throws Exception {
 	String send = "Send something strange...";
-	String recv = system.processClientMessage(send, "");
+	String recv = system.processClientMessage(send, "", GeneralUserPermission.NONE);
 	AbstractResponse resp = AbstractResponse.deserialize(recv);
     }
 
@@ -80,7 +81,7 @@ public class ClientSimulationTest {
 	    throws Exception {
 	AbstractRequest req = new GetSingleEventRequest(-1);
 	String send = req.serialize();
-	String recv = system.processClientMessage(send, "");
+	String recv = system.processClientMessage(send, "", GeneralUserPermission.NONE);
 	AbstractResponse resp = AbstractResponse.deserialize(recv);
 	GetSingleEventResponse response = (GetSingleEventResponse) resp;
     }
@@ -89,7 +90,7 @@ public class ClientSimulationTest {
     public void testGetSingleEventRequestWrongParameter() throws Exception {
 	AbstractRequest req = new GetSingleEventRequest(42);
 	String send = req.serialize();
-	String recv = system.processClientMessage(send, "");
+	String recv = system.processClientMessage(send, "", GeneralUserPermission.NONE);
 	AbstractResponse resp = AbstractResponse.deserialize(recv);
 	GetSingleEventResponse response = (GetSingleEventResponse) resp;
     }
@@ -98,7 +99,7 @@ public class ClientSimulationTest {
     public void testGetSingleEventRequestInternalError() throws Exception {
 	AbstractRequest req = new GetSingleEventRequest(0);
 	String send = req.serialize();
-	String recv = system.processClientMessage(send, "");
+	String recv = system.processClientMessage(send, "", GeneralUserPermission.NONE);
 	AbstractResponse resp = AbstractResponse.deserialize(recv);
 	GetSingleEventResponse response = (GetSingleEventResponse) resp;
     }
