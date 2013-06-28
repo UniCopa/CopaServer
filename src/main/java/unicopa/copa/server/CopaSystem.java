@@ -70,7 +70,8 @@ import unicopa.copa.server.database.DatabaseService;
 import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectAlreadyExsistsException;
 import unicopa.copa.server.database.ObjectNotFoundException;
-import unicopa.copa.server.module.eventimport.impl.UserRoleMatcher;
+import unicopa.copa.server.module.eventimport.EventImportService;
+import unicopa.copa.server.module.eventimport.impl.tuilmenau.TUIlmenauEventImportService;
 import unicopa.copa.server.module.login.GeneralUserPermissionMapper;
 import unicopa.copa.server.module.login.impl.TUIlmenauGeneralUserPermissionMapper;
 import unicopa.copa.server.notification.EmailNotificationService;
@@ -98,6 +99,7 @@ public class CopaSystem {
     private CopaSystemContext context;
     private Registration registration;
     private GeneralUserPermissionMapper userPermissionMapper;
+    private EventImportService eventImportService;
     private Map<Class<? extends AbstractRequest>, RequestHandler> requestHandlers = new HashMap<>();
 
     private CopaSystem() {
@@ -150,6 +152,11 @@ public class CopaSystem {
 									       // generalize:
 									       // load
 									       // class
+	    // TODO use correct parameters
+	    eventImportService = new TUIlmenauEventImportService(null, null); // TODO
+									      // generalize:
+									      // load
+									      // class
 	    EmailNotificationService emailNotificationService = new EmailNotificationService(
 		    context);
 	    GoogleCloudNotificationService googleCloudNotificationService = new GoogleCloudNotificationService(
@@ -289,6 +296,9 @@ public class CopaSystem {
 		try {
 		    registration.register(userName, userPermission);
 		    userID = context.getDbservice().getUserID(userName);
+		    // new user registered - make him owner at events where he
+		    // is eligible
+		    context.getDbservice().matchOwners(userID);
 		} catch (NamingException | ObjectAlreadyExsistsException
 			| IncorrectObjectException ex1) {
 		    throw new InternalErrorException(
