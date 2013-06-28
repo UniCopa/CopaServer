@@ -70,6 +70,9 @@ import unicopa.copa.server.database.DatabaseService;
 import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectAlreadyExsistsException;
 import unicopa.copa.server.database.ObjectNotFoundException;
+import unicopa.copa.server.module.eventimport.impl.UserRoleMatcher;
+import unicopa.copa.server.module.login.GeneralUserPermissionMapper;
+import unicopa.copa.server.module.login.impl.TUIlmenauGeneralUserPermissionMapper;
 import unicopa.copa.server.notification.EmailNotificationService;
 import unicopa.copa.server.notification.GoogleCloudNotificationService;
 import unicopa.copa.server.notification.Notifier;
@@ -94,6 +97,7 @@ public class CopaSystem {
     private Properties systemProperties = new Properties(); // TODO use
     private CopaSystemContext context;
     private Registration registration;
+    private GeneralUserPermissionMapper userPermissionMapper;
     private Map<Class<? extends AbstractRequest>, RequestHandler> requestHandlers = new HashMap<>();
 
     private CopaSystem() {
@@ -142,6 +146,10 @@ public class CopaSystem {
 	    context.setServerInfo(serverInfo);
 
 	    registration = new Registration(context);
+	    userPermissionMapper = new TUIlmenauGeneralUserPermissionMapper(); // TODO
+									       // generalize:
+									       // load
+									       // class
 	    EmailNotificationService emailNotificationService = new EmailNotificationService(
 		    context);
 	    GoogleCloudNotificationService googleCloudNotificationService = new GoogleCloudNotificationService(
@@ -270,7 +278,8 @@ public class CopaSystem {
      * 
      * @return the message to be sent back to the client
      */
-    public String processClientMessage(String json, String userName) {
+    public String processClientMessage(String json, String userName,
+	    GeneralUserPermission userPermission) {
 	try {
 	    int userID;
 	    try {
@@ -278,7 +287,7 @@ public class CopaSystem {
 	    } catch (ObjectNotFoundException ex) {
 		// user does not exist in database - register and try again
 		try {
-		    registration.register(userName);
+		    registration.register(userName, userPermission);
 		    userID = context.getDbservice().getUserID(userName);
 		} catch (NamingException | ObjectAlreadyExsistsException
 			| IncorrectObjectException ex1) {
@@ -320,5 +329,9 @@ public class CopaSystem {
 
     public CopaSystemContext getContext() {
 	return context;
+    }
+
+    public GeneralUserPermissionMapper getUserPermissionMapper() {
+	return userPermissionMapper;
     }
 }

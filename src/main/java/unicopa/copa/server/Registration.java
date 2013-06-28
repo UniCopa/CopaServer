@@ -72,9 +72,12 @@ public class Registration {
      * 
      * @param username
      *            the username of the user to register
+     * @param userPermission
+     *            the generel user permission for the user
      */
-    public void register(String username) throws NamingException,
-	    ObjectAlreadyExsistsException, IncorrectObjectException {
+    public void register(String username, GeneralUserPermission userPermission)
+	    throws NamingException, ObjectAlreadyExsistsException,
+	    IncorrectObjectException {
 	String userIdAttribute = this.ldapProps.getProperty("userIdAttribute");
 	String userBaseDn = this.ldapProps.getProperty("userBaseDn");
 	String url = this.ldapProps.getProperty("url");

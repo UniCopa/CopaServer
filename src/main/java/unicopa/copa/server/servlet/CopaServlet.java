@@ -33,6 +33,7 @@ import unicopa.copa.base.com.exception.APIException;
 import unicopa.copa.base.com.exception.InternalErrorException;
 import unicopa.copa.base.com.serialization.ServerSerializer;
 import unicopa.copa.server.CopaSystem;
+import unicopa.copa.server.GeneralUserPermission;
 
 /**
  * This servlet receives all requests (AbstractRequest) from the clients, passes
@@ -90,7 +91,10 @@ public class CopaServlet extends HttpServlet implements Filter {
 			    + " The request to the system must "
 			    + " be the value of this parameter."));
 	} else {
-	    resp = system.processClientMessage(req, userName);
+	    GeneralUserPermission userPermission = system
+		    .getUserPermissionMapper()
+		    .getGeneralUserPermission(request);
+	    resp = system.processClientMessage(req, userName, userPermission);
 	}
 	response.getWriter().print(resp);
     }
