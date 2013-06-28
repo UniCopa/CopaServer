@@ -17,42 +17,41 @@
 package unicopa.copa.server.module.eventimport.model;
 
 import java.util.List;
+import java.util.Set;
 import unicopa.copa.base.event.CategoryNode;
-import unicopa.copa.base.event.Event;
-import unicopa.copa.base.event.SingleEvent;
 
 /**
- * Encapsulates an Event with related data.
+ * Holds import data to build an EventGroup.
  * 
  * @author Felix Wiemuth
  */
-public class EventContainer {
-    private Event event;
-    private List<SingleEvent> singleEvents;
-    private List<Integer> owners;
-    private List<CategoryNode> categories;
+public class EventGroupImport {
+    private String eventGroupName;
+    private String eventGroupInfo;
+    private List<EventImport> events;
+    private Set<CategoryNode> categories;
 
-    public EventContainer(Event event, List<SingleEvent> singleEvents,
-	    List<Integer> owners, List<CategoryNode> categories) {
-	this.event = event;
-	this.singleEvents = singleEvents;
-	this.owners = owners;
+    public EventGroupImport(String eventGroupName, String eventGroupInfo,
+	    List<EventImport> events, Set<CategoryNode> categories) {
+	this.eventGroupName = eventGroupName;
+	this.eventGroupInfo = eventGroupInfo;
+	this.events = events;
 	this.categories = categories;
     }
 
-    public Event getEvent() {
-	return event;
+    public String getEventGroupName() {
+	return eventGroupName;
     }
 
-    public List<SingleEvent> getSingleEvents() {
-	return singleEvents;
+    public String getEventGroupInfo() {
+	return eventGroupInfo;
     }
 
-    public List<Integer> getOwners() {
-	return owners;
+    public List<EventImport> getEvents() {
+	return events;
     }
 
-    public List<CategoryNode> getCategories() {
+    public Set<CategoryNode> getCategories() {
 	return categories;
     }
 }

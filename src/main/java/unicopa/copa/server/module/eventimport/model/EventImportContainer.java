@@ -26,41 +26,10 @@ import unicopa.copa.base.event.CategoryNodeImpl;
  */
 public class EventImportContainer {
     private CategoryNodeImpl categoryTree;
-    private List<EventGroupContainer> eventGroupContainers;
+    private List<EventGroupImport> eventGroupContainers;
 
-    // public boolean addEventGroup(EventGroup e) {
-    // return eventGroups.add(e);
-    // }
-    //
-    // public boolean addEvent(Event e) {
-    // return events.add(e);
-    // }
-    //
-    // public boolean addSingleEvent(SingleEvent e) {
-    // return singleEvents.add(e);
-    // }
-    //
-    // public CategoryNodeImpl getCategoryTree() {
-    // return categoryTree;
-    // }
-    //
-    // public List<EventGroup> getEventGroups() {
-    // return eventGroups;
-    // }
-    //
-    // public List<Event> getEvents() {
-    // return events;
-    // }
-    //
-    // public List<SingleEvent> getSingleEvents() {
-    // return singleEvents;
-    // }
-
-    // private List<Event> events = new LinkedList<>();
-    // private List<SingleEvent> singleEvents = new LinkedList<>();
-    // TODO only save list of EventGroupContainers
     public EventImportContainer(CategoryNodeImpl categoryTree,
-	    List<EventGroupContainer> eventGroupContainers) {
+	    List<EventGroupImport> eventGroupContainers) {
 	this.categoryTree = categoryTree;
 	this.eventGroupContainers = eventGroupContainers;
     }
@@ -69,7 +38,7 @@ public class EventImportContainer {
 	return categoryTree;
     }
 
-    public List<EventGroupContainer> getEventGroupContainers() {
+    public List<EventGroupImport> getEventGroupContainers() {
 	return eventGroupContainers;
     }
 }

@@ -33,17 +33,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import unicopa.copa.base.event.CategoryNode;
 import unicopa.copa.base.event.CategoryNodeImpl;
-import unicopa.copa.base.event.Event;
-import unicopa.copa.base.event.EventGroup;
 import unicopa.copa.base.event.SingleEvent;
-import unicopa.copa.server.GeneralUserPermission;
-import unicopa.copa.server.database.IncorrectObjectException;
-import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.module.eventimport.serialization.Serializer;
 import unicopa.copa.server.module.eventimport.EventImportService;
 import unicopa.copa.server.module.eventimport.LimitedDatabaseAccess;
-import unicopa.copa.server.module.eventimport.model.EventContainer;
-import unicopa.copa.server.module.eventimport.model.EventGroupContainer;
+import unicopa.copa.server.module.eventimport.model.EventImport;
+import unicopa.copa.server.module.eventimport.model.EventGroupImport;
 import unicopa.copa.server.module.eventimport.model.EventImportContainer;
 import unicopa.copa.server.util.SimpleHttpsClient;
 
@@ -112,7 +107,7 @@ public class TUIlmenauEventImportService implements EventImportService {
 
 	// Collect all EventGroups here to be finally returned inside an
 	// EventImportContainer
-	List<EventGroupContainer> eventGroupContainers = new LinkedList<>();
+	List<EventGroupImport> eventGroupContainers = new LinkedList<>();
 
 	// Get a list of all courses (EventGroups) from the server
 	String jsonCourses = client.GET(REQ_GET_COURSES);
@@ -132,11 +127,15 @@ public class TUIlmenauEventImportService implements EventImportService {
 		    jsonCourseEvents, new TypeToken<Collection<CourseEvent>>() {
 		    }.getType());
 
-	    List<Integer> owners = new LinkedList<>(); // ID of users to become
-						       // owners of the events
-						       // from this group
+	    // List<Integer> owners = new LinkedList<>(); // ID of users to
+	    // become
+	    // owners of the events
+	    // from this group
 
 	    // TODO add texts only
+
+	    List<String> possibleOwners = new LinkedList<>();
+
 	    // for (String person : course.getLecturers()) {
 	    // try {
 	    // owners.addAll(access.matchName(person,
@@ -148,21 +147,21 @@ public class TUIlmenauEventImportService implements EventImportService {
 	    // }
 	    // }
 
-	    for (String person : course.getLecturers()) {
-		try {
-		    owners.addAll(access.matchName(person,
-			    GeneralUserPermission.POSSIBLE_OWNER));
-		} catch (ObjectNotFoundException ex) {
-		    // Did not find a match //TODO log warning
-		} catch (IncorrectObjectException e) {
-		    // Incorrect Input //TODO log warning?
-		}
-	    }
+	    // for (String person : course.getLecturers()) {
+	    // try {
+	    // owners.addAll(access.matchName(person,
+	    // GeneralUserPermission.POSSIBLE_OWNER));
+	    // } catch (ObjectNotFoundException ex) {
+	    // // Did not find a match //TODO log warning
+	    // } catch (IncorrectObjectException e) {
+	    // // Incorrect Input //TODO log warning?
+	    // }
+	    // }
 
 	    // Collect events for this course (EventGroup): an event is
 	    // identified by the
 	    // combination of groups
-	    Map<Set<Group>, EventContainer> eventsMap = new HashMap();
+	    Map<Set<Group>, EventImport> eventsMap = new HashMap();
 
 	    // TODO note that categories at eventgroup are the ones unioned from
 	    // the events
@@ -176,11 +175,11 @@ public class TUIlmenauEventImportService implements EventImportService {
 		for (Integer g : courseEvent.getGroups()) {
 		    groups.add(getGroup(g));
 		}
-		EventContainer eventContainer = eventsMap.get(groups); // check
-								       // if
-								       // event
-								       // already
-								       // exists
+		EventImport eventContainer = eventsMap.get(groups); // check
+								    // if
+								    // event
+								    // already
+								    // exists
 		if (eventContainer == null) { // create new Event
 		    StringBuilder eventName = new StringBuilder();
 		    eventName.append(courseEvent.getType()).append(" - ");
@@ -190,21 +189,15 @@ public class TUIlmenauEventImportService implements EventImportService {
 		    eventName.deleteCharAt(eventName.length() - 1);
 
 		    // Construct the Event
-		    Event event = new Event(0, 0, eventName.toString(), null); // IDs
-									       // must
-									       // be
-									       // set
-									       // by
-									       // the
-									       // database
 
 		    // Collect the categories for this event
 		    List<CategoryNode> categories = new LinkedList<>();
 		    for (Group group : groups) {
 			categories.add(categoryCache.get(group));
 		    }
-		    eventContainer = new EventContainer(event,
-			    new LinkedList<SingleEvent>(), owners, categories);
+		    eventContainer = new EventImport(eventName.toString(),
+			    new LinkedList<SingleEvent>(), possibleOwners,
+			    categories);
 		    eventsMap.put(groups, eventContainer);
 		}
 		eventContainer.getSingleEvents().add(singleEvent);
@@ -215,23 +208,18 @@ public class TUIlmenauEventImportService implements EventImportService {
 	    // TODO construct these at the end when all information is there...
 
 	    // The events for this EventGroup
-	    List<EventContainer> eventContainers = new LinkedList<>(
+	    List<EventImport> eventContainers = new LinkedList<>(
 		    eventsMap.values());
 
 	    // The categories for the EventGroup
 	    Set<CategoryNode> categories = new HashSet<>();
-	    for (EventContainer eventContainer : eventContainers) {
+	    for (EventImport eventContainer : eventContainers) {
 		categories.addAll(eventContainer.getCategories());
 	    }
 
-	    // Construct the EventGroup with the collected data
-	    EventGroup eventGroup = new EventGroup(0, course.getName(), "",
-		    null); // IDs for EventGroup and categories must be set by
-			   // database
-
-	    // Construct the EventGroupContainer with the collected data
-	    EventGroupContainer eventGroupConainer = new EventGroupContainer(
-		    eventGroup, eventContainers, categories);
+	    // Construct the EventGroupImport with the collected data
+	    EventGroupImport eventGroupConainer = new EventGroupImport(
+		    course.getName(), "", eventContainers, categories);
 	    // Add the container to the final list which contains everything
 	    // collected in this method
 	    eventGroupContainers.add(eventGroupConainer);
