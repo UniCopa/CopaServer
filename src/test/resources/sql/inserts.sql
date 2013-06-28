@@ -1,5 +1,4 @@
 insert into eventGroups(eventGroupName, eventGroupInfo) values
-		('DUMMY','DUMMY'),
 		('Mathe(Test)','Hier könnte ihr Werbung stehen'),
         ('Telematik 1(Test)','Ilf'),
         ('BS(Test)','Super Fach!'),
@@ -71,7 +70,6 @@ insert into eventGroup_has_Categories(categoryID,eventGroupID) values
 		(15,12);
 
 insert into events(eventGroupID, kindOfEvent) values
-	   (0,'DUMMY'),
 	   (1,'Uebung 1'),
 	   (1,'Uebung 2'),
 	   (1,'Vorlesung'),
@@ -139,7 +137,6 @@ insert into event_has_Categories(categoryID, eventID) values
 		
 
 insert into singleEvents(eventID,location,sEventDate,duration,supervisor,mostRecent) values
-	   (0,'DUMMY',0,0,'DUMMY',false),
 	   (1,'HU 103',1391471714176,20,'Dr. Test',true),
 	   (1,'HU 234',1395471714176,120,'Mr. Super',false),
 	   (1,'LdV 2',1491471714176,80,'The Visor',true),

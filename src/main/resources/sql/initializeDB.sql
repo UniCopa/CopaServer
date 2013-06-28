@@ -131,3 +131,12 @@ CREATE TABLE possibleOwners(
 	PRIMARY KEY (possibleOwnerID),
 	FOREIGN KEY (eventID) REFERENCES events(eventID)
 );
+
+insert into eventGroups(eventGroupName, eventGroupInfo) values
+		('DUMMY','DUMMY');
+
+insert into events(eventGroupID, kindOfEvent) values
+	   (0,'DUMMY');
+	   
+insert into singleEvents(eventID,location,sEventDate,duration,supervisor,mostRecent) values
+	   (0,'DUMMY',0,0,'DUMMY',false);
