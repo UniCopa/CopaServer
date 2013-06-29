@@ -36,7 +36,6 @@ import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.server.module.eventimport.impl.tuilmenau.serialization.Serializer;
 import unicopa.copa.server.module.eventimport.EventImportService;
-import unicopa.copa.server.module.eventimport.LimitedDatabaseAccess;
 import unicopa.copa.server.module.eventimport.model.EventImport;
 import unicopa.copa.server.module.eventimport.model.EventGroupImport;
 import unicopa.copa.server.module.eventimport.model.EventImportContainer;
@@ -48,22 +47,16 @@ import unicopa.copa.server.util.SimpleHttpsClient;
  * @author Felix Wiemuth
  */
 public class TUIlmenauEventImportService implements EventImportService {
-    // TODO: own repository, parent CopaServer TODO: use in the following way:
-    // get
-    // EventImportContainer from here, let database insert data and set the IDs!
-    // container also contains map from event to {role,user} => hand container
-    // over
-    // to permission import system
+    // TODO: own repository, parent CopaServer
     private SimpleHttpsClient client;
     private Properties settings = new Properties();
-    private static final Logger LOG = Logger
-	    .getLogger(TUIlmenauEventImportService.class.getName());
+    private static final Logger LOG = Logger.getLogger(EventImportService.class
+	    .getName());
 
     // URIs or Strings to build URIs for all requests
     private static URI REQ_GET_COURSES;
     private static String REQ_GET_COURSE_EVENTS;
     private static String REQ_GET_GROUP;
-    private final LimitedDatabaseAccess access;
 
     private Map<Integer, Group> groupCache = new HashMap<>();
     private CategoryNodeImpl categoryTree = new CategoryNodeImpl(0, ""); // create
@@ -82,8 +75,9 @@ public class TUIlmenauEventImportService implements EventImportService {
      * @param access
      * @throws IOException
      */
-    public TUIlmenauEventImportService(InputStream settingsStream,
-	    LimitedDatabaseAccess access) throws IOException {
+    public TUIlmenauEventImportService(InputStream settingsStream)
+	    throws IOException {
+	LOG.info("Initializing TUIlmenauEventImportService");
 	settings.loadFromXML(settingsStream);
 	REQ_GET_COURSE_EVENTS = settings.getProperty("uri_getCourseEvents");
 	REQ_GET_GROUP = settings.getProperty("uri_getGroup");
@@ -97,7 +91,7 @@ public class TUIlmenauEventImportService implements EventImportService {
 	}
 	client.authenticate(settings.getProperty("user"),
 		settings.getProperty("password"));
-	this.access = access;
+	LOG.info("Successfully initialized TUIlmenauEventImportService");
     }
 
     @Override
@@ -107,7 +101,7 @@ public class TUIlmenauEventImportService implements EventImportService {
 
 	// Collect all EventGroups here to be finally returned inside an
 	// EventImportContainer
-	List<EventGroupImport> eventGroupContainers = new LinkedList<>();
+	List<EventGroupImport> eventGroupImports = new LinkedList<>();
 
 	// Get a list of all courses (EventGroups) from the server
 	String jsonCourses = client.GET(REQ_GET_COURSES);
@@ -127,44 +121,16 @@ public class TUIlmenauEventImportService implements EventImportService {
 		    jsonCourseEvents, new TypeToken<Collection<CourseEvent>>() {
 		    }.getType());
 
-	    // List<Integer> owners = new LinkedList<>(); // ID of users to
-	    // become
-	    // owners of the events
-	    // from this group
-
-	    // TODO add texts only
-
 	    List<String> possibleOwners = new LinkedList<>();
 
-	    // for (String person : course.getLecturers()) {
-	    // try {
-	    // owners.addAll(access.matchName(person,
-	    // GeneralUserPermission.POSSIBLE_OWNER));
-	    // } catch (ObjectNotFoundException ex) {
-	    // // Did not find a match //TODO log warning
-	    // } catch (IncorrectObjectException e) {
-	    // Incorrect Input //TODO log warning?
-	    // }
-	    // }
-
-	    // for (String person : course.getLecturers()) {
-	    // try {
-	    // owners.addAll(access.matchName(person,
-	    // GeneralUserPermission.POSSIBLE_OWNER));
-	    // } catch (ObjectNotFoundException ex) {
-	    // // Did not find a match //TODO log warning
-	    // } catch (IncorrectObjectException e) {
-	    // // Incorrect Input //TODO log warning?
-	    // }
-	    // }
+	    for (String person : course.getLecturers()) {
+		possibleOwners.add(person);
+	    }
 
 	    // Collect events for this course (EventGroup): an event is
 	    // identified by the
 	    // combination of groups
 	    Map<Set<Group>, EventImport> eventsMap = new HashMap();
-
-	    // TODO note that categories at eventgroup are the ones unioned from
-	    // the events
 
 	    // Distribute "dates" as SingleEvents to Events
 	    for (CourseEvent courseEvent : courseEvents) {
@@ -175,12 +141,12 @@ public class TUIlmenauEventImportService implements EventImportService {
 		for (Integer g : courseEvent.getGroups()) {
 		    groups.add(getGroup(g));
 		}
-		EventImport eventContainer = eventsMap.get(groups); // check
-								    // if
-								    // event
-								    // already
-								    // exists
-		if (eventContainer == null) { // create new Event
+		EventImport eventImport = eventsMap.get(groups); // check
+								 // if
+								 // event
+								 // already
+								 // exists
+		if (eventImport == null) { // create new Event
 		    StringBuilder eventName = new StringBuilder();
 		    eventName.append(courseEvent.getType()).append(" - ");
 		    for (Group group : groups) {
@@ -195,34 +161,35 @@ public class TUIlmenauEventImportService implements EventImportService {
 		    for (Group group : groups) {
 			categories.add(categoryCache.get(group));
 		    }
-		    eventContainer = new EventImport(eventName.toString(),
+		    eventImport = new EventImport(eventName.toString(),
 			    new LinkedList<SingleEvent>(), possibleOwners,
 			    categories);
-		    eventsMap.put(groups, eventContainer);
+		    eventsMap.put(groups, eventImport);
 		}
-		eventContainer.getSingleEvents().add(singleEvent);
+		eventImport.getSingleEvents().add(singleEvent);
 	    }
 
-	    // TODO sort to events after generating SingleEvents?
-
-	    // TODO construct these at the end when all information is there...
-
 	    // The events for this EventGroup
-	    List<EventImport> eventContainers = new LinkedList<>(
+	    List<EventImport> eventImports = new LinkedList<>(
 		    eventsMap.values());
 
 	    // The categories for the EventGroup
 	    Set<CategoryNode> categories = new HashSet<>();
-	    for (EventImport eventContainer : eventContainers) {
-		categories.addAll(eventContainer.getCategories());
+	    for (EventImport eventImport : eventImports) {
+		categories.addAll(eventImport.getCategories());
 	    }
 
 	    // Construct the EventGroupImport with the collected data
-	    EventGroupImport eventGroupConainer = new EventGroupImport(
-		    course.getName(), "", eventContainers, categories);
-	    // Add the container to the final list which contains everything
+	    EventGroupImport eventGroupImport = new EventGroupImport(
+		    course.getName(), "", eventImports, categories);
+	    // Add the Import to the final list which contains everything
 	    // collected in this method
-	    eventGroupContainers.add(eventGroupConainer);
+	    if (!eventGroupImport.getEvents().isEmpty()) {
+		eventGroupImports.add(eventGroupImport);
+	    } else {
+		LOG.warning("Ignored course with no events: "
+			+ eventGroupImport.getEventGroupName());
+	    }
 	}
 	try {
 	    client.stop();
@@ -230,7 +197,7 @@ public class TUIlmenauEventImportService implements EventImportService {
 	    Logger.getLogger(TUIlmenauEventImportService.class.getName()).log(
 		    Level.WARNING, "Could not stop HTTPS client.", ex);
 	}
-	return new EventImportContainer(categoryTree, eventGroupContainers);
+	return new EventImportContainer(categoryTree, eventGroupImports);
     }
 
     /**

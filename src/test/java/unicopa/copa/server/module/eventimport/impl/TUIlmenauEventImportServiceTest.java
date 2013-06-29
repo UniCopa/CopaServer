@@ -49,7 +49,7 @@ public class TUIlmenauEventImportServiceTest {
     @Before
     public void setUp() throws IOException {
 	service = new TUIlmenauEventImportService(new FileInputStream(
-		"eventImport.xml"), null);
+		"eventImport.xml"));
     }
 
     @After
@@ -109,7 +109,8 @@ public class TUIlmenauEventImportServiceTest {
     @Test
     public void testGetSnapshot() throws Exception {
 	TUIlmenauEventImportService service = new TUIlmenauEventImportService(
-		new FileInputStream("eventImport.xml"), null);
+		new FileInputStream("eventImport.xml"));
 	EventImportContainer snapshot = service.getSnapshot();
+	System.out.println("Imported all events.");
     }
 }

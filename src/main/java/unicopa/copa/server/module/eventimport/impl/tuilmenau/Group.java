@@ -35,7 +35,7 @@ public class Group {
     public List<String> toList() {
 	List<String> path = new LinkedList<>();
 	path.add(degree);
-	path.add("" + semester);
+	path.add("Semester " + semester);
 	if (!(subgroup == null || subgroup.isEmpty())) {
 	    path.add(subgroup);
 	}
