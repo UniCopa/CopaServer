@@ -28,7 +28,7 @@ CREATE TABLE events (
 );
 
 CREATE TABLE categories(
-	categoryID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1), 
+	categoryID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1),  -- 0 is the root
 	name varchar(70) NOT NULL, 
 	PRIMARY KEY (categoryID)
 );
