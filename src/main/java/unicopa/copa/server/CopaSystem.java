@@ -18,7 +18,9 @@ package unicopa.copa.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,6 +74,7 @@ import unicopa.copa.server.database.ObjectNotFoundException;
 import unicopa.copa.server.database.util.DatabaseUtil;
 import unicopa.copa.server.module.eventimport.EventImportService;
 import unicopa.copa.server.module.eventimport.impl.tuilmenau.TUIlmenauEventImportService;
+import unicopa.copa.server.module.eventimport.model.EventImportContainer;
 import unicopa.copa.server.notification.EmailNotificationService;
 import unicopa.copa.server.notification.GoogleCloudNotificationService;
 import unicopa.copa.server.notification.Notifier;
@@ -99,6 +102,8 @@ public class CopaSystem {
     private Registration registration;
     private EventImportService eventImportService;
     private Map<Class<? extends AbstractRequest>, RequestHandler> requestHandlers = new HashMap<>();
+
+    private boolean doEventImport = false;
 
     private CopaSystem() {
 	try {
@@ -149,6 +154,7 @@ public class CopaSystem {
 		    startDate, availableRequests);
 	    context.setServerInfo(serverInfo);
 
+	    loadSystemProperties();
 	    initializeEventImportService();
 
 	    registration = new Registration(context);
@@ -166,11 +172,21 @@ public class CopaSystem {
 	} catch (Exception ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	    throw new RuntimeException(
-		    "Could not fully initialize the system - safety abort."); // cannot
-									      // continue
-									      // with
-									      // this
-									      // failure
+		    "Could not fully initialize the system - safety abort.", ex); // cannot
+										  // continue
+										  // with
+										  // this
+										  // failure
+	}
+	if (doEventImport) {
+	    LOG.info("Starting event import because database was created...");
+	    try {
+		EventImportContainer snapshot = eventImportService
+			.getSnapshot();
+		context.getDbservice().importEvents(snapshot);
+	    } catch (Exception ex) {
+		LOG.log(Level.SEVERE, "Event import failed", ex);
+	    }
 	}
     }
 
@@ -204,25 +220,46 @@ public class CopaSystem {
      * @return
      */
     private DatabaseService initializeDatabase() throws Exception {
+	DatabaseService databaseService;
 	if (!databaseDirectory.isDirectory()) {
 	    if (databaseDirectory.exists()) {
-		LOG.log(Level.SEVERE,
-			"The path {0} should be either the database directory or nonexistent. Delete it for new database initialization.",
-			databaseDirectory.getAbsolutePath());
+		throw new Exception(
+			String.format(
+				"The path {0} should be either the database directory or nonexistent. Delete it for new database initialization.",
+				databaseDirectory.getAbsolutePath()));
 	    } else {
 		DatabaseUtil.createNewDatabase(databaseDirectory);
 		LOG.log(Level.WARNING, "Created new Database in {0}",
 			databaseDirectory.getAbsolutePath());
+		databaseService = new DatabaseService(databaseDirectory);
+		if (systemProperties.getProperty(
+			"runEventImportOnInitialization").equals("true")) {
+		    doEventImport = true;
+		}
 	    }
+	} else {
+	    databaseService = new DatabaseService(databaseDirectory);
 	}
-	return new DatabaseService(databaseDirectory);
+	return databaseService;
     }
 
     /**
      * Create the systems settings directory if necessary and load properties.
      */
-    private void loadProperties() {
-	// TODO load properties if necessary
+    private void loadSystemProperties() throws URISyntaxException, IOException {
+	File systemPropertiesFile = new File(context.getSettingsDirectory(),
+		"system.properties");
+	if (!systemPropertiesFile.isFile()) {
+	    LOG.warning("System configuration file "
+		    + systemPropertiesFile.getAbsolutePath()
+		    + " does not exist, creating default configuration.");
+	    File src = new File(this.getClass()
+		    .getResource("/system/system.properties").toURI());
+	    unicopa.copa.server.util.IOutils
+		    .copyFile(src, systemPropertiesFile);
+	}
+	systemProperties = new Properties();
+	systemProperties.load(new FileInputStream(systemPropertiesFile));
     }
 
     /**
