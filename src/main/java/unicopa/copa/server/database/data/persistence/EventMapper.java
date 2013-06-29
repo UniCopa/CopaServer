@@ -45,4 +45,6 @@ public interface EventMapper {
 
     public void insertPossibleOwners(@Param("eventID") int eventID,
 	    @Param("ownerList") List<String> ownerList);
+
+    public List<Integer> getPossibleOwnerMatches(@Param("userID") int userID);
 }

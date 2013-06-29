@@ -1,6 +1,6 @@
 
 CREATE TABLE persons(
-	personID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
+	personID int NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 0, INCREMENT BY 1), -- entry with id=0 is the ImportSystem 
 	userName varchar(20) NOT NULL UNIQUE, 
 	firstName varchar(35) NOT NULL, 
 	familyName varchar(35) NOT NULL, 
@@ -140,3 +140,6 @@ insert into events(eventGroupID, kindOfEvent) values
 	   
 insert into singleEvents(eventID,location,sEventDate,duration,supervisor,mostRecent) values
 	   (0,'DUMMY',0,0,'DUMMY',false);
+	
+insert into persons(userName,firstName,familyName,email,titel,language,eMailNotification,generalUserPermission) values
+	('ImportSystem','ImportSystem','ImportSystem','ImportSystem','','english',false,0);

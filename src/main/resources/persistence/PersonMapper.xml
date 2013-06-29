@@ -130,6 +130,12 @@
 	    Where personID=#{userID}
 	</select>
 
+	<select id='getAllPossibleOwnerIDs' resultType='int'>
+		select personID
+		From persons
+		where personID != 0 and generalUserPermission = 1
+	</select>
+	
 	<insert id='insertPerson' parameterType='map'>
 		insert into
 		persons(userName,firstName,familyName,email,titel,language,eMailNotification,generalUserPermission)

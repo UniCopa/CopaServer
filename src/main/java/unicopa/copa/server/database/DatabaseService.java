@@ -791,12 +791,13 @@ public class DatabaseService {
 	    kindOfPrivilege = 1;
 	    break;
 	case USER:
-	    removePrivilege(userID, eventID);
 	    break;
 	default:
 	    throw new IncorrectObjectException(
 		    "setUserRoleForEvent not defined for UserRole = " + role);
 	}
+	if (hasPrivfor(userID, eventID) != 0)
+	    removePrivilege(userID, eventID);
 	if (role != UserRole.USER)
 	    insertPrivilege(userID, eventID, kindOfPrivilege, gavePrivilegeID,
 		    new Date());
@@ -1071,6 +1072,7 @@ public class DatabaseService {
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    PrivilegeMapper mapper = session.getMapper(PrivilegeMapper.class);
 	    mapper.removePrivilege(userID, eventID);
+	    session.commit();
 	}
     }
 
@@ -1986,21 +1988,46 @@ public class DatabaseService {
      * owners list the events were imported with.
      * 
      * @param userID
+     * @throws IncorrectObjectException
+     * @throws ObjectNotFoundException
+     *             is thrown if the given user does not exist in the database
      */
-    public List<Integer> matchOwners(int userID) {
-	return null;
-	// TODO wenn ein neuer user mit ID irgendwo passender possibleOwner ist
-	// dann wird er als Owner gesetzt
+    public List<Integer> matchOwners(int userID) throws ObjectNotFoundException {
+	List<Integer> ownerEventList = new ArrayList<>();
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    EventMapper mapper = session.getMapper(EventMapper.class);
+	    ownerEventList = mapper.getPossibleOwnerMatches(userID);
+	    for (int eventID : ownerEventList) {
+		try {
+		    setUserRoleForEvent(userID, eventID, UserRole.OWNER, 0);
+		} catch (IncorrectObjectException e) {
+		}
+
+	    }
+	}
+	return ownerEventList;
     }
 
     /**
      * Try to find users to be owners for each event by using the possible
      * owners list the events were imported with.
+     * 
+     * @return returns a map<userID,List<eventID>> with all userIDs that were
+     *         set as owner for all events in the corresponding list
      */
     public Map<Integer, List<Integer>> matchOwners() {
-	return null;
-	// TODO macht das wie oben für alle User... liefert map<UserID,
-	// List<eventID>>
+	Map<Integer, List<Integer>> eventOwnerMap = new HashMap<>();
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    PersonMapper mapper = session.getMapper(PersonMapper.class);
+	    List<Integer> userIDList = mapper.getAllPossibleOwnerIDs();
+	    for (int userID : userIDList) {
+		try {
+		    eventOwnerMap.put(userID, matchOwners(userID));
+		} catch (ObjectNotFoundException e) {
+		}
+	    }
+	}
+	return eventOwnerMap;
     }
 
     /**

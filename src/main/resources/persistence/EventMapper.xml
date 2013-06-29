@@ -59,6 +59,12 @@
 	    Where eventID=#{eventID}
 	</select>
 	
+	<select id='getPossibleOwnerMatches' parameterType='int' resultType='int'>
+	    Select distinct eventID
+	    From persons p, possibleOwners o
+	    Where p.personID=#{userID} and UPPER(possibleOwnerName)  like '%' || UPPER(p.familyName)    
+	</select>
+	
 	<insert id='insertPossibleOwners' parameterType='map'>
 		insert into possibleOwners(eventID, possibleOwnerName) values
 		<foreach item="item" index="index" collection="ownerList"

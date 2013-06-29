@@ -794,12 +794,27 @@ public class DatabaseServiceTest {
     public void testPossibleOwners3() {
 	try {
 	    assertEquals("Dr. Dr. Prof. Derp", dbs.getPossibleOwners(4).get(0));
-	    assertEquals("Derpy", dbs.getPossibleOwners(4).get(1));
-	    assertEquals("Owner2", dbs.getPossibleOwners(4).get(2));
+	    assertEquals("Prof. Dr. Mustermann", dbs.getPossibleOwners(4)
+		    .get(1));
+	    assertEquals("Derpy", dbs.getPossibleOwners(4).get(2));
+	    assertEquals("Owner2", dbs.getPossibleOwners(4).get(3));
 	} catch (ObjectNotFoundException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
+    }
+
+    @Test
+    public void testZMatchOwners() {
+	Map<Integer, List<Integer>> ownerEventMap = dbs.matchOwners();
+	List<Integer> ownerListEmpty = new ArrayList<>();
+	List<Integer> ownerListWith4 = new ArrayList<>();
+	ownerListWith4.add(4);
+	assertEquals(ownerListWith4, ownerEventMap.get(1));
+	assertEquals(ownerListWith4, ownerEventMap.get(7));
+	assertEquals(ownerListWith4, ownerEventMap.get(12));
+	assertEquals(ownerListEmpty, ownerEventMap.get(2));
+
     }
 
     @Test
@@ -888,6 +903,5 @@ public class DatabaseServiceTest {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-
     }
 }

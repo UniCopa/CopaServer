@@ -357,4 +357,5 @@ insert into subscriptionLists(personID,eventID,color) values
 	(1,'Dr. Test'),
 	(1,'Herr Prof. Owner'),
 	(4,'Dr. Dr. Prof. Derp'),
-	(5,'Frau Herr Dr. Prof. Dingensens');
+	(5,'Frau Herr Dr. Prof. Dingensens'),
+	(4,'Prof. Dr. Mustermann');

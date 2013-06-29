@@ -61,4 +61,6 @@ public interface PersonMapper {
     public List<Integer> getUserByFamilyNameWithPermission(
 	    @Param("familyName") String familyName,
 	    @Param("generalUserPermission") int generalUserPermission);
+
+    public List<Integer> getAllPossibleOwnerIDs();
 }
