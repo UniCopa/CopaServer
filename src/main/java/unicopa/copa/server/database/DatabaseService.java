@@ -2048,9 +2048,6 @@ public class DatabaseService {
 	    ScriptRunner runner = new ScriptRunner(conn);
 	    runner.runScript(reader);
 	}
-	// TODO do without DatabaseService?
-	DatabaseService dbservice = new DatabaseService(database);
-	dbservice.insertProgramVersion();
 	// TODO need to shut down DatabaseService?
     }
 
