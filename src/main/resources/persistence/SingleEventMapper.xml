@@ -78,6 +78,7 @@
 	<delete id='deleteSingleEvent'>
 	    delete
 	    from singleEvents
+	    where singleEventID != 0
 	</delete>
 
 </mapper>

@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 import unicopa.copa.base.event.CategoryNode;
 import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.SingleEvent;
-import unicopa.copa.server.module.eventimport.serialization.Serializer;
+import unicopa.copa.server.module.eventimport.impl.tuilmenau.serialization.Serializer;
 import unicopa.copa.server.module.eventimport.EventImportService;
 import unicopa.copa.server.module.eventimport.LimitedDatabaseAccess;
 import unicopa.copa.server.module.eventimport.model.EventImport;

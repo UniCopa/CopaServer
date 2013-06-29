@@ -45,6 +45,7 @@ import unicopa.copa.base.ServerStatusNote;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
+import unicopa.copa.base.event.CategoryNode;
 import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
@@ -1338,8 +1339,9 @@ public class DatabaseService {
 	    EventMapper mapper = session.getMapper(EventMapper.class);
 	    mapper.insertEvent(event);
 	    session.commit();
-	    mapper.insertEventCategorie(event.getEventID(),
-		    event.getCategories());
+	    if (!event.getCategories().isEmpty())
+		mapper.insertEventCategorie(event.getEventID(),
+			event.getCategories());
 	    session.commit();
 	}
     }
@@ -1367,10 +1369,11 @@ public class DatabaseService {
 	    ObjectNotFoundException {
 	checkString(category.getName(), 70);
 	checkNull(category, "given CategoryNodeImpl");
-	if (categoryExists(category.getId()))
-	    throw new ObjectAlreadyExsistsException(
-		    "There is already an entry in the category table in the database with categoryID="
-			    + category.getId());
+	// TODO check if needed
+	// if (categoryExists(category.getId()))
+	// throw new ObjectAlreadyExsistsException(
+	// "There is already an entry in the category table in the database with categoryID="
+	// + category.getId());
 	if (!categoryExists(parent) && parent != -1)
 	    throw new ObjectNotFoundException(
 		    "There is no Category entry in the database with ID="
@@ -1442,57 +1445,6 @@ public class DatabaseService {
 	}
     }
 
-    // // TODO JUnit test!!!!
-    // /**
-    // * Inserts a EventGroupImport into the database. This method should only
-    // * be used on an database without EventGroup,Event or SingleEvent entries.
-    // * But it has to contain the given Categories.
-    // *
-    // * @param eventGroupContainerList
-    // * @throws ObjectNotFoundException
-    // * is thrown if one of the given categories in the
-    // * eventGroupContainer does not exist in the database
-    // * @throws IncorrectObjectException
-    // * is thrown if one of the given parameters is null where it
-    // * must not or a given string does not meet the needed
-    // * requirements
-    // */
-    // public void insertEventGroupContainer(
-    // List<EventGroupImport> eventGroupContainerList)
-    // throws ObjectNotFoundException, IncorrectObjectException {
-    // Event tempEvent = null;
-    // // insert the eventGroups
-    // for (EventGroupImport eventGroupContainer : eventGroupContainerList) {
-    // for (CategoryNode category : eventGroupContainer.getCategories()) {
-    // checkCategory(category.getId());
-    // }
-    // insertEventGroup(eventGroupContainer.getEventGroup());
-    // // insert the events
-    // for (EventImport eventImport : eventGroupContainer
-    // .getEvents()) {
-    // tempEvent = new Event(0, eventGroupContainer.getEventGroup()
-    // .getEventGroupID(), eventImport.getEvent()
-    // .getEventName(), eventImport.getEvent()
-    // .getCategories());
-    // insertEvent(tempEvent);
-    // // insert the singleEvents
-    // for (SingleEvent singleEvent : eventImport.getSingleEvents()) {
-    // insertSingleEventUpdate(new SingleEventUpdate(
-    // new SingleEvent(0, tempEvent.getEventID(),
-    // singleEvent.getLocation(),
-    // singleEvent.getDate(),
-    // singleEvent.getSupervisor(),
-    // singleEvent.getDurationMinutes()), 0,
-    // new Date(), "EventImportService",
-    // "Inserted by EventImportService"));
-    // }
-    //
-    // }
-    //
-    // }
-    //
-    // }
-
     /**
      * inserts the given EventGroup into the database, also inserts the
      * eventGroupHasCategorys entries
@@ -1524,8 +1476,9 @@ public class DatabaseService {
 	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
 	    mapper.insertEventGroup(eventGroup);
 	    session.commit();
-	    mapper.insertEventGroupCategory(eventGroup.getEventGroupID(),
-		    eventGroup.getCategories());
+	    if (!eventGroup.getCategories().isEmpty())
+		mapper.insertEventGroupCategory(eventGroup.getEventGroupID(),
+			eventGroup.getCategories());
 	    session.commit();
 	}
     }
@@ -1854,19 +1807,24 @@ public class DatabaseService {
     }
 
     /**
-     * Deletes all entries of the tables: eventGroups, events, categories,
-     * eventGroup_has_Categories, category_Connections, singleEvents,
-     * singleEventUpdates, subscriptionLists, event_has_Categories, privilege
+     * Deletes all entries (except the dummy entries) of the tables:
+     * eventGroups, events, categories, eventGroup_has_Categories,
+     * category_Connections, singleEvents, singleEventUpdates,
+     * subscriptionLists, event_has_Categories, privilege
+     * 
+     * @throws IncorrectObjectException
+     * @throws ObjectNotFoundException
      */
-    private void clear() {
-	// TODO test
+    public void clear() throws ObjectNotFoundException,
+	    IncorrectObjectException {
+	deletePossibleOwners();
 	deleteSubscriptionList();
 	deleteSingleEvents();
 	deletePrivilege();
 	deleteEvents();
 	deleteEventGroups();
 	deleteCategorys();
-	deletePossibleOwners();
+	resetAutoGeneratedCategoryKey();
     }
 
     /**
@@ -1949,33 +1907,77 @@ public class DatabaseService {
 	}
     }
 
-    /*
+    /**
      * Clean the database (delete all EventGroups, SingleEvents, Events and
-     * dependant data) and import the events given by an EventImportContainer.
+     * dependent data except the dummy entries) and import the events given by
+     * an EventImportContainer.
      * 
      * @param container
+     * @throws ObjectNotFoundException
+     * @throws IncorrectObjectException
+     * @throws ObjectAlreadyExsistsException
      */
-    public void importEvents(EventImportContainer container) {
-	// TODO 1. clean database
-	// TODO 2. insert category tree: container.getCategoryTree() - the IDs
+    public void importEvents(EventImportContainer container)
+	    throws ObjectNotFoundException, IncorrectObjectException,
+	    ObjectAlreadyExsistsException {
+	clear();
+	insertCategoryTree(container.getCategoryTree(), -1);
 	// must be set on insert so that the can be used for inserting
 	// categories for Events and EventGroups below
 
+	List<Integer> categoryEventGroupList = new ArrayList<>();
+	List<Integer> categoryEventList = new ArrayList<>();
+	EventGroup tempEventGroup = null;
+	Event tempEvent = null;
 	// Insert EventGroups
 	for (EventGroupImport eventGroupImport : container
 		.getEventGroupContainers()) {
-	    // TODO create & insert event group
-	    // TODO insert categories for EventGroup
+	    categoryEventGroupList.clear();
+	    // collect the categoryIDs for the EventGroup
+	    for (CategoryNode category : eventGroupImport.getCategories()) {
+		categoryEventGroupList.add(category.getId());
+	    }
+	    tempEventGroup = new EventGroup(0,
+		    eventGroupImport.getEventGroupName(),
+		    eventGroupImport.getEventGroupInfo(),
+		    categoryEventGroupList);
+	    insertEventGroup(tempEventGroup);
 	    // Create and Insert Events for current EventGroup
 	    for (EventImport eventImport : eventGroupImport.getEvents()) {
-		// TODO insert Event (with possible owners -> field
-		// "eventImportData" etc.)
-		// TODO insert categories for Event
+		categoryEventList.clear();
+		// collect the categoryIDs for the Event
+		for (CategoryNode category : eventImport.getCategories()) {
+		    categoryEventList.add(category.getId());
+		}
+		tempEvent = new Event(0, tempEventGroup.getEventGroupID(),
+			eventImport.getEventName(), categoryEventList);
+		insertEvent(tempEvent);
+		if (!eventImport.getPossibleOwners().isEmpty())
+		    insertPossibleOwners(tempEvent.getEventID(),
+			    eventImport.getPossibleOwners());
 		// Insert SingleEvents
 		for (SingleEvent singleEvent : eventImport.getSingleEvents()) {
-		    // TODO insert SingleEvent
+		    insertSingleEventUpdate(new SingleEventUpdate(
+			    new SingleEvent(0, tempEvent.getEventID(),
+				    singleEvent.getLocation(),
+				    singleEvent.getDate(),
+				    singleEvent.getSupervisor(),
+				    singleEvent.getDurationMinutes()), 0,
+			    new Date(), "EventImportModule",
+			    "Created via EventImportModule"));
 		}
 	    }
+	}
+    }
+
+    /**
+     * Resets the auto generated key in the table categories to 0
+     */
+    private void resetAutoGeneratedCategoryKey() {
+	try (SqlSession session = sqlSessionFactory.openSession()) {
+	    CategoryMapper mapper = session.getMapper(CategoryMapper.class);
+	    mapper.resetAutoGeneratedKey();
+	    session.commit();
 	}
     }
 
@@ -1985,16 +1987,20 @@ public class DatabaseService {
      * 
      * @param userID
      */
-    public void matchOwners(int userID) {
-	// TODO implement
+    public List<Integer> matchOwners(int userID) {
+	return null;
+	// TODO wenn ein neuer user mit ID irgendwo passender possibleOwner ist
+	// dann wird er als Owner gesetzt
     }
 
     /**
      * Try to find users to be owners for each event by using the possible
      * owners list the events were imported with.
      */
-    public void matchOwners() {
-	// TODO implement
+    public Map<Integer, List<Integer>> matchOwners() {
+	return null;
+	// TODO macht das wie oben für alle User... liefert map<UserID,
+	// List<eventID>>
     }
 
     /**

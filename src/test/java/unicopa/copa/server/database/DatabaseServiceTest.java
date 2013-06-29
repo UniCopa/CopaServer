@@ -45,6 +45,7 @@ import unicopa.copa.base.UserData;
 import unicopa.copa.base.UserEventSettings;
 import unicopa.copa.base.UserRole;
 import unicopa.copa.base.UserSettings;
+import unicopa.copa.base.event.CategoryNode;
 import unicopa.copa.base.event.CategoryNodeImpl;
 import unicopa.copa.base.event.Event;
 import unicopa.copa.base.event.EventGroup;
@@ -52,6 +53,9 @@ import unicopa.copa.base.event.SingleEvent;
 import unicopa.copa.base.event.SingleEventUpdate;
 import unicopa.copa.server.GeneralUserPermission;
 import unicopa.copa.server.database.util.DatabaseUtil;
+import unicopa.copa.server.module.eventimport.model.EventGroupImport;
+import unicopa.copa.server.module.eventimport.model.EventImport;
+import unicopa.copa.server.module.eventimport.model.EventImportContainer;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 /**
@@ -796,5 +800,94 @@ public class DatabaseServiceTest {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
+    }
+
+    @Test
+    public void testzzzzImportEvents() {
+	CategoryNodeImpl categoryTree = new CategoryNodeImpl(0, "root");
+	CategoryNodeImpl categoryTreeC1 = new CategoryNodeImpl(0, "child1");
+	CategoryNodeImpl categoryTreeC2 = new CategoryNodeImpl(0, "child2");
+	CategoryNodeImpl categoryTreeC11 = new CategoryNodeImpl(0, "child11");
+	CategoryNodeImpl categoryTreeC12 = new CategoryNodeImpl(0, "child12");
+	categoryTree.addChildNode(categoryTreeC1);
+	categoryTree.addChildNode(categoryTreeC2);
+	categoryTreeC1.addChildNode(categoryTreeC11);
+	categoryTreeC1.addChildNode(categoryTreeC12);
+
+	Set<CategoryNode> eG1Cat = new HashSet<>();
+	eG1Cat.add(categoryTreeC11);
+	eG1Cat.add(categoryTreeC2);
+
+	Set<CategoryNode> eG2Cat = new HashSet<>();
+	eG1Cat.add(categoryTreeC12);
+
+	List<CategoryNode> e1Cat = new ArrayList<>();
+	e1Cat.add(categoryTreeC11);
+	e1Cat.add(categoryTreeC2);
+
+	List<CategoryNode> e2Cat = new ArrayList<>();
+	e2Cat.add(categoryTreeC2);
+
+	List<CategoryNode> e3Cat = new ArrayList<>();
+	e3Cat.add(categoryTreeC12);
+
+	SingleEvent se1 = new SingleEvent(0, 0, "HU 102", new Date(),
+		"Mr. Super", 10);
+	SingleEvent se2 = new SingleEvent(0, 0, "HU 120", new Date(),
+		"Superviser", 20);
+	SingleEvent se3 = new SingleEvent(0, 0, "LdV1", new Date(),
+		"Uffpasser", 90);
+	SingleEvent se4 = new SingleEvent(0, 0, "Mensa", new Date(), "Derp", 45);
+
+	List<SingleEvent> sEL1 = new ArrayList<>();
+	sEL1.add(se1);
+	sEL1.add(se2);
+
+	List<SingleEvent> sEL2 = new ArrayList<>();
+	sEL2.add(se3);
+
+	List<SingleEvent> sEL3 = new ArrayList<>();
+	sEL3.add(se4);
+
+	List<String> possibleOwner1 = new ArrayList<>();
+	possibleOwner1.add("Prof. Derp");
+
+	List<String> possibleOwner2 = new ArrayList<>();
+	possibleOwner2.add("Prof. Derp");
+	possibleOwner2.add("Dr. Test");
+
+	List<String> possibleOwner3 = new ArrayList<>();
+	possibleOwner3.add("Prof. Dr. Admin");
+
+	EventImport eI1 = new EventImport("event1", sEL1, possibleOwner1, e1Cat);
+	EventImport eI2 = new EventImport("event2", sEL2, possibleOwner2, e2Cat);
+	EventImport eI3 = new EventImport("event3", sEL3, possibleOwner3, e3Cat);
+
+	List<EventImport> eventImport1 = new ArrayList<>();
+	eventImport1.add(eI1);
+	eventImport1.add(eI2);
+
+	List<EventImport> eventImport2 = new ArrayList<>();
+	eventImport2.add(eI3);
+
+	EventGroupImport eventGroupImp1 = new EventGroupImport("TestEG1",
+		"No Info", eventImport1, eG1Cat);
+
+	EventGroupImport eventGroupImp2 = new EventGroupImport("TestEG2", "",
+		eventImport2, eG2Cat);
+
+	List<EventGroupImport> eventGroupContainers = new ArrayList<>();
+	eventGroupContainers.add(eventGroupImp1);
+	eventGroupContainers.add(eventGroupImp2);
+	EventImportContainer container = new EventImportContainer(categoryTree,
+		eventGroupContainers);
+	try {
+	    dbs.importEvents(container);
+	} catch (ObjectNotFoundException | IncorrectObjectException
+		| ObjectAlreadyExsistsException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
     }
 }

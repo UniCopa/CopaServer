@@ -14,29 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package unicopa.copa.server.module.eventimport.serialization;
+package unicopa.copa.server.module.eventimport.impl.tuilmenau.serialization;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import unicopa.copa.base.com.serialization.DateDeserializer;
-import unicopa.copa.base.com.serialization.DateSerializer;
 
 /**
  * 
  * @author Felix Wiemuth
  */
-public class Serializer {
-    private static final Gson gson = new GsonBuilder()
-	    .registerTypeAdapter(Date.class, new DateSerializer())
-	    .registerTypeAdapter(Date.class, new DateDeserializer()).create();
+public class DateSerializer implements JsonSerializer<Date> {
+    private static final SimpleDateFormat SDF = new SimpleDateFormat(
+	    "yyyy-MM-dd HH:mm:ss");
 
-    // public static String serialize(Object object) {
-    // return gson.toJson(object);
-    // }
-
-    public static Gson getGson() {
-	return gson;
+    @Override
+    public JsonElement serialize(Date src, Type typeOfSrc,
+	    JsonSerializationContext context) {
+	return new JsonPrimitive(SDF.format(src));
     }
 
 }

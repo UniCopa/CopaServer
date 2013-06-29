@@ -84,6 +84,7 @@
 	<delete id='deleteEvent'>
 	    delete
 	    from events
+	    where eventID != 0
 	</delete>
 	
 	<delete id='deleteEventHasCategories'>
