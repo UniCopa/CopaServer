@@ -103,7 +103,7 @@ public class CopaSystem {
     private EventImportService eventImportService;
     private Map<Class<? extends AbstractRequest>, RequestHandler> requestHandlers = new HashMap<>();
 
-    private boolean doEventImport = false;
+    private boolean initializedDatabase = false;
 
     private CopaSystem() {
 	try {
@@ -178,15 +178,19 @@ public class CopaSystem {
 										  // this
 										  // failure
 	}
-	if (doEventImport) {
-	    LOG.info("Starting event import because database was created...");
-	    try {
-		EventImportContainer snapshot = eventImportService
-			.getSnapshot();
-		context.getDbservice().importEvents(snapshot);
-	    } catch (Exception ex) {
-		LOG.log(Level.SEVERE, "Event import failed", ex);
+	if (initializedDatabase) {
+	    if (systemProperties.getProperty("runEventImportOnInitialization")
+		    .equals("true")) {
+		LOG.info("Starting event import because database was created...");
+		try {
+		    EventImportContainer snapshot = eventImportService
+			    .getSnapshot();
+		    context.getDbservice().importEvents(snapshot);
+		} catch (Exception ex) {
+		    LOG.log(Level.SEVERE, "Event import failed", ex);
+		}
 	    }
+	    initializedDatabase = false;
 	}
     }
 
@@ -231,11 +235,9 @@ public class CopaSystem {
 		DatabaseUtil.createNewDatabase(databaseDirectory);
 		LOG.log(Level.WARNING, "Created new Database in {0}",
 			databaseDirectory.getAbsolutePath());
+		DatabaseService.initDB(databaseDirectory);
 		databaseService = new DatabaseService(databaseDirectory);
-		if (systemProperties.getProperty(
-			"runEventImportOnInitialization").equals("true")) {
-		    doEventImport = true;
-		}
+		initializedDatabase = true;
 	    }
 	} else {
 	    databaseService = new DatabaseService(databaseDirectory);
@@ -367,7 +369,7 @@ public class CopaSystem {
 		} catch (NamingException | ObjectAlreadyExsistsException
 			| IncorrectObjectException ex1) {
 		    throw new InternalErrorException(
-			    "Fatal: the user could not be registered to the system (which is required to process requests): "
+			    "Fatal: The user could not be registered to the system (which is required to process requests): "
 				    + ex.getMessage());
 		} catch (ObjectNotFoundException ex1) {
 		    throw new InternalErrorException(
