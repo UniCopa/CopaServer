@@ -17,9 +17,8 @@
 package unicopa.copa.server;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -70,6 +69,7 @@ import unicopa.copa.server.database.DatabaseService;
 import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectAlreadyExsistsException;
 import unicopa.copa.server.database.ObjectNotFoundException;
+import unicopa.copa.server.database.util.DatabaseUtil;
 import unicopa.copa.server.module.eventimport.EventImportService;
 import unicopa.copa.server.module.eventimport.impl.tuilmenau.TUIlmenauEventImportService;
 import unicopa.copa.server.notification.EmailNotificationService;
@@ -92,6 +92,7 @@ public class CopaSystem {
     private static final Logger LOG = Logger.getLogger(CopaSystem.class
 	    .getName());
     private static final Logger DEBUG_LOG = Logger.getLogger("debug");
+    private static final File databaseDirectory = new File("database");
     private static CopaSystem instance = new CopaSystem();
     private Properties systemProperties = new Properties(); // TODO use
     private CopaSystemContext context;
@@ -120,8 +121,12 @@ public class CopaSystem {
 			true));
 	    }
 
-	    DatabaseService dbservice = new DatabaseService(
-		    new File("database"));
+	    // Logger for EventImport module
+	    Logger.getLogger(EventImportService.class.getName()).addHandler(
+		    new FileHandler(logDirectory.getCanonicalPath()
+			    + "/event-import.log", 10000000, 1, true));
+
+	    DatabaseService dbservice = initializeDatabase();
 
 	    Properties serverInfoProperties = new Properties();
 	    serverInfoProperties.load(getClass().getResourceAsStream(
@@ -144,6 +149,8 @@ public class CopaSystem {
 		    startDate, availableRequests);
 	    context.setServerInfo(serverInfo);
 
+	    initializeEventImportService();
+
 	    registration = new Registration(context);
 	    EmailNotificationService emailNotificationService = new EmailNotificationService(
 		    context);
@@ -156,7 +163,7 @@ public class CopaSystem {
 		    new Object[] { startDate, serverInfo.getVersion(),
 			    serverInfo.getApiVersion(),
 			    serverInfo.getCommitID() });
-	} catch (IOException | URISyntaxException ex) {
+	} catch (Exception ex) {
 	    LOG.log(Level.SEVERE, null, ex);
 	    throw new RuntimeException(
 		    "Could not fully initialize the system - safety abort."); // cannot
@@ -176,6 +183,39 @@ public class CopaSystem {
      */
     public static CopaSystem getInstance() {
 	return instance;
+    }
+
+    private void initializeEventImportService() throws Exception {
+	File eventImportSettings = new File(context.getSettingsDirectory(),
+		"eventImport.xml");
+	if (!eventImportSettings.exists()) {
+	    throw new Exception(
+		    "The configuration file for the event import module does not exist - expected: "
+			    + eventImportSettings.getAbsolutePath());
+	}
+	// TODO generalize: load class from file
+	eventImportService = new TUIlmenauEventImportService(
+		new FileInputStream(eventImportSettings));
+    }
+
+    /**
+     * Initialize DatabaseService and create database if it doesn´t exist.
+     * 
+     * @return
+     */
+    private DatabaseService initializeDatabase() throws Exception {
+	if (!databaseDirectory.isDirectory()) {
+	    if (databaseDirectory.exists()) {
+		LOG.log(Level.SEVERE,
+			"The path {0} should be either the database directory or nonexistent. Delete it for new database initialization.",
+			databaseDirectory.getAbsolutePath());
+	    } else {
+		DatabaseUtil.createNewDatabase(databaseDirectory);
+		LOG.log(Level.WARNING, "Created new Database in {0}",
+			databaseDirectory.getAbsolutePath());
+	    }
+	}
+	return new DatabaseService(databaseDirectory);
     }
 
     /**
