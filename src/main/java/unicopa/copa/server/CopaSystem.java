@@ -191,6 +191,28 @@ public class CopaSystem {
 		}
 	    }
 	    initializedDatabase = false;
+	} else if (systemProperties.getProperty("runEventImportOnNextStartup")
+		.equals("true")) {
+	    LOG.info("Starting event import (activated via properties)...");
+	    // systemProperties.setProperty("runEventImportOnNextStartup",
+	    // "false");
+	    // File systemPropertiesFile = new
+	    // File(context.getSettingsDirectory(),
+	    // "system.properties");
+	    // try {
+	    // systemProperties.store(new
+	    // FileOutputStream(systemPropertiesFile), "comments");
+	    // } catch (IOException ex) {
+	    // LOG.log(Level.SEVERE, "Writing to system properties file failed",
+	    // ex);
+	    // }
+	    try {
+		EventImportContainer snapshot = eventImportService
+			.getSnapshot();
+		context.getDbservice().importEvents(snapshot);
+	    } catch (Exception ex) {
+		LOG.log(Level.SEVERE, "Event import failed", ex);
+	    }
 	}
     }
 
