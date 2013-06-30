@@ -392,11 +392,11 @@ public class CopaSystem {
 			| IncorrectObjectException ex1) {
 		    throw new InternalErrorException(
 			    "Fatal: The user could not be registered to the system (which is required to process requests): "
-				    + ex.getMessage());
+				    + ex1.getMessage());
 		} catch (ObjectNotFoundException ex1) {
 		    throw new InternalErrorException(
 			    "Fatal: Registration was performed but user still cannot be found in the database: "
-				    + ex.getMessage());
+				    + ex1.getMessage());
 		}
 	    }
 	    AbstractRequest request = AbstractRequest.deserialize(json);
