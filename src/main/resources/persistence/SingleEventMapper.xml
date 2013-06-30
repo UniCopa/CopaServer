@@ -31,7 +31,7 @@
 		select s.singleEventID, s.eventID,
 		s.location,s.SEventDate,s.supervisor,s.duration
 		From singleEvents s
-		Where s.singleEventID=#{singleEventID}
+		Where s.singleEventID=#{singleEventID} and s.singleEventID != 0
 	</select>
 
 	<select id='getCurrentSingleEvent' parameterType='map'
@@ -40,14 +40,14 @@
 		s.location,s.SEventDate,s.supervisor,s.duration
 		From singleEvents s
 		Where s.mostRecent=true and s.sEventDate>=#{since} and
-		s.eventID = #{eventID}
+		s.eventID = #{eventID} and s.singleEventID != 0
 	</select>
 
 	<select id='getSingleEventStatus' parameterType='int'
 		resultType='boolean'>
 		Select mostRecent
 		From singleEvents
-		Where singleEventID=#{singleEventID}
+		Where singleEventID=#{singleEventID} and singleEventID != 0
 	</select>
 
 	<select id='singleEventExists' parameterType='int' resultType='int'>
@@ -67,7 +67,7 @@
 	<update id='updateSingleEventStatus' parameterType='map'>
 		update singleEvents
 		Set mostRecent=#{isRecent}
-		Where singleEventID=#{singleEventID}
+		Where singleEventID=#{singleEventID} and singleEventID != 0
 	</update>
 	
 	<delete id='deleteSingleEventUpdates'>

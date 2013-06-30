@@ -30,7 +30,7 @@
 		g
 		where e.eventGroupID=c.eventGroupID and UPPER(e.eventGroupName) like
 		UPPER(#{searchTerm})
-		and c.categoryID=g.categoryID and
+		and c.categoryID=g.categoryID and e.eventGroupID != 0 and
 		<foreach item="item" index="index" collection="categoryNodeID"
 			open="(" separator="or" close=")">
 			g.categoryID=#{item}
@@ -43,7 +43,7 @@
 		from
 		eventGroups e,eventGroup_has_Categories c
 		where e.eventGroupID
-		=#{eventGroupID} and e.eventGroupID=c.eventGroupID
+		=#{eventGroupID} and e.eventGroupID=c.eventGroupID and e.eventGroupID != 0
 		Order By
 		(c.categoryID)
 	</select>

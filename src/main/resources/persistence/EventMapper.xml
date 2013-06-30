@@ -31,7 +31,7 @@
 		From
 		events e, event_has_Categories c
 		Where e.eventGroupID=#{eventGroupID}
-		and e.eventID=c.eventID and
+		and e.eventID=c.eventID and e.eventID != 0 and
 		<foreach item="item" index="index" collection="categoryNodeID"
 			open="(" separator="or" close=")">
 			c.categoryID=#{item}
@@ -42,7 +42,7 @@
 		select e.eventID, e.eventGroupID, e.kindOfEvent, c.categoryID
 		From events e,
 		event_has_Categories c
-		Where e.eventID=#{eventID} and
+		Where e.eventID=#{eventID} and e.eventID != 0 and
 		e.eventID=c.eventID
 		Order By (c.categoryID)
 	</select>
@@ -56,13 +56,13 @@
 	<select id='getPossibleOwners' parameterType='int' resultType='String'>
 	    Select possibleOwnerName
 	    from possibleOwners
-	    Where eventID=#{eventID}
+	    Where eventID=#{eventID} and eventID != 0
 	</select>
 	
 	<select id='getPossibleOwnerMatches' parameterType='int' resultType='int'>
 	    Select distinct eventID
 	    From persons p, possibleOwners o
-	    Where p.personID=#{userID} and UPPER(possibleOwnerName)  like '%' || UPPER(p.familyName)    
+	    Where p.personID=#{userID} and UPPER(possibleOwnerName)  like '%' || UPPER(p.familyName) and eventID != 0   
 	</select>
 	
 	<insert id='insertPossibleOwners' parameterType='map'>

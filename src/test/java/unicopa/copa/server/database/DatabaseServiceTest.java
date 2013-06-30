@@ -211,20 +211,7 @@ public class DatabaseServiceTest {
 		.getOldSingleEventID());
 	assertEquals(sEUList.get(0).getUpdateDate(), resSEUList.get(0)
 		.getUpdateDate());
-	assertEquals(
-		sEUList.get(0).getUpdatedSingleEvent().getDate().getTime(),
-		resSEUList.get(0).getUpdatedSingleEvent().getDate().getTime());
-	assertEquals(sEUList.get(0).getUpdatedSingleEvent()
-		.getDurationMinutes(), resSEUList.get(0)
-		.getUpdatedSingleEvent().getDurationMinutes());
-	assertEquals(sEUList.get(0).getUpdatedSingleEvent().getEventID(),
-		resSEUList.get(0).getUpdatedSingleEvent().getEventID());
-	assertEquals(sEUList.get(0).getUpdatedSingleEvent().getLocation(),
-		resSEUList.get(0).getUpdatedSingleEvent().getLocation());
-	assertEquals(sEUList.get(0).getUpdatedSingleEvent().getSingleEventID(),
-		resSEUList.get(0).getUpdatedSingleEvent().getSingleEventID());
-	assertEquals(sEUList.get(0).getUpdatedSingleEvent().getSupervisor(),
-		resSEUList.get(0).getUpdatedSingleEvent().getSupervisor());
+	assertEquals(null, resSEUList.get(0).getUpdatedSingleEvent());
     }
 
     @Test
@@ -904,4 +891,20 @@ public class DatabaseServiceTest {
 	    e.printStackTrace();
 	}
     }
+
+    // @Test
+    // public void dropCheck() {
+    // try {
+    // System.out.println("Name:" + dbs.getUserName(2));
+    // System.out.println(">" + dbs.getRightholders(12));
+    // dbs.setUserRoleForEvent(2, 12, UserRole.USER, 2);
+    // System.out.println(">>" + dbs.getRightholders(12));
+    // } catch (ObjectNotFoundException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // } catch (IncorrectObjectException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // }
 }

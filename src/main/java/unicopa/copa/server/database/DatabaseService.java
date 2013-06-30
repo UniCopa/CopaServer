@@ -260,11 +260,23 @@ public class DatabaseService {
 		    .getDBSingleEventUpdates(eventID, since.getTime());
 	    List<SingleEventUpdate> singleEventUpdates = new ArrayList<>();
 	    for (DBSingleEventUpdate dbSingleEvent : dbSingleEventUpdates) {
-		singleEventUpdates.add(new SingleEventUpdate(
-			getSingleEvent(dbSingleEvent.getUpdatedSingleEvent()),
-			dbSingleEvent.getOldSingleEventID(), new Date(
-				dbSingleEvent.getUpdateDate()), dbSingleEvent
-				.getCreatorName(), dbSingleEvent.getComment()));
+		// the event is not cancelled
+		if (dbSingleEvent.getUpdatedSingleEvent() != 0) {
+		    singleEventUpdates.add(new SingleEventUpdate(
+			    getSingleEvent(dbSingleEvent
+				    .getUpdatedSingleEvent()), dbSingleEvent
+				    .getOldSingleEventID(), new Date(
+				    dbSingleEvent.getUpdateDate()),
+			    dbSingleEvent.getCreatorName(), dbSingleEvent
+				    .getComment()));
+		} else {// the event is cancelled, the new singleEvent is now
+			// null
+		    singleEventUpdates.add(new SingleEventUpdate(null,
+			    dbSingleEvent.getOldSingleEventID(), new Date(
+				    dbSingleEvent.getUpdateDate()),
+			    dbSingleEvent.getCreatorName(), dbSingleEvent
+				    .getComment()));
+		}
 	    }
 	    return singleEventUpdates;
 	}
