@@ -986,6 +986,10 @@ public class DatabaseService {
 	    mapper.deleteAllSubscriptions(userID);
 	    for (int eventID : userSetting.getSubscriptions()) {
 		if (eventID != 0) {
+		    if (userSetting.getEventSettings(eventID).getColorCode() == null) {
+			userSetting.getEventSettings(eventID).setColorCode(
+				"000000");
+		    }
 		    checkColor(userSetting.getEventSettings(eventID)
 			    .getColorCode());
 		    mapper.insertSubscription(eventID, userSetting
