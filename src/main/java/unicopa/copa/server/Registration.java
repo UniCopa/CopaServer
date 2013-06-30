@@ -31,6 +31,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import unicopa.copa.server.database.IncorrectObjectException;
 import unicopa.copa.server.database.ObjectAlreadyExsistsException;
+import com.sun.jndi.ldap.LdapCtxFactory;
 
 /**
  * This class handles the registration of users to the system.
@@ -81,15 +82,13 @@ public class Registration {
 	String userIdAttribute = this.ldapProps.getProperty("userIdAttribute");
 	String userBaseDn = this.ldapProps.getProperty("userBaseDn");
 	String url = this.ldapProps.getProperty("url");
-	String initialCtxFactory = this.ldapProps
-		.getProperty("initialCtxFactory");
 	String emailAttrName = this.ldapProps.getProperty("emailAttrName");
 	String givenNameAttrName = this.ldapProps
 		.getProperty("givenNameAttrName");
 	String surNameAttrName = this.ldapProps.getProperty("surNameAttrName");
 
 	Hashtable env = new Hashtable(11);
-	env.put(Context.INITIAL_CONTEXT_FACTORY, initialCtxFactory);
+	env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 	env.put(Context.PROVIDER_URL, url);
 	env.put(Context.SECURITY_PRINCIPAL, userBaseDn);
 
