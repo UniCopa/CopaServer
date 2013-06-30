@@ -40,6 +40,7 @@ import unicopa.copa.server.module.eventimport.impl.tuilmenau.serialization.Seria
  * 
  * @author Felix Wiemuth
  */
+@Ignore
 public class TUIlmenauEventImportServiceTest {
     TUIlmenauEventImportService service;
 
