@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -70,6 +71,37 @@ public class CopaServlet extends HttpServlet implements Filter {
 	} catch (IOException | SecurityException ex) {
 	    Logger.getLogger(CopaServlet.class.getName()).log(Level.SEVERE,
 		    null, ex);
+	}
+
+	// determine permissions config
+	File settingsDirectory = new File(this.system.getContext()
+		.getSettingsDirectory(), "permissions");
+	settingsDirectory.mkdirs();
+	File permissionsFile = new File(settingsDirectory, "permissions.txt");
+	try {
+	    this.permissions = new ArrayList<>();
+	    if (!permissionsFile.exists()) {
+		File src = new File(this.getClass()
+			.getResource("externalAddresses.txt").toURI());
+		unicopa.copa.server.util.IOutils.copyFile(src, permissionsFile);
+	    }
+	    FileInputStream extAddrs = new FileInputStream(permissionsFile);
+	    Scanner scn = new Scanner(new BufferedInputStream(extAddrs));
+	    if (scn.hasNextLine())
+		scn.nextLine();
+	    if (scn.hasNextLine())
+		scn.nextLine();
+	    if (scn.hasNextLine())
+		scn.nextLine(); // ignore first three lines
+	    while (scn.hasNextLine()) {
+		String nextRole = scn.nextLine();
+		this.permissions.add(nextRole);
+	    }
+
+	} catch (FileNotFoundException ex) {
+	    LOG.log(Level.SEVERE, null, ex);
+	} catch (IOException | URISyntaxException ex) {
+	    LOG.log(Level.SEVERE, null, ex);
 	}
 
     }
@@ -137,33 +169,7 @@ public class CopaServlet extends HttpServlet implements Filter {
 
     public GeneralUserPermission determineGeneralPermission(
 	    HttpServletRequest request) {
-	if (this.permissions == null) {
-	    File settingsDirectory = new File(this.system.getContext()
-		    .getSettingsDirectory(), "permissions");
-	    settingsDirectory.mkdirs();
-	    File permissionsFile = new File(settingsDirectory,
-		    "permissions.txt");
-	    try {
-		permissionsFile.createNewFile();
-		this.permissions = new ArrayList<>();
-		FileInputStream extAddrs = new FileInputStream(permissionsFile);
-		Scanner scn = new Scanner(new BufferedInputStream(extAddrs));
-		scn.nextLine();
-		scn.nextLine();
-		scn.nextLine(); // ignore first three lines
-		while (scn.hasNextLine()) {
-		    String nextRole = scn.nextLine();
-		    this.permissions.add(nextRole);
-		}
-
-	    } catch (FileNotFoundException ex) {
-		LOG.log(Level.SEVERE, null, ex);
-	    } catch (IOException ex) {
-		LOG.log(Level.SEVERE, null, ex);
-	    }
-	}
-
-	for (String role : permissions) {
+	for (String role : this.permissions) {
 	    if (request.isUserInRole(role)) {
 		return GeneralUserPermission.POSSIBLE_OWNER;
 	    }
