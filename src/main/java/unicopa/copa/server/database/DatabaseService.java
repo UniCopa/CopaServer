@@ -1957,7 +1957,8 @@ public class DatabaseService {
 	    categoryEventGroupList.clear();
 	    // collect the categoryIDs for the EventGroup
 	    for (CategoryNode category : eventGroupImport.getCategories()) {
-		categoryEventGroupList.add(category.getId());
+		if (!categoryEventGroupList.contains(category.getId()))
+		    categoryEventGroupList.add(category.getId());
 	    }
 	    tempEventGroup = new EventGroup(0,
 		    eventGroupImport.getEventGroupName(),
@@ -1969,7 +1970,8 @@ public class DatabaseService {
 		categoryEventList.clear();
 		// collect the categoryIDs for the Event
 		for (CategoryNode category : eventImport.getCategories()) {
-		    categoryEventList.add(category.getId());
+		    if (!categoryEventList.contains(category.getId()))
+			categoryEventList.add(category.getId());
 		}
 		tempEvent = new Event(0, tempEventGroup.getEventGroupID(),
 			eventImport.getEventName(), categoryEventList);

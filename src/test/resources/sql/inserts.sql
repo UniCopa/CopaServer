@@ -338,7 +338,7 @@ insert into subscriptionLists(personID,eventID,color) values
 	(2,8,'FFFF00'),
 	(2,17,'0FF000'),
 	(2,1,'00FFF0'),
-	(5,2,'0FF00'),
+	(5,2,'0FF000'),
 	(5,10,'000000'),
 	(5,12,'0FFFF0'),
 	(5,13,'00FF00'),
