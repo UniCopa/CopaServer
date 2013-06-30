@@ -1118,8 +1118,8 @@ public class DatabaseService {
 	checkNull(singleEvent.getSupervisor(),
 		"String(supervisor) in given SingleEvent");
 	checkEvent(singleEvent.getEventID());
-	checkString(singleEvent.getLocation(), 70);
-	checkString(singleEvent.getSupervisor(), 70);
+	cut(singleEvent.getLocation(), 70);
+	cut(singleEvent.getSupervisor(), 70);
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);
@@ -1295,8 +1295,8 @@ public class DatabaseService {
 	checkNull(singleEventUpdate, "given singleEventUpdate");
 	checkNull(singleEventUpdate.getUpdateDate(),
 		"Date in given SingleEventUpdate");
-	checkString(singleEventUpdate.getComment(), 1000);
-	checkString(singleEventUpdate.getCreatorName(), 70);
+	cut(singleEventUpdate.getComment(), 1000);
+	cut(singleEventUpdate.getCreatorName(), 70);
 	if (singleEventUpdate.getOldSingleEventID() != 0) {
 	    checkSingleEvent(singleEventUpdate.getOldSingleEventID());
 	    if (!isRecent(singleEventUpdate.getOldSingleEventID()))
@@ -1351,7 +1351,7 @@ public class DatabaseService {
      */
     public void insertEvent(Event event) throws ObjectNotFoundException,
 	    IncorrectObjectException {
-	checkString(event.getEventName(), 70);
+	cut(event.getEventName(), 70);
 	checkNull(event, "given Event");
 	checkNull(event.getEventName(), "String(eventName) in the given Event");
 	for (int categoryID : event.getCategories()) {
@@ -1389,7 +1389,7 @@ public class DatabaseService {
     public void insertCategoryTree(CategoryNodeImpl category, int parent)
 	    throws IncorrectObjectException, ObjectAlreadyExsistsException,
 	    ObjectNotFoundException {
-	checkString(category.getName(), 70);
+	cut(category.getName(), 70);
 	checkNull(category, "given CategoryNodeImpl");
 	// TODO check if needed
 	// if (categoryExists(category.getId()))
@@ -1489,8 +1489,8 @@ public class DatabaseService {
 		"string(eventGroupInfo) in given eventGroup");
 	checkNull(eventGroup.getEventGroupName(),
 		"string(eventGroupName) in given eventGroup");
-	checkString(eventGroup.getEventGroupName(), 70);
-	checkString(eventGroup.getEventGroupInfo(), 500);
+	cut(eventGroup.getEventGroupName(), 70);
+	cut(eventGroup.getEventGroupInfo(), 500);
 	for (int categoryID : eventGroup.getCategories()) {
 	    checkCategory(categoryID);
 	}
@@ -2050,6 +2050,33 @@ public class DatabaseService {
 	    }
 	}
 	return eventOwnerMap;
+    }
+
+    /**
+     * Cuts the given String to the given length. If length is greater than 3
+     * "..." is added to the string
+     * 
+     * @param input
+     * @param length
+     * @return
+     * @throws IncorrectObjectException
+     *             is thrown if the given length is 1 or less
+     */
+    private String cut(String input, int length)
+	    throws IncorrectObjectException {
+	if (length < 1)
+	    throw new IncorrectObjectException(
+		    "Given length must be greater than 1");
+	if (input == null)
+	    return input;
+	if (input.length() <= length)
+	    return input;
+	else {
+	    if (length > 3)
+		return input.substring(0, length - 3) + "...";
+	    return input.substring(0, length);
+	}
+
     }
 
     /**
