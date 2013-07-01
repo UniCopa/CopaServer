@@ -1118,13 +1118,16 @@ public class DatabaseService {
 	checkNull(singleEvent.getSupervisor(),
 		"String(supervisor) in given SingleEvent");
 	checkEvent(singleEvent.getEventID());
-	cut(singleEvent.getLocation(), 70);
-	cut(singleEvent.getSupervisor(), 70);
+	SingleEvent singleEventInsert = new SingleEvent(
+		singleEvent.getSingleEventID(), singleEvent.getEventID(), cut(
+			singleEvent.getLocation(), 70), singleEvent.getDate(),
+		cut(singleEvent.getSupervisor(), 70),
+		singleEvent.getDurationMinutes());
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    SingleEventMapper mapper = session
 		    .getMapper(SingleEventMapper.class);
-	    mapper.insertSingleEvent(singleEvent, singleEvent.getDate()
-		    .getTime(), isRecent);
+	    mapper.insertSingleEvent(singleEventInsert, singleEventInsert
+		    .getDate().getTime(), isRecent);
 	    session.commit();
 	}
     }
@@ -1295,8 +1298,8 @@ public class DatabaseService {
 	checkNull(singleEventUpdate, "given singleEventUpdate");
 	checkNull(singleEventUpdate.getUpdateDate(),
 		"Date in given SingleEventUpdate");
-	cut(singleEventUpdate.getComment(), 1000);
-	cut(singleEventUpdate.getCreatorName(), 70);
+	;
+	;
 	if (singleEventUpdate.getOldSingleEventID() != 0) {
 	    checkSingleEvent(singleEventUpdate.getOldSingleEventID());
 	    if (!isRecent(singleEventUpdate.getOldSingleEventID()))
@@ -1316,9 +1319,9 @@ public class DatabaseService {
 			singleEventUpdate.getUpdatedSingleEvent()
 				.getSingleEventID(), singleEventUpdate
 				.getOldSingleEventID(), singleEventUpdate
-				.getUpdateDate().getTime(), singleEventUpdate
-				.getCreatorName(), singleEventUpdate
-				.getComment()));
+				.getUpdateDate().getTime(), cut(
+				singleEventUpdate.getCreatorName(), 70), cut(
+				singleEventUpdate.getComment(), 1000)));
 		session.commit();
 	    }
 	} else {
@@ -1327,9 +1330,9 @@ public class DatabaseService {
 			.getMapper(SingleEventUpdateMapper.class);
 		mapper.insertSingleEventUpdate(new DBSingleEventUpdate(0,
 			singleEventUpdate.getOldSingleEventID(),
-			singleEventUpdate.getUpdateDate().getTime(),
-			singleEventUpdate.getCreatorName(), singleEventUpdate
-				.getComment()));
+			singleEventUpdate.getUpdateDate().getTime(), cut(
+				singleEventUpdate.getCreatorName(), 70), cut(
+				singleEventUpdate.getComment(), 1000)));
 		session.commit();
 		updateSingleEventStatus(
 			singleEventUpdate.getOldSingleEventID(), false);
@@ -1351,19 +1354,21 @@ public class DatabaseService {
      */
     public void insertEvent(Event event) throws ObjectNotFoundException,
 	    IncorrectObjectException {
-	cut(event.getEventName(), 70);
 	checkNull(event, "given Event");
 	checkNull(event.getEventName(), "String(eventName) in the given Event");
+	Event eventInsert = new Event(event.getEventID(),
+		event.getEventGroupID(), cut(event.getEventName(), 70),
+		event.getCategories());
 	for (int categoryID : event.getCategories()) {
 	    checkCategory(categoryID);
 	}
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventMapper mapper = session.getMapper(EventMapper.class);
-	    mapper.insertEvent(event);
+	    mapper.insertEvent(eventInsert);
 	    session.commit();
-	    if (!event.getCategories().isEmpty())
-		mapper.insertEventCategorie(event.getEventID(),
-			event.getCategories());
+	    if (!eventInsert.getCategories().isEmpty())
+		mapper.insertEventCategorie(eventInsert.getEventID(),
+			eventInsert.getCategories());
 	    session.commit();
 	}
     }
@@ -1389,7 +1394,7 @@ public class DatabaseService {
     public void insertCategoryTree(CategoryNodeImpl category, int parent)
 	    throws IncorrectObjectException, ObjectAlreadyExsistsException,
 	    ObjectNotFoundException {
-	cut(category.getName(), 70);
+	//TODO cut
 	checkNull(category, "given CategoryNodeImpl");
 	// TODO check if needed
 	// if (categoryExists(category.getId()))
@@ -1489,18 +1494,22 @@ public class DatabaseService {
 		"string(eventGroupInfo) in given eventGroup");
 	checkNull(eventGroup.getEventGroupName(),
 		"string(eventGroupName) in given eventGroup");
-	cut(eventGroup.getEventGroupName(), 70);
-	cut(eventGroup.getEventGroupInfo(), 500);
+	EventGroup eventGroupInsert = new EventGroup(
+		eventGroup.getEventGroupID(), cut(
+			eventGroup.getEventGroupName(), 70), cut(
+			eventGroup.getEventGroupInfo(), 500),
+		eventGroup.getCategories());
 	for (int categoryID : eventGroup.getCategories()) {
 	    checkCategory(categoryID);
 	}
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
-	    mapper.insertEventGroup(eventGroup);
+	    mapper.insertEventGroup(eventGroupInsert);
 	    session.commit();
-	    if (!eventGroup.getCategories().isEmpty())
-		mapper.insertEventGroupCategory(eventGroup.getEventGroupID(),
-			eventGroup.getCategories());
+	    if (!eventGroupInsert.getCategories().isEmpty())
+		mapper.insertEventGroupCategory(
+			eventGroupInsert.getEventGroupID(),
+			eventGroupInsert.getCategories());
 	    session.commit();
 	}
     }
