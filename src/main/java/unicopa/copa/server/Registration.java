@@ -88,7 +88,8 @@ public class Registration {
 	String surNameAttrName = this.ldapProps.getProperty("surNameAttrName");
 
 	Hashtable env = new Hashtable(11);
-	env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+	env.put(Context.INITIAL_CONTEXT_FACTORY,
+		"com.sun.jndi.ldap.LdapCtxFactory");
 	env.put(Context.PROVIDER_URL, url);
 	env.put(Context.SECURITY_PRINCIPAL, userBaseDn);
 
