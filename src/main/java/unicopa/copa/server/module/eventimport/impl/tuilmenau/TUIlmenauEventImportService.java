@@ -98,6 +98,7 @@ public class TUIlmenauEventImportService implements EventImportService {
     public EventImportContainer getSnapshot() throws URISyntaxException {
 	// Start the client for this import session
 	client.start();
+	LOG.info("Starting event import...");
 
 	// Collect all EventGroups here to be finally returned inside an
 	// EventImportContainer
@@ -138,9 +139,14 @@ public class TUIlmenauEventImportService implements EventImportService {
 			courseEvent.getLocation(), courseEvent.getDate(), "",
 			courseEvent.getDuration());
 		Set<Group> groups = new HashSet<>();
+		StringBuilder sb = new StringBuilder(
+			"Set of groups for event: "); // DEBUG
 		for (Integer g : courseEvent.getGroups()) {
 		    groups.add(getGroup(g));
+		    sb.append("\nID=").append(g).append(" Group=")
+			    .append(getGroup(g).getCompactForm());
 		}
+		// LOG.info(sb.toString());
 		EventImport eventImport = eventsMap.get(groups); // check
 								 // if
 								 // event
@@ -148,11 +154,23 @@ public class TUIlmenauEventImportService implements EventImportService {
 								 // exists
 		if (eventImport == null) { // create new Event
 		    StringBuilder eventName = new StringBuilder();
-		    eventName.append(courseEvent.getType()).append(" - ");
+		    if (courseEvent.getType() != null) {
+			eventName.append(courseEvent.getType()).append(" - ");
+		    } else {
+			eventName.append("Other - ");
+		    }
 		    for (Group group : groups) {
 			eventName.append(group.getCompactForm()).append(",");
+			// if (! (group.getSubgroup() == null ||
+			// group.getSubgroup().equals(""))) {
+			// eventName.append(group.getSubgroup()).append(",");
+			// }
 		    }
 		    eventName.deleteCharAt(eventName.length() - 1);
+		    // LOG.info("Creating event name: " + eventName.toString());
+		    if (eventName.length() > 70) {
+			LOG.warning("Too many groups");
+		    }
 
 		    // Construct the Event
 
@@ -179,6 +197,11 @@ public class TUIlmenauEventImportService implements EventImportService {
 		categories.addAll(eventImport.getCategories());
 	    }
 
+	    if (course.getName().length() > 70) {
+		LOG.warning("Cut event group name to: " + course.getName()
+			+ "LENGTH IS NOW " + course.getName().length());
+	    }
+
 	    // Construct the EventGroupImport with the collected data
 	    EventGroupImport eventGroupImport = new EventGroupImport(
 		    course.getName(), "", eventImports, categories);
@@ -187,15 +210,14 @@ public class TUIlmenauEventImportService implements EventImportService {
 	    if (!eventGroupImport.getEvents().isEmpty()) {
 		eventGroupImports.add(eventGroupImport);
 	    } else {
-		LOG.warning("Ignored course with no events: "
-			+ eventGroupImport.getEventGroupName());
+		// LOG.log(Level.WARNING, "Ignored course with no events: {0}",
+		// eventGroupImport.getEventGroupName());
 	    }
 	}
 	try {
 	    client.stop();
 	} catch (Exception ex) {
-	    Logger.getLogger(TUIlmenauEventImportService.class.getName()).log(
-		    Level.WARNING, "Could not stop HTTPS client.", ex);
+	    LOG.log(Level.WARNING, "Could not stop HTTPS client.", ex);
 	}
 	return new EventImportContainer(categoryTree, eventGroupImports);
     }
