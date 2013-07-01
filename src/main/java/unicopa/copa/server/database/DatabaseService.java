@@ -1298,8 +1298,6 @@ public class DatabaseService {
 	checkNull(singleEventUpdate, "given singleEventUpdate");
 	checkNull(singleEventUpdate.getUpdateDate(),
 		"Date in given SingleEventUpdate");
-	;
-	;
 	if (singleEventUpdate.getOldSingleEventID() != 0) {
 	    checkSingleEvent(singleEventUpdate.getOldSingleEventID());
 	    if (!isRecent(singleEventUpdate.getOldSingleEventID()))
@@ -1394,7 +1392,7 @@ public class DatabaseService {
     public void insertCategoryTree(CategoryNodeImpl category, int parent)
 	    throws IncorrectObjectException, ObjectAlreadyExsistsException,
 	    ObjectNotFoundException {
-	//TODO cut
+	// TODO cut
 	checkNull(category, "given CategoryNodeImpl");
 	// TODO check if needed
 	// if (categoryExists(category.getId()))
