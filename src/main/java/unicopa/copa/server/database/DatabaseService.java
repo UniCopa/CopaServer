@@ -1109,7 +1109,7 @@ public class DatabaseService {
      *             is thrown when the give singleEvent object,the date,the
      *             location or the supervisor is null
      */
-    private void insertSingleEvent(SingleEvent singleEvent, boolean isRecent)
+    private int insertSingleEvent(SingleEvent singleEvent, boolean isRecent)
 	    throws ObjectNotFoundException, IncorrectObjectException {
 	checkNull(singleEvent, "given SingleEvent");
 	checkNull(singleEvent.getDate(), "Date in given SingleEvent");
@@ -1129,6 +1129,7 @@ public class DatabaseService {
 	    mapper.insertSingleEvent(singleEventInsert, singleEventInsert
 		    .getDate().getTime(), isRecent);
 	    session.commit();
+	    return singleEventInsert.getSingleEventID();
 	}
     }
 
@@ -1307,17 +1308,16 @@ public class DatabaseService {
 				+ " is deprecated.");
 	}
 	if (singleEventUpdate.getUpdatedSingleEvent() != null) {
-	    insertSingleEvent(singleEventUpdate.getUpdatedSingleEvent(), true);
+	    int singleEventID = insertSingleEvent(
+		    singleEventUpdate.getUpdatedSingleEvent(), true);
 	    updateSingleEventStatus(singleEventUpdate.getOldSingleEventID(),
 		    false);
 	    try (SqlSession session = sqlSessionFactory.openSession()) {
 		SingleEventUpdateMapper mapper = session
 			.getMapper(SingleEventUpdateMapper.class);
 		mapper.insertSingleEventUpdate(new DBSingleEventUpdate(
-			singleEventUpdate.getUpdatedSingleEvent()
-				.getSingleEventID(), singleEventUpdate
-				.getOldSingleEventID(), singleEventUpdate
-				.getUpdateDate().getTime(), cut(
+			singleEventID, singleEventUpdate.getOldSingleEventID(),
+			singleEventUpdate.getUpdateDate().getTime(), cut(
 				singleEventUpdate.getCreatorName(), 70), cut(
 				singleEventUpdate.getComment(), 1000)));
 		session.commit();
@@ -1350,7 +1350,7 @@ public class DatabaseService {
      *             is thrown it the given event object or the name in the event
      *             object is null
      */
-    public void insertEvent(Event event) throws ObjectNotFoundException,
+    public int insertEvent(Event event) throws ObjectNotFoundException,
 	    IncorrectObjectException {
 	checkNull(event, "given Event");
 	checkNull(event.getEventName(), "String(eventName) in the given Event");
@@ -1368,6 +1368,7 @@ public class DatabaseService {
 		mapper.insertEventCategorie(eventInsert.getEventID(),
 			eventInsert.getCategories());
 	    session.commit();
+	    return eventInsert.getEventID();
 	}
     }
 
@@ -1392,7 +1393,7 @@ public class DatabaseService {
     public void insertCategoryTree(CategoryNodeImpl category, int parent)
 	    throws IncorrectObjectException, ObjectAlreadyExsistsException,
 	    ObjectNotFoundException {
-	// TODO cut
+	cut(category.getName(), 70);
 	checkNull(category, "given CategoryNodeImpl");
 	// TODO check if needed
 	// if (categoryExists(category.getId()))
@@ -1403,9 +1404,15 @@ public class DatabaseService {
 	    throw new ObjectNotFoundException(
 		    "There is no Category entry in the database with ID="
 			    + parent);
-	insertCategory(category, parent);
+	CategoryNodeImpl categoryInsert = new CategoryNodeImpl(0, cut(
+		category.getName(), 70));
+	for (CategoryNodeImpl catNode : category.getChildren()) {
+	    categoryInsert.addChildNode(catNode);
+	}
+
+	int categoryID = insertCategory(categoryInsert, parent);
 	for (CategoryNodeImpl cate : category.getChildren()) {
-	    insertCategoryTree(cate, category.getId());
+	    insertCategoryTree(cate, categoryID);
 	}
 
     }
@@ -1419,7 +1426,7 @@ public class DatabaseService {
      * @throws IncorrectObjectException
      *             is thrown if the gven category is null
      */
-    private void insertCategory(CategoryNodeImpl category, int parent)
+    private int insertCategory(CategoryNodeImpl category, int parent)
 	    throws IncorrectObjectException {
 	checkNull(category, "givenCategoryNodeImpl");
 	try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -1431,6 +1438,7 @@ public class DatabaseService {
 		session.commit();
 	    }
 	}
+	return category.getId();
     }
 
     /**
@@ -1475,6 +1483,7 @@ public class DatabaseService {
      * eventGroupHasCategorys entries
      * 
      * @param eventGroup
+     * @retrun returns the eventGroup ID of the new inserted eventGroup
      * @throws ObjectNotFoundException
      *             is thrown if the given category does not exist in the
      *             database
@@ -1484,7 +1493,7 @@ public class DatabaseService {
      *             the given strings is longer than the corresponding database
      *             attribute
      */
-    public void insertEventGroup(EventGroup eventGroup)
+    public int insertEventGroup(EventGroup eventGroup)
 	    throws ObjectNotFoundException, IncorrectObjectException {
 	checkNull(eventGroup.getCategories(),
 		"categoryList in given eventGroup");
@@ -1504,11 +1513,13 @@ public class DatabaseService {
 	    EventGroupMapper mapper = session.getMapper(EventGroupMapper.class);
 	    mapper.insertEventGroup(eventGroupInsert);
 	    session.commit();
-	    if (!eventGroupInsert.getCategories().isEmpty())
+	    if (!eventGroupInsert.getCategories().isEmpty()) {
 		mapper.insertEventGroupCategory(
 			eventGroupInsert.getEventGroupID(),
 			eventGroupInsert.getCategories());
+	    }
 	    session.commit();
+	    return eventGroupInsert.getEventGroupID();
 	}
     }
 
@@ -1958,6 +1969,8 @@ public class DatabaseService {
 	List<Integer> categoryEventList = new ArrayList<>();
 	EventGroup tempEventGroup = null;
 	Event tempEvent = null;
+	int eventGroupID = 0;
+	int eventID = 0;
 	// Insert EventGroups
 	for (EventGroupImport eventGroupImport : container
 		.getEventGroupContainers()) {
@@ -1971,7 +1984,7 @@ public class DatabaseService {
 		    eventGroupImport.getEventGroupName(),
 		    eventGroupImport.getEventGroupInfo(),
 		    categoryEventGroupList);
-	    insertEventGroup(tempEventGroup);
+	    eventGroupID = insertEventGroup(tempEventGroup);
 	    // Create and Insert Events for current EventGroup
 	    for (EventImport eventImport : eventGroupImport.getEvents()) {
 		categoryEventList.clear();
@@ -1980,16 +1993,16 @@ public class DatabaseService {
 		    if (!categoryEventList.contains(category.getId()))
 			categoryEventList.add(category.getId());
 		}
-		tempEvent = new Event(0, tempEventGroup.getEventGroupID(),
+		tempEvent = new Event(0, eventGroupID,
 			eventImport.getEventName(), categoryEventList);
-		insertEvent(tempEvent);
+		eventID = insertEvent(tempEvent);
 		if (!eventImport.getPossibleOwners().isEmpty())
-		    insertPossibleOwners(tempEvent.getEventID(),
+		    insertPossibleOwners(eventID,
 			    eventImport.getPossibleOwners());
 		// Insert SingleEvents
 		for (SingleEvent singleEvent : eventImport.getSingleEvents()) {
 		    insertSingleEventUpdate(new SingleEventUpdate(
-			    new SingleEvent(0, tempEvent.getEventID(),
+			    new SingleEvent(0, eventID,
 				    singleEvent.getLocation(),
 				    singleEvent.getDate(),
 				    singleEvent.getSupervisor(),
