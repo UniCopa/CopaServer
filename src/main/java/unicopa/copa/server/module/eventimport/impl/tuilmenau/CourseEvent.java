@@ -24,14 +24,14 @@ import java.util.List;
  * @author Felix Wiemuth
  */
 public class CourseEvent {
-    private CourseEventType type;
+    private String type;
     private Date date;
     private int duration;
     private String location;
     private List<Integer> groups;
 
-    public CourseEvent(CourseEventType type, Date date, int duration,
-	    String location, List<Integer> groups) {
+    public CourseEvent(String type, Date date, int duration, String location,
+	    List<Integer> groups) {
 	this.type = type;
 	this.date = date;
 	this.duration = duration;
@@ -39,7 +39,7 @@ public class CourseEvent {
 	this.groups = groups;
     }
 
-    public CourseEventType getType() {
+    public String getType() {
 	return type;
     }
 

@@ -29,7 +29,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import unicopa.copa.server.module.eventimport.impl.tuilmenau.CourseEvent;
-import unicopa.copa.server.module.eventimport.impl.tuilmenau.CourseEventType;
 
 /**
  * 
@@ -45,8 +44,7 @@ public class CourseEventDeserializer implements JsonDeserializer<CourseEvent> {
 	JsonObject jo = json.getAsJsonObject();
 
 	// standard deserialization
-	CourseEventType type = context.deserialize(jo.get("type"),
-		CourseEventType.class);
+	String type = context.deserialize(jo.get("type"), String.class);
 	Date date = context.deserialize(jo.get("date"), Date.class);
 	String location = context.deserialize(jo.get("location"), String.class);
 	List<Integer> groups = context.deserialize(jo.get("groups"),
