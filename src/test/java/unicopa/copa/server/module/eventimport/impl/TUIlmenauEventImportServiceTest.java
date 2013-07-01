@@ -16,7 +16,6 @@
  */
 package unicopa.copa.server.module.eventimport.impl;
 
-import unicopa.copa.server.module.eventimport.impl.tuilmenau.CourseEventType;
 import unicopa.copa.server.module.eventimport.impl.tuilmenau.CourseEvent;
 import unicopa.copa.server.module.eventimport.impl.tuilmenau.TUIlmenauEventImportService;
 import com.google.gson.reflect.TypeToken;
@@ -40,7 +39,7 @@ import unicopa.copa.server.module.eventimport.impl.tuilmenau.serialization.Seria
  * 
  * @author Felix Wiemuth
  */
-@Ignore
+//@Ignore
 public class TUIlmenauEventImportServiceTest {
     TUIlmenauEventImportService service;
 
@@ -62,7 +61,7 @@ public class TUIlmenauEventImportServiceTest {
 	List<Integer> groups = new LinkedList<>();
 	groups.add(2);
 	groups.add(4);
-	CourseEvent event = new CourseEvent(CourseEventType.Vorlesungen,
+	CourseEvent event = new CourseEvent("bla",
 		new Date(42), 20, "Hs2", groups);
 	System.out.println("Serialized: " + Serializer.getGson().toJson(event));
     }
