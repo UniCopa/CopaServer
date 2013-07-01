@@ -1393,7 +1393,6 @@ public class DatabaseService {
     public void insertCategoryTree(CategoryNodeImpl category, int parent)
 	    throws IncorrectObjectException, ObjectAlreadyExsistsException,
 	    ObjectNotFoundException {
-	cut(category.getName(), 70);
 	checkNull(category, "given CategoryNodeImpl");
 	// TODO check if needed
 	// if (categoryExists(category.getId()))
@@ -1404,15 +1403,10 @@ public class DatabaseService {
 	    throw new ObjectNotFoundException(
 		    "There is no Category entry in the database with ID="
 			    + parent);
-	CategoryNodeImpl categoryInsert = new CategoryNodeImpl(0, cut(
-		category.getName(), 70));
-	for (CategoryNodeImpl catNode : category.getChildren()) {
-	    categoryInsert.addChildNode(catNode);
-	}
-
-	int categoryID = insertCategory(categoryInsert, parent);
+	category.setName(cut(category.getName(), 70));
+	insertCategory(category, parent);
 	for (CategoryNodeImpl cate : category.getChildren()) {
-	    insertCategoryTree(cate, categoryID);
+	    insertCategoryTree(cate, category.getId());
 	}
 
     }
