@@ -34,8 +34,21 @@ public class Group {
 
     public List<String> toList() {
 	List<String> path = new LinkedList<>();
-	path.add(degree);
-	path.add("Semester " + semester);
+	if (degree == "") {
+	    path.add("Others");
+	} else {
+	    path.add(degree);
+	}
+	if (course == "") {
+	    path.add("Others");
+	} else {
+	    path.add(course);
+	}
+	if (semester == 0) {
+	    path.add("Others");
+	} else {
+	    path.add("Semester " + semester);
+	}
 	if (!(subgroup == null || subgroup.isEmpty())) {
 	    path.add(subgroup);
 	}
@@ -50,5 +63,21 @@ public class Group {
 	    sb.append("-").append(subgroup);
 	}
 	return sb.toString();
+    }
+
+    public String getDegree() {
+	return degree;
+    }
+
+    public String getCourse() {
+	return course;
+    }
+
+    public int getSemester() {
+	return semester;
+    }
+
+    public String getSubgroup() {
+	return subgroup;
     }
 }
