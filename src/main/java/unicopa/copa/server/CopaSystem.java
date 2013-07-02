@@ -185,7 +185,9 @@ public class CopaSystem {
 		try {
 		    EventImportContainer snapshot = eventImportService
 			    .getSnapshot();
+		    LOG.info("Fetched event import from remote, inserting into database...");
 		    context.getDbservice().importEvents(snapshot);
+		    LOG.info("Event import finished.");
 		} catch (Exception ex) {
 		    LOG.log(Level.SEVERE, "Event import failed", ex);
 		}
@@ -209,7 +211,9 @@ public class CopaSystem {
 	    try {
 		EventImportContainer snapshot = eventImportService
 			.getSnapshot();
+		LOG.info("Fetched event import from remote, inserting into database...");
 		context.getDbservice().importEvents(snapshot);
+		LOG.info("Event import finished.");
 	    } catch (Exception ex) {
 		LOG.log(Level.SEVERE, "Event import failed", ex);
 	    }
