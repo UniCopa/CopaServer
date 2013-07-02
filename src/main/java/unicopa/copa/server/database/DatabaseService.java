@@ -968,11 +968,13 @@ public class DatabaseService {
 	    }
 	}
 	deleteAllGCMKeys(userID);
-	for (String gcmKey : userSetting.getGCMKeys()) {
-	    if (existsGCMKey(gcmKey))
-		throw new ObjectAlreadyExsistsException(
-			"There is already an GCMKey with value=" + gcmKey
-				+ " in the database");
+	if (userSetting.getGCMKeys() != null) {
+	    for (String gcmKey : userSetting.getGCMKeys()) {
+		if (existsGCMKey(gcmKey))
+		    throw new ObjectAlreadyExsistsException(
+			    "There is already an GCMKey with value=" + gcmKey
+				    + " in the database");
+	    }
 	}
 	try (SqlSession session = sqlSessionFactory.openSession()) {
 	    UserSettingMapper mapper = session
