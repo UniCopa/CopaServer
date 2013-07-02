@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['serializer',['Serializer',['../classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1Serializer.html',1,'unicopa::copa::base::com::serialization']]],
+  ['serializer',['Serializer',['../classunicopa_1_1copa_1_1server_1_1module_1_1eventimport_1_1impl_1_1tuilmenau_1_1serialization_1_1Serializer.html',1,'unicopa::copa::server::module::eventimport::impl::tuilmenau::serialization']]],
+  ['serverinfo',['ServerInfo',['../classunicopa_1_1copa_1_1base_1_1ServerInfo.html',1,'unicopa::copa::base']]],
+  ['serverserializer',['ServerSerializer',['../classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1ServerSerializer.html',1,'unicopa::copa::base::com::serialization']]],
+  ['serverstatusmapper',['ServerStatusMapper',['../interfaceunicopa_1_1copa_1_1server_1_1database_1_1data_1_1persistence_1_1ServerStatusMapper.html',1,'unicopa::copa::server::database::data::persistence']]],
+  ['serverstatusnote',['ServerStatusNote',['../classunicopa_1_1copa_1_1base_1_1ServerStatusNote.html',1,'unicopa::copa::base']]],
+  ['setusersettingsrequest',['SetUserSettingsRequest',['../classunicopa_1_1copa_1_1base_1_1com_1_1request_1_1SetUserSettingsRequest.html',1,'unicopa::copa::base::com::request']]],
+  ['setusersettingsrequesthandler',['SetUserSettingsRequestHandler',['../classunicopa_1_1copa_1_1server_1_1com_1_1requestHandler_1_1SetUserSettingsRequestHandler.html',1,'unicopa::copa::server::com::requestHandler']]],
+  ['setusersettingsresponse',['SetUserSettingsResponse',['../classunicopa_1_1copa_1_1base_1_1com_1_1request_1_1SetUserSettingsResponse.html',1,'unicopa::copa::base::com::request']]],
+  ['simpleexceptiondeserializer',['SimpleExceptionDeserializer',['../classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1SimpleExceptionDeserializer.html',1,'unicopa::copa::base::com::serialization']]],
+  ['simpleexceptionserializer',['SimpleExceptionSerializer',['../classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1SimpleExceptionSerializer.html',1,'unicopa::copa::base::com::serialization']]],
+  ['simplehttpsclient',['SimpleHttpsClient',['../classunicopa_1_1copa_1_1server_1_1util_1_1SimpleHttpsClient.html',1,'unicopa::copa::server::util']]],
+  ['singleevent',['SingleEvent',['../classunicopa_1_1copa_1_1base_1_1event_1_1SingleEvent.html',1,'unicopa::copa::base::event']]],
+  ['singleeventmapper',['SingleEventMapper',['../interfaceunicopa_1_1copa_1_1server_1_1database_1_1data_1_1persistence_1_1SingleEventMapper.html',1,'unicopa::copa::server::database::data::persistence']]],
+  ['singleeventupdate',['SingleEventUpdate',['../classunicopa_1_1copa_1_1base_1_1event_1_1SingleEventUpdate.html',1,'unicopa::copa::base::event']]],
+  ['singleeventupdatemapper',['SingleEventUpdateMapper',['../interfaceunicopa_1_1copa_1_1server_1_1database_1_1data_1_1persistence_1_1SingleEventUpdateMapper.html',1,'unicopa::copa::server::database::data::persistence']]]
+];

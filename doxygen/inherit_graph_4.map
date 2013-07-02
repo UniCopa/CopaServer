@@ -1,0 +1,10 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1APIExceptionDeserializer.html" title="unicopa.copa.base.com.serialization.\lAPIExceptionDeserializer" alt="" coords="384,201,621,242"/>
+<area shape="rect" id="node3" href="$classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1DateDeserializer.html" title="unicopa.copa.base.com.serialization.\lDateDeserializer" alt="" coords="384,266,621,307"/>
+<area shape="rect" id="node4" href="$classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1InternalErrorExceptionDeserializer.html" title="unicopa.copa.base.com.serialization.\lInternalErrorExceptionDeserializer" alt="" coords="384,5,621,46"/>
+<area shape="rect" id="node5" href="$classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1PermissionExceptionDeserializer.html" title="unicopa.copa.base.com.serialization.\lPermissionExceptionDeserializer" alt="" coords="384,70,621,111"/>
+<area shape="rect" id="node6" href="$classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1RequestNotPracticableExceptionDeserializer.html" title="unicopa.copa.base.com.serialization.\lRequestNotPracticableExceptionDeserializer" alt="" coords="361,135,645,177"/>
+<area shape="rect" id="node7" href="$classunicopa_1_1copa_1_1server_1_1module_1_1eventimport_1_1impl_1_1tuilmenau_1_1serialization_1_1CourseEventDeserializer.html" title="unicopa.copa.server.module.eventimport.impl.tuilmenau.serialization.\lCourseEventDeserializer" alt="" coords="291,331,714,373"/>
+<area shape="rect" id="node8" href="$classunicopa_1_1copa_1_1server_1_1module_1_1eventimport_1_1impl_1_1tuilmenau_1_1serialization_1_1DateDeserializer.html" title="unicopa.copa.server.module.eventimport.impl.tuilmenau.serialization.\lDateDeserializer" alt="" coords="291,397,714,438"/>
+<area shape="rect" id="node9" href="$classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1SimpleExceptionDeserializer.html" title="unicopa.copa.base.com.serialization.\lSimpleExceptionDeserializer" alt="" coords="5,103,243,145"/>
+</map>

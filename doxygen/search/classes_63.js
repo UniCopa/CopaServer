@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['cancelsingleeventrequest',['CancelSingleEventRequest',['../classunicopa_1_1copa_1_1base_1_1com_1_1request_1_1CancelSingleEventRequest.html',1,'unicopa::copa::base::com::request']]],
+  ['cancelsingleeventrequesthandler',['CancelSingleEventRequestHandler',['../classunicopa_1_1copa_1_1server_1_1com_1_1requestHandler_1_1CancelSingleEventRequestHandler.html',1,'unicopa::copa::server::com::requestHandler']]],
+  ['cancelsingleeventresponse',['CancelSingleEventResponse',['../classunicopa_1_1copa_1_1base_1_1com_1_1request_1_1CancelSingleEventResponse.html',1,'unicopa::copa::base::com::request']]],
+  ['categorymapper',['CategoryMapper',['../interfaceunicopa_1_1copa_1_1server_1_1database_1_1data_1_1persistence_1_1CategoryMapper.html',1,'unicopa::copa::server::database::data::persistence']]],
+  ['categorynode',['CategoryNode',['../interfaceunicopa_1_1copa_1_1base_1_1event_1_1CategoryNode.html',1,'unicopa::copa::base::event']]],
+  ['categorynodeimpl',['CategoryNodeImpl',['../classunicopa_1_1copa_1_1base_1_1event_1_1CategoryNodeImpl.html',1,'unicopa::copa::base::event']]],
+  ['categorynodeimpltest',['CategoryNodeImplTest',['../classunicopa_1_1copa_1_1base_1_1event_1_1CategoryNodeImplTest.html',1,'unicopa::copa::base::event']]],
+  ['clientserializer',['ClientSerializer',['../classunicopa_1_1copa_1_1base_1_1com_1_1serialization_1_1ClientSerializer.html',1,'unicopa::copa::base::com::serialization']]],
+  ['clientsimulationtest',['ClientSimulationTest',['../classunicopa_1_1copa_1_1server_1_1ClientSimulationTest.html',1,'unicopa::copa::server']]],
+  ['communicationitem',['CommunicationItem',['../classunicopa_1_1copa_1_1base_1_1com_1_1CommunicationItem.html',1,'unicopa::copa::base::com']]],
+  ['copaservlet',['CopaServlet',['../classunicopa_1_1copa_1_1server_1_1servlet_1_1CopaServlet.html',1,'unicopa::copa::server::servlet']]],
+  ['copasystem',['CopaSystem',['../classunicopa_1_1copa_1_1server_1_1CopaSystem.html',1,'unicopa::copa::server']]],
+  ['copasystemcontext',['CopaSystemContext',['../classunicopa_1_1copa_1_1server_1_1CopaSystemContext.html',1,'unicopa::copa::server']]],
+  ['course',['Course',['../classunicopa_1_1copa_1_1server_1_1module_1_1eventimport_1_1impl_1_1tuilmenau_1_1Course.html',1,'unicopa::copa::server::module::eventimport::impl::tuilmenau']]],
+  ['courseevent',['CourseEvent',['../classunicopa_1_1copa_1_1server_1_1module_1_1eventimport_1_1impl_1_1tuilmenau_1_1CourseEvent.html',1,'unicopa::copa::server::module::eventimport::impl::tuilmenau']]],
+  ['courseeventdeserializer',['CourseEventDeserializer',['../classunicopa_1_1copa_1_1server_1_1module_1_1eventimport_1_1impl_1_1tuilmenau_1_1serialization_1_1CourseEventDeserializer.html',1,'unicopa::copa::server::module::eventimport::impl::tuilmenau::serialization']]]
+];

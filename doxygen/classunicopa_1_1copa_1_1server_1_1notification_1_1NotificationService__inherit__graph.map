@@ -1,0 +1,4 @@
+<map id="unicopa.copa.server.notification.NotificationService" name="unicopa.copa.server.notification.NotificationService">
+<area shape="rect" id="node2" href="$classunicopa_1_1copa_1_1server_1_1notification_1_1EmailNotificationService.html" title="This NotificationService informs users about updates by sending E&#45;Mails. " alt="" coords="5,190,215,311"/>
+<area shape="rect" id="node3" href="$classunicopa_1_1copa_1_1server_1_1notification_1_1GoogleCloudNotificationService.html" title="This NotificationService informs Android devices about updates by sending Google Cloud Messages..." alt="" coords="240,190,467,311"/>
+</map>

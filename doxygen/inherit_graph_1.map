@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$classunicopa_1_1copa_1_1base_1_1com_1_1exception_1_1APIException.html" title="Indicates an error caused by inappropriate API usage. " alt="" coords="133,5,357,46"/>
+<area shape="rect" id="node3" href="$classunicopa_1_1copa_1_1base_1_1com_1_1exception_1_1InternalErrorException.html" title="Indicates an internal error at the service. " alt="" coords="133,70,357,111"/>
+<area shape="rect" id="node4" href="$classunicopa_1_1copa_1_1base_1_1com_1_1exception_1_1PermissionException.html" title="Indicates a rejection of a request by the service because of insufficient permission. " alt="" coords="133,135,357,177"/>
+<area shape="rect" id="node5" href="$classunicopa_1_1copa_1_1base_1_1com_1_1exception_1_1RequestNotPracticableException.html" title="Indicates that a request could not be executed because of its parameterization. " alt="" coords="133,201,357,242"/>
+<area shape="rect" id="node6" href="$classunicopa_1_1copa_1_1server_1_1database_1_1IncorrectObjectException.html" title="Indicated that an object queried does already exist. " alt="" coords="145,266,345,307"/>
+<area shape="rect" id="node7" href="$classunicopa_1_1copa_1_1server_1_1database_1_1ObjectAlreadyExsistsException.html" title="Indicated that an object queried does already exist. " alt="" coords="142,331,349,373"/>
+<area shape="rect" id="node8" href="$classunicopa_1_1copa_1_1server_1_1database_1_1ObjectNotFoundException.html" title="Indicated that an object queried does not exist. " alt="" coords="145,397,345,438"/>
+</map>

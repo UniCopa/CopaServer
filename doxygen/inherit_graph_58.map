@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classunicopa_1_1copa_1_1server_1_1notification_1_1NotificationService.html" title="A service which notifies clients about an update on a SingleEvent. " alt="" coords="5,38,216,79"/>
+<area shape="rect" id="node2" href="$classunicopa_1_1copa_1_1server_1_1notification_1_1EmailNotificationService.html" title="This NotificationService informs users about updates by sending E&#45;Mails. " alt="" coords="264,5,475,46"/>
+<area shape="rect" id="node3" href="$classunicopa_1_1copa_1_1server_1_1notification_1_1GoogleCloudNotificationService.html" title="This NotificationService informs Android devices about updates by sending Google Cloud Messages..." alt="" coords="264,70,475,111"/>
+</map>
