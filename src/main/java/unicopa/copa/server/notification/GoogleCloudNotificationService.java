@@ -59,10 +59,15 @@ public class GoogleCloudNotificationService extends NotificationService {
 	    // Note: We have to get the Event-ID from the old single event,
 	    // because
 	    // the new single event might be null
-	    int seID = update.getOldSingleEventID();
-	    SingleEvent oldSingleEvent = super.getContext().getDbservice()
-		    .getSingleEvent(seID);
-	    int eventID = oldSingleEvent.getEventID();
+            int eventID;
+	    if (!update.isSingleEventCreation()) {
+		int oldID = update.getOldSingleEventID();
+		SingleEvent oldSingleEvent = super.getContext().getDbservice()
+			.getSingleEvent(oldID);
+		eventID = oldSingleEvent.getEventID();
+	    } else {
+		eventID = update.getUpdatedSingleEvent().getEventID();
+	    }
 	    // determine the users that should be informed about the update
 	    List<Integer> subUsers = super.getContext().getDbservice()
 		    .getSubscribedUserIDs(eventID);
