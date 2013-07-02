@@ -9,3 +9,23 @@
         <url-pattern>/service</url-pattern>
     </servlet-mapping>
 </web-app>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Restricted</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>USER</role-name>
+      </auth-constraint>
+  </security-constraint>
+
+
+  <login-config>
+    <auth-method>FORM</auth-method>
+    <realm-name>copa-realm</realm-name>
+  </login-config>
+
+  <security-role>
+    <role-name>USER</role-name>
+  </security-role>
