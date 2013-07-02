@@ -41,6 +41,7 @@
 		From singleEvents s
 		Where s.mostRecent=true and s.sEventDate>=#{since} and
 		s.eventID = #{eventID} and s.singleEventID != 0
+		order by seventdate
 	</select>
 
 	<select id='getSingleEventStatus' parameterType='int'
