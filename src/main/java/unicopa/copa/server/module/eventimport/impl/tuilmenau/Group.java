@@ -34,16 +34,16 @@ public class Group {
 
     public List<String> toList() {
 	List<String> path = new LinkedList<>();
-	if (degree == "") {
+	if ("".equals(degree)) {
 	    path.add("Sonstige");
-	} else if (degree == " ") {
+	} else if (" ".equals(degree)) {
 	    path.add("<leer>");
 	} else {
 	    path.add(degree);
 	}
-	if (course == "") {
+	if (course.equals("")) {
 	    path.add("Sonstige");
-	} else if (course == " ") {
+	} else if (course.equals(" ")) {
 	    path.add("<leer>");
 	} else if (course == null) {
 	    path.add("Unsortiert");
@@ -58,7 +58,7 @@ public class Group {
 	if (!(subgroup == null || subgroup.isEmpty() || subgroup.equals("0"))) {
 	    path.add("Gruppe " + subgroup);
 	} else {
-	    path.add("Alle"); // DEBUG, should be possible to remove.
+	    path.add("Alle Gruppen");
 	}
 	return path;
     }
@@ -73,9 +73,9 @@ public class Group {
 	return sb.toString();
     }
 
-    // public boolean isGroup() {
-    //
-    // }
+    public boolean isOrdinaryGroup() {
+	return !course.equals("");
+    }
 
     public String getDegree() {
 	return degree;

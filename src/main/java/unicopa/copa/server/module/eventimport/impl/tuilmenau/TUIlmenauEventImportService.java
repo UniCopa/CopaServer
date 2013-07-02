@@ -139,18 +139,13 @@ public class TUIlmenauEventImportService implements EventImportService {
 			courseEvent.getLocation(), courseEvent.getDate(), "",
 			courseEvent.getDuration());
 		Set<Group> groups = new HashSet<>();
-		StringBuilder sb = new StringBuilder(
-			"Set of groups for event: "); // DEBUG
 		for (Integer g : courseEvent.getGroups()) {
 		    groups.add(getGroup(g));
-		    sb.append("\nID=").append(g).append(" Group=")
-			    .append(getGroup(g).getCompactForm());
 		}
 		if (groups.isEmpty()) {
 		    LOG.log(Level.WARNING, "No Groups for event {0}",
 			    course.getName());
 		}
-		// LOG.info(sb.toString());
 		EventImport eventImport = eventsMap.get(groups); // check
 								 // if
 								 // event
@@ -159,26 +154,20 @@ public class TUIlmenauEventImportService implements EventImportService {
 		if (eventImport == null) { // create new Event
 		    StringBuilder eventName = new StringBuilder();
 		    if (courseEvent.getType() != null) {
-			eventName.append(courseEvent.getType()).append(" - ");
+			eventName.append(courseEvent.getType());
 		    } else {
-			eventName.append("Andere - ");
+			eventName.append("Andere");
 		    }
 		    if (!courseEvent.getType().equals("Vorlesungen")) {
+			eventName.append(" - ");
 			for (Group group : groups) {
-			    eventName.append(group.getCompactForm())
-				    .append(",");
-			    // if (! (group.getSubgroup() == null ||
-			    // group.getSubgroup().equals(""))) {
-			    // eventName.append(group.getSubgroup()).append(",");
-			    // }
+			    if (group.isOrdinaryGroup()) {
+				eventName.append(group.getCompactForm())
+					.append(",");
+			    }
 			}
 			eventName.deleteCharAt(eventName.length() - 1);
 		    }
-		    // // LOG.info("Creating event name: " +
-		    // eventName.toString());
-		    // if (eventName.length() > 70) {
-		    // LOG.warning("Too many groups: " + eventName.toString());
-		    // }
 
 		    // Construct the Event
 
@@ -186,7 +175,7 @@ public class TUIlmenauEventImportService implements EventImportService {
 		    List<CategoryNode> categories = new LinkedList<>();
 		    for (Group group : groups) {
 			if (group == null) {
-			    LOG.warning("Adding null group!!!");
+			    LOG.warning("Adding null group!");
 			}
 			categories.add(categoryCache.get(group));
 		    }
@@ -208,30 +197,20 @@ public class TUIlmenauEventImportService implements EventImportService {
 		categories.addAll(eventImport.getCategories());
 	    }
 
-	    // if (course.getName().length() > 70) {1
-	    // LOG.warning("Cut event group name to: " + course.getName()
-	    // + "LENGTH IS NOW " + course.getName().length());
-	    // }
-
 	    // Construct the EventGroupImport with the collected data
 	    EventGroupImport eventGroupImport = new EventGroupImport(
 		    course.getName(), "", eventImports, categories);
 	    // Add the Import to the final list which contains everything
 	    // collected in this method
-	    if (true/* !eventGroupImport.getEvents().isEmpty() */) {
-		eventGroupImports.add(eventGroupImport);
-	    } else {
-		// LOG.log(Level.WARNING, "Ignored course with no events: {0}",
-		// eventGroupImport.getEventGroupName());
-	    }
+	    eventGroupImports.add(eventGroupImport);
 	}
 	try {
 	    client.stop();
 	} catch (Exception ex) {
 	    LOG.log(Level.WARNING, "Could not stop HTTPS client.", ex);
 	}
-	LOG.info("Finished event import, imported " + eventGroupImports.size()
-		+ " event groups");
+	LOG.log(Level.INFO, "Finished event import, imported {0} event groups",
+		eventGroupImports.size());
 	return new EventImportContainer(categoryTree, eventGroupImports);
     }
 
