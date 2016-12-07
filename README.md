@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 CoPA (Change of Plan Application) is a notification system for schedule changes.
 It can be connected to different user authentication systems and databases of events.
 Event responsibles can easily notify their subscribers about changes via a webinterface and an Android app.
-Subscribers to events recevive these notifications over the same channels and by email.
+Subscribers to events receive these notifications over the same channels and by email.
 This repository contains the server part of the system.
 
 ##Overview
